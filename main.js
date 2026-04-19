@@ -159,6 +159,27 @@ stepEls.forEach(s=>obs.observe(s));
   }, { offset: 0 });
 })();
 
+// ── Vicious cycle highlight (Phase 4) ────────
+// Each .cy-dullable[data-order="N"] lights up (.cy-lit) once scroll
+// progress through the .prob-designed section crosses N/4.
+(function () {
+  var cycleSection = document.querySelector('section.prob-designed');
+  if (!cycleSection) return;
+  if (!cycleSection.id) cycleSection.id = 'cycle-anchor';
+  var parts = cycleSection.querySelectorAll('.cy-dullable');
+  if (!parts.length) return;
+  // 4-step cycle: trigger at 0.05, 0.30, 0.55, 0.80 so everything is
+  // lit well before the section finishes scrolling.
+  var thresholds = [0.05, 0.30, 0.55, 0.80];
+  window.onSectionProgress('#' + cycleSection.id, function (p) {
+    parts.forEach(function (el) {
+      var n = parseInt(el.getAttribute('data-order'), 10);
+      if (!n) return;
+      if (p >= thresholds[n - 1]) el.classList.add('cy-lit');
+    });
+  }, { offset: 0 });
+})();
+
 // ── Feasibility horizontal scroll ───────────
 // Feasibility horizontal scroll
 (function() {

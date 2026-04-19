@@ -47,7 +47,7 @@
 <!-- ══ SECTION 1: BIOLOGICALLY HARD TO DETECT ══ -->
 <section class="prob-section prob-bio">
   <div class="prob-inner">
-    <div class="prob-tag">The Problem · 1 of 3</div>
+    <div class="prob-tag">The Problem · 1 of 2</div>
     <h2 class="prob-h">Biologically hard<br>to detect</h2>
     <div class="prob-cards-full">
 
@@ -108,7 +108,7 @@
 <!-- ══ SECTION 2: POLITICAL UNDERREPRESENTATION ══ -->
 <section class="prob-section prob-designed">
   <div class="prob-inner">
-    <div class="prob-tag prob-tag--light">The Problem · 2 of 3</div>
+    <div class="prob-tag prob-tag--light">The Problem · 2 of 2</div>
     <h2 class="prob-h prob-h--light">Children are politically<br>underrepresented</h2>
     <p class="prob-intro-text">Public health systems and biotechnology prioritise what is scalable, profitable and measurable, resulting in a self-reinforcing cycle that keeps children with TB sidelined.</p>
 
@@ -128,73 +128,99 @@
 
   <!-- ══ CYCLE ARCS ══ -->
   <!-- N1→N2: exits right side of N1, enters top of N2 -->
-  <path d="M594 126 C648 128 704 172 716 236 C724 278 718 302 714 308"
-        fill="none" stroke="rgba(160,160,160,0.8)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#cy)"/>
+  <g class="cy-dullable" data-order="1">
+    <path d="M594 126 C648 128 704 172 716 236 C724 278 718 302 714 308"
+          fill="none" stroke="rgba(160,160,160,0.8)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#cy)"/>
+  </g>
   <!-- N2→N3: exits bottom of N2, enters right of N3 -->
-  <path d="M712 374 C708 420 682 472 646 500 C622 516 582 520 558 520"
-        fill="none" stroke="rgba(160,160,160,0.8)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#cy)"/>
+  <g class="cy-dullable" data-order="2">
+    <path d="M712 374 C708 420 682 472 646 500 C622 516 582 520 558 520"
+          fill="none" stroke="rgba(160,160,160,0.8)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#cy)"/>
+  </g>
   <!-- N3→N4: exits left of N3, enters bottom of N4 — solid -->
-  <path d="M442 520 C402 516 348 494 320 462 C298 438 290 406 290 375"
-        fill="none" stroke="rgba(160,160,160,0.8)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#cy)"/>
+  <g class="cy-dullable" data-order="3">
+    <path d="M442 520 C402 516 348 494 320 462 C298 438 290 406 290 375"
+          fill="none" stroke="rgba(160,160,160,0.8)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#cy)"/>
+  </g>
   <!-- N4→N1: exits top of N4, enters left of N1 -->
-  <path d="M290 308 C292 264 318 208 360 172 C392 146 440 132 458 130"
-        fill="none" stroke="rgba(160,160,160,0.8)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#cy)"/>
+  <g class="cy-dullable" data-order="4">
+    <path d="M290 308 C292 264 318 208 360 172 C392 146 440 132 458 130"
+          fill="none" stroke="rgba(160,160,160,0.8)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#cy)"/>
+  </g>
 
   <!-- ══ ANNOTATION BOXES — centered on arc midpoints ══ -->
   <!-- ann12: arc midpoint ~(695,210). Box: center x=695 → x=575 y=182 w=240 h=56 -->
-  <rect x="575" y="182" width="240" height="56" rx="10" fill="#000"/>
-  <text x="695" y="206" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">Misdiagnosis, delayed</text>
-  <text x="695" y="228" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">treatment, death</text>
+  <g class="cy-dullable" data-order="1">
+    <rect x="575" y="182" width="240" height="56" rx="10" fill="#000"/>
+    <text x="695" y="206" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">Misdiagnosis, delayed</text>
+    <text x="695" y="228" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">treatment, death</text>
+  </g>
 
   <!-- ann23: arc midpoint ~(700,450). Box: x=616 y=432 w=188 h=36 -->
-  <rect x="616" y="432" width="196" height="36" rx="10" fill="#000"/>
-  <text x="714" y="456" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">Lack of evidence</text>
+  <g class="cy-dullable" data-order="2">
+    <rect x="616" y="432" width="196" height="36" rx="10" fill="#000"/>
+    <text x="714" y="456" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">Lack of evidence</text>
+  </g>
 
   <!-- ann34: arc midpoint ~(298,452). Box centered at x=298 → x=166 y=430 w=264 h=56 -->
-  <rect x="166" y="430" width="264" height="56" rx="10" fill="#000"/>
-  <text x="298" y="454" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">Resources not allocated</text>
-  <text x="298" y="476" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">to pediatric TB diagnosis</text>
+  <g class="cy-dullable" data-order="3">
+    <rect x="166" y="430" width="264" height="56" rx="10" fill="#000"/>
+    <text x="298" y="454" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">Resources not allocated</text>
+    <text x="298" y="476" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">to pediatric TB diagnosis</text>
+  </g>
 
   <!-- ann41: arc midpoint ~(307,207). Box centered x=307 → x=186 y=186 w=242 h=56
        BUT red break is also here — shift ann41 further up and right -->
-  <rect x="140" y="228" width="242" height="56" rx="10" fill="#000"/>
-  <text x="261" y="252" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">Less incentive to design</text>
-  <text x="261" y="274" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">better tests for children</text>
+  <g class="cy-dullable" data-order="4">
+    <rect x="140" y="228" width="242" height="56" rx="10" fill="#000"/>
+    <text x="261" y="252" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">Less incentive to design</text>
+    <text x="261" y="274" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">better tests for children</text>
+  </g>
 
   <!-- ══ RED BREAK ══ -->
-  <!-- Fork touches arc near (308, 246), red arrow goes left to label at x=190 -->
-  <path d="M322 262 C294 250 260 238 218 228" fill="none" stroke="#ee0202" stroke-width="3" stroke-linecap="round"/>
-  <path d="M322 264 C290 260 256 252 218 244" fill="none" stroke="#ee0202" stroke-width="3" stroke-linecap="round"/>
-  <path d="M218 236 C192 228 164 218 138 212" fill="none" stroke="#ee0202" stroke-width="3" stroke-linecap="round" marker-end="url(#rd)"/>
-  <!-- Label: top-left area, clear of ann41 -->
-  <rect x="4" y="94" width="124" height="64" rx="10" fill="#000"/>
-  <text x="66" y="118" text-anchor="middle" font-family="Gaegu,cursive" font-size="13" fill="#ee0202" font-weight="700">NEW DIAGNOSIS</text>
-  <text x="66" y="144" text-anchor="middle" font-family="Gaegu,cursive" font-size="13" fill="#ee0202" font-weight="700">ALGORITHMS</text>
+  <g class="cy-dullable" data-order="4">
+    <!-- Fork touches arc near (308, 246), red arrow goes left to label at x=190 -->
+    <path d="M322 262 C294 250 260 238 218 228" fill="none" stroke="#ee0202" stroke-width="3" stroke-linecap="round"/>
+    <path d="M322 264 C290 260 256 252 218 244" fill="none" stroke="#ee0202" stroke-width="3" stroke-linecap="round"/>
+    <path d="M218 236 C192 228 164 218 138 212" fill="none" stroke="#ee0202" stroke-width="3" stroke-linecap="round" marker-end="url(#rd)"/>
+    <!-- Label: top-left area, clear of ann41 -->
+    <rect x="4" y="94" width="124" height="64" rx="10" fill="#000"/>
+    <text x="66" y="118" text-anchor="middle" font-family="Gaegu,cursive" font-size="13" fill="#ee0202" font-weight="700">NEW DIAGNOSIS</text>
+    <text x="66" y="144" text-anchor="middle" font-family="Gaegu,cursive" font-size="13" fill="#ee0202" font-weight="700">ALGORITHMS</text>
+  </g>
 
   <!-- ══ MAIN CYCLE NODES ══ -->
   <!-- N1: top — center (500,130), pill x=400 y=95 w=200 h=70 -->
-  <rect x="400" y="95" width="200" height="70" rx="35" fill="rgba(68,187,164,0.25)" stroke="#44bba4" stroke-width="1.5"/>
-  <text x="500" y="122" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(68,187,164,0.7)" font-weight="700" letter-spacing="2">1</text>
-  <text x="500" y="141" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">Adult tests return</text>
-  <text x="500" y="157" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">false negatives</text>
+  <g class="cy-dullable" data-order="1">
+    <rect x="400" y="95" width="200" height="70" rx="35" fill="rgba(68,187,164,0.25)" stroke="#44bba4" stroke-width="1.5"/>
+    <text x="500" y="122" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(68,187,164,0.7)" font-weight="700" letter-spacing="2">1</text>
+    <text x="500" y="141" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">Adult tests return</text>
+    <text x="500" y="157" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">false negatives</text>
+  </g>
 
   <!-- N2: right — center (714,340), pill x=614 y=305 w=200 h=70 -->
-  <rect x="614" y="305" width="200" height="70" rx="35" fill="rgba(68,187,164,0.25)" stroke="#44bba4" stroke-width="1.5"/>
-  <text x="714" y="332" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(68,187,164,0.7)" font-weight="700" letter-spacing="2">2</text>
-  <text x="714" y="351" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">Undercounted in</text>
-  <text x="714" y="367" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">surveillance data</text>
+  <g class="cy-dullable" data-order="2">
+    <rect x="614" y="305" width="200" height="70" rx="35" fill="rgba(68,187,164,0.25)" stroke="#44bba4" stroke-width="1.5"/>
+    <text x="714" y="332" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(68,187,164,0.7)" font-weight="700" letter-spacing="2">2</text>
+    <text x="714" y="351" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">Undercounted in</text>
+    <text x="714" y="367" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">surveillance data</text>
+  </g>
 
   <!-- N3: bottom — center (500,553), pill x=400 y=518 w=200 h=70 -->
-  <rect x="400" y="518" width="200" height="70" rx="35" fill="rgba(68,187,164,0.25)" stroke="#44bba4" stroke-width="1.5"/>
-  <text x="500" y="545" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(68,187,164,0.7)" font-weight="700" letter-spacing="2">3</text>
-  <text x="500" y="564" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">Less policy</text>
-  <text x="500" y="580" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">attention</text>
+  <g class="cy-dullable" data-order="3">
+    <rect x="400" y="518" width="200" height="70" rx="35" fill="rgba(68,187,164,0.25)" stroke="#44bba4" stroke-width="1.5"/>
+    <text x="500" y="545" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(68,187,164,0.7)" font-weight="700" letter-spacing="2">3</text>
+    <text x="500" y="564" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">Less policy</text>
+    <text x="500" y="580" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">attention</text>
+  </g>
 
   <!-- N4: left — center (288,340), pill x=188 y=305 w=200 h=70 -->
-  <rect x="188" y="305" width="200" height="70" rx="35" fill="rgba(68,187,164,0.25)" stroke="#44bba4" stroke-width="1.5"/>
-  <text x="288" y="332" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(68,187,164,0.7)" font-weight="700" letter-spacing="2">4</text>
-  <text x="288" y="351" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">Low diagnosis and</text>
-  <text x="288" y="367" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">continued invisibility</text>
+  <g class="cy-dullable" data-order="4">
+    <rect x="188" y="305" width="200" height="70" rx="35" fill="rgba(68,187,164,0.25)" stroke="#44bba4" stroke-width="1.5"/>
+    <text x="288" y="332" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(68,187,164,0.7)" font-weight="700" letter-spacing="2">4</text>
+    <text x="288" y="351" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">Low diagnosis and</text>
+    <text x="288" y="367" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">continued invisibility</text>
+  </g>
 
   <!-- VISCOUS CYCLE — faint text center -->
   <text x="500" y="346" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11"
@@ -244,36 +270,20 @@
   <text x="500" y="902" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">Children are less infectious</text>
   <text x="500" y="922" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">than adults</text>
 
+  <!-- ══ RED BREAKOUT — downward into next section (Option A) ══ -->
+  <!-- Exits the "NEW DIAGNOSIS ALGORITHMS" label at bottom-center and sweeps
+       down to the bottom of the SVG, pointing toward the TDA section below.
+       Lights up with order=4 (end of the cycle reveal). -->
+  <g class="cy-dullable cy-breakout" data-order="4">
+    <path d="M66 158 C66 260 66 520 66 820 C66 920 150 1030 330 1100 C430 1140 480 1170 500 1190"
+          fill="none" stroke="#ee0202" stroke-width="3.2" stroke-linecap="round"
+          marker-end="url(#rd)" stroke-dasharray="10 6"/>
+  </g>
+
 </svg>
     </div>
   </div>
 </section>
-
-<!-- ══ SECTION 3: PLACEHOLDER ══ -->
-<section class="prob-section prob-bio">
-  <div class="prob-inner">
-    <div class="prob-tag">The Problem · 3 of 3</div>
-    <h2 class="prob-h">Problem 3 placeholder</h2>
-    <div class="prob-s3-layout">
-      <!-- Image placeholder -->
-      <div class="prob-s3-img-placeholder">
-        <svg viewBox="0 0 64 64" fill="none"><rect x="8" y="14" width="48" height="36" rx="4" stroke="#ccc" stroke-width="1.5"/><circle cx="22" cy="26" r="5" stroke="#ccc" stroke-width="1.5"/><path d="M8 40l14-10 10 8 8-6 14 12" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span>Image coming</span>
-      </div>
-      <!-- Bullet point placeholder panel -->
-      <div class="prob-s3-bullets">
-        <ul class="prob-card__list">
-          <li>Bullet point placeholder</li>
-          <li>Bullet point placeholder</li>
-          <li>Bullet point placeholder</li>
-          <li>Bullet point placeholder</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-
 
 <!-- TDA SECTION -->
 <section class="dark" style="padding:0">

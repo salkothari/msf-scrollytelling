@@ -539,34 +539,9 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 }
 
 
-/* Problem 3 placeholder layout */
-.prob-s3-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  align-items: start;
-  margin-top: 8px;
-}
-.prob-s3-img-placeholder {
-  width: 100%;
-  aspect-ratio: 4/3;
-  background: #f0efec;
-  border: 2px dashed #ccc;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-.prob-s3-img-placeholder svg { width: 48px; height: 48px; }
-.prob-s3-img-placeholder span { font-size: 12px; color: #bbb; }
-.prob-s3-bullets {
-  padding-top: 8px;
-}
-@media(max-width:700px) {
-  .prob-s3-layout { grid-template-columns: 1fr; }
-}
+/* Vicious cycle highlight states — Phase 4 */
+.cy-dullable { opacity: .25; transition: opacity .5s ease; }
+.cy-dullable.cy-lit { opacity: 1; }
 
 
 /* Evidence section restructured intro */
