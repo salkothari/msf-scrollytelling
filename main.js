@@ -114,7 +114,12 @@ window.switchAlgo=function(a){
   updateNode(6);
 };
 
-updateNode(0);
+// Guard: the #node-display/#algo-toggle-wrap/#prog/.tda-step DOM elements
+// referenced above were removed from the HTML in an earlier edit, which made
+// updateNode(0) throw and aborted every later <script> on the page. Phase 5
+// will rebuild the TDA flowchart against the current .flow-step markup; until
+// then, only run the legacy init when its target elements still exist.
+if (document.getElementById('node-display')) updateNode(0);
 
 // Intersection observer for scroll steps
 const stepEls=document.querySelectorAll('.tda-step');
@@ -130,30 +135,28 @@ const obs=new IntersectionObserver(entries=>{
 },{threshold:0.5});
 stepEls.forEach(s=>obs.observe(s));
 
-// ── Hero chain reveal (Phase 3 will replace)
-// Hero chain scroll reveal
-(function() {
-  var items = ['hc1','ha1','hc2','ha2','hc3'];
-  var delays = [0, 300, 600, 900, 1200];
-  var revealed = false;
-
-  function revealChain() {
-    if (revealed) return;
-    revealed = true;
-    items.forEach(function(id, i) {
-      setTimeout(function() {
-        var el = document.getElementById(id);
+// ── Hero chain reveal (scroll-progress based) ─
+// Each item reveals once scroll progress through the hero section
+// crosses its threshold, and stays revealed (no flicker on scroll-up).
+(function () {
+  var items = [
+    { id: 'hc1', at: 0.05 }, // More diagnosis
+    { id: 'ha1', at: 0.20 }, // arrow →
+    { id: 'hc2', at: 0.35 }, // More treatment
+    { id: 'ha2', at: 0.50 }, // arrow →
+    { id: 'hc3', at: 0.65 }, // More life saved
+  ];
+  var hero = document.querySelector('section.hero');
+  if (!hero) return;
+  if (!hero.id) hero.id = 'hero-anchor';
+  window.onSectionProgress('#' + hero.id, function (p) {
+    items.forEach(function (it) {
+      if (p >= it.at) {
+        var el = document.getElementById(it.id);
         if (el) el.classList.add('visible');
-      }, delays[i]);
+      }
     });
-  }
-
-  window.addEventListener('scroll', function() {
-    if (window.scrollY > 80) revealChain();
-  }, { passive: true });
-
-  // Auto-reveal after 2.2s if user doesn't scroll
-  setTimeout(revealChain, 2200);
+  }, { offset: 0 });
 })();
 
 // ── Feasibility horizontal scroll ───────────
