@@ -12,9 +12,24 @@ const t0=Date.now();
 function tick(){const n=Math.floor((Date.now()-t0)/180000);['c1','c3'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=n})}
 setInterval(tick,1000);tick();
 
-// ── Scroll hint (Phase 2 will replace) ──────
-const sh=document.getElementById('sh');let gone=false;
-window.addEventListener('scroll',()=>{if(!gone&&window.scrollY>40){gone=true;sh.classList.add('gone')}},{passive:true});
+// ── Scroll hint ─────────────────────────────
+// Arrow visible on load, hides when the first section after the hero is
+// well into the viewport (offset 0.4 = 40% from top), reappears on scroll-up.
+// Mobile hiding is handled by CSS media query.
+(function () {
+  var sh = document.getElementById('sh');
+  if (!sh) return;
+  sh.classList.remove('gone'); // ensure visible on load
+  var firstPost = document.querySelector('section.prob-section');
+  if (!firstPost) return;
+  if (!firstPost.id) firstPost.id = 'post-hero-anchor';
+  window.onSectionEnter(
+    '#' + firstPost.id,
+    function () { sh.classList.add('gone'); },
+    function () { sh.classList.remove('gone'); },
+    0.4
+  );
+})();
 
 // ── Baby grid fills ─────────────────────────
 ['fb','fa'].forEach((id,i)=>{const el=document.getElementById(id);if(!el)return;const pct=i===0?8:36;for(let j=0;j<100;j++){const s=document.createElement('span');s.className='fg'+(j>=pct?' fgo':'');s.textContent='👶';el.appendChild(s);}});

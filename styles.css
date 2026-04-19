@@ -488,6 +488,7 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 }
 
 #sh.gone{opacity:0!important;pointer-events:none;}
+@media (max-width: 560px){ #sh{display:none!important;} }
 
 /* Prob card bullet list */
 .prob-card__list {
