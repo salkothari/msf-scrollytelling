@@ -180,6 +180,39 @@ stepEls.forEach(s=>obs.observe(s));
   }, { offset: 0 });
 })();
 
+// ── TDA progressive reveal (Phase 5) ─────────
+// Each .flow-step's data-lit SVG groups light cumulatively as scroll
+// progress through the section crosses the step's threshold. Step
+// cards gain .active cumulatively so previously-crossed descriptions
+// stay fully visible instead of being replaced.
+(function () {
+  var section = document.querySelector('section.flow-section');
+  if (!section) return;
+  if (!section.id) section.id = 'tda-anchor';
+  var steps = Array.from(section.querySelectorAll('.flow-step'));
+  if (!steps.length) return;
+  // 7 steps — thresholds biased slightly early so the first node
+  // appears as soon as the user starts scrolling into the section
+  // and the last one well before the section fully exits.
+  var defaults = [0.02, 0.18, 0.34, 0.50, 0.65, 0.80, 0.92];
+  var thresholds = steps.map(function (_, i) {
+    return defaults[i] != null ? defaults[i] : (i + 1) / (steps.length + 1);
+  });
+  window.onSectionProgress('#' + section.id, function (p) {
+    steps.forEach(function (step, i) {
+      if (p >= thresholds[i]) {
+        step.classList.add('active');
+        var ids = (step.getAttribute('data-lit') || '')
+          .split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        ids.forEach(function (id) {
+          var g = document.getElementById(id);
+          if (g) g.classList.add('lit');
+        });
+      }
+    });
+  }, { offset: 0 });
+})();
+
 // ── Feasibility horizontal scroll ───────────
 // Feasibility horizontal scroll
 (function() {
