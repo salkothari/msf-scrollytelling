@@ -136,27 +136,28 @@ const obs=new IntersectionObserver(entries=>{
 stepEls.forEach(s=>obs.observe(s));
 
 // ── Hero chain reveal (scroll-progress based) ─
-// Each item reveals once scroll progress through the hero section
-// crosses its threshold, and stays revealed (no flicker on scroll-up).
+// Raw scroll listener instead of scrollama, because scrollama throttles
+// small progress updates and the chain items need to reveal in the
+// first ~150px of hero scroll (thresholds below are in scrolled pixels).
 (function () {
   var items = [
-    { id: 'hc1', at: 0.05 }, // More diagnosis
-    { id: 'ha1', at: 0.20 }, // arrow →
-    { id: 'hc2', at: 0.35 }, // More treatment
-    { id: 'ha2', at: 0.50 }, // arrow →
-    { id: 'hc3', at: 0.65 }, // More life saved
+    { id: 'hc1', at: 20 },  // More diagnosis
+    { id: 'ha1', at: 50 },  // arrow →
+    { id: 'hc2', at: 80 },  // More treatment
+    { id: 'ha2', at: 110 }, // arrow →
+    { id: 'hc3', at: 140 }, // More life saved
   ];
-  var hero = document.querySelector('section.hero');
-  if (!hero) return;
-  if (!hero.id) hero.id = 'hero-anchor';
-  window.onSectionProgress('#' + hero.id, function (p) {
+  function check() {
+    var y = window.scrollY;
     items.forEach(function (it) {
-      if (p >= it.at) {
+      if (y >= it.at) {
         var el = document.getElementById(it.id);
         if (el) el.classList.add('visible');
       }
     });
-  }, { offset: 0 });
+  }
+  window.addEventListener('scroll', check, { passive: true });
+  check(); // run once in case user is already scrolled on load
 })();
 
 // ── Vicious cycle highlight (Phase 4) ────────
