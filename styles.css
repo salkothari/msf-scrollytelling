@@ -536,6 +536,16 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   display: block;
   overflow: visible;
 }
+.cycle-svg-mount {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.cycle-svg-mount svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
 
 
 /* Vicious cycle highlight states — Phase 4 */

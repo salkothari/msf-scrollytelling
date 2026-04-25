@@ -161,24 +161,45 @@ stepEls.forEach(s=>obs.observe(s));
 })();
 
 // ── Vicious cycle highlight (Phase 4) ────────
-// Each .cy-dullable[data-order="N"] lights up (.cy-lit) once scroll
-// progress through the .prob-designed section crosses N/4.
+// Inject cycle-tagged.svg into #cycle-svg-mount, then drive a
+// progressive scroll-reveal: each .cy-dullable[data-order="N"] gains
+// .cy-lit when scroll progress through .prob-designed crosses N/4.
 (function () {
+  var mount = document.getElementById('cycle-svg-mount');
   var cycleSection = document.querySelector('section.prob-designed');
-  if (!cycleSection) return;
+  if (!mount || !cycleSection) return;
   if (!cycleSection.id) cycleSection.id = 'cycle-anchor';
-  var parts = cycleSection.querySelectorAll('.cy-dullable');
-  if (!parts.length) return;
-  // 4-step cycle: trigger at 0.05, 0.30, 0.55, 0.80 so everything is
-  // lit well before the section finishes scrolling.
   var thresholds = [0.05, 0.30, 0.55, 0.80];
-  window.onSectionProgress('#' + cycleSection.id, function (p) {
-    parts.forEach(function (el) {
-      var n = parseInt(el.getAttribute('data-order'), 10);
-      if (!n) return;
-      if (p >= thresholds[n - 1]) el.classList.add('cy-lit');
-    });
-  }, { offset: 0 });
+
+  function wireScroll() {
+    var parts = cycleSection.querySelectorAll('.cy-dullable');
+    if (!parts.length) return;
+    window.onSectionProgress('#' + cycleSection.id, function (p) {
+      parts.forEach(function (el) {
+        var n = parseInt(el.getAttribute('data-order'), 10);
+        if (!n) return;
+        if (p >= thresholds[n - 1]) el.classList.add('cy-lit');
+      });
+    }, { offset: 0 });
+  }
+
+  fetch('cycle-tagged.svg')
+    .then(function (r) { return r.text(); })
+    .then(function (txt) {
+      mount.innerHTML = txt;
+      // Make the SVG scale to its container
+      var svg = mount.querySelector('svg');
+      if (svg) {
+        svg.removeAttribute('width');
+        svg.removeAttribute('height');
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        svg.style.width = '100%';
+        svg.style.height = 'auto';
+        svg.style.display = 'block';
+      }
+      wireScroll();
+    })
+    .catch(function (e) { console.warn('cycle SVG load failed:', e); });
 })();
 
 // ── TDA progressive reveal (Phase 5) ─────────

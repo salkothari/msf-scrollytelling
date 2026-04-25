@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=7">
 
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -113,174 +113,7 @@
     <p class="prob-intro-text">Public health systems and biotechnology prioritise what is scalable, profitable and measurable, resulting in a self-reinforcing cycle that keeps children with TB sidelined.</p>
 
     <div class="loop-circle-wrap">
-    <svg class="loop-circle-svg" viewBox="0 0 1000 1200" xmlns="http://www.w3.org/2000/svg" >
-  <defs>
-    <marker id="cy" viewBox="0 0 16 16" refX="12" refY="8" markerWidth="8" markerHeight="8" orient="auto">
-      <path d="M2 4 C6 6 10 7.5 13 8 C10 8.5 6 10.5 2 12" fill="none" stroke="rgba(180,180,180,0.85)" stroke-width="2" stroke-linecap="round"/>
-    </marker>
-    <marker id="pk" viewBox="0 0 16 16" refX="12" refY="8" markerWidth="8" markerHeight="8" orient="auto">
-      <path d="M2 4 C6 6 10 7.5 13 8 C10 8.5 6 10.5 2 12" fill="none" stroke="#ff92c2" stroke-width="2" stroke-linecap="round"/>
-    </marker>
-    <marker id="rd" viewBox="0 0 16 16" refX="12" refY="8" markerWidth="9" markerHeight="9" orient="auto">
-      <path d="M2 4 C6 6 10 7.5 13 8 C10 8.5 6 10.5 2 12" fill="none" stroke="#ee0202" stroke-width="2.2" stroke-linecap="round"/>
-    </marker>
-  </defs>
-
-  <!-- ══ CYCLE ARCS ══ -->
-  <!-- N1→N2: exits right side of N1, enters top of N2 -->
-  <g class="cy-dullable" data-order="1">
-    <path d="M594 126 C648 128 704 172 716 236 C724 278 718 302 714 308"
-          fill="none" stroke="rgba(160,160,160,0.8)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#cy)"/>
-  </g>
-  <!-- N2→N3: exits bottom of N2, enters right of N3 -->
-  <g class="cy-dullable" data-order="2">
-    <path d="M712 374 C708 420 682 472 646 500 C622 516 582 520 558 520"
-          fill="none" stroke="rgba(160,160,160,0.8)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#cy)"/>
-  </g>
-  <!-- N3→N4: exits left of N3, enters bottom of N4 — solid -->
-  <g class="cy-dullable" data-order="3">
-    <path d="M442 520 C402 516 348 494 320 462 C298 438 290 406 290 375"
-          fill="none" stroke="rgba(160,160,160,0.8)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#cy)"/>
-  </g>
-  <!-- N4→N1: exits top of N4, enters left of N1 -->
-  <g class="cy-dullable" data-order="4">
-    <path d="M290 308 C292 264 318 208 360 172 C392 146 440 132 458 130"
-          fill="none" stroke="rgba(160,160,160,0.8)" stroke-width="3.5" stroke-linecap="round" marker-end="url(#cy)"/>
-  </g>
-
-  <!-- ══ ANNOTATION BOXES — centered on arc midpoints ══ -->
-  <!-- ann12: arc midpoint ~(695,210). Box: center x=695 → x=575 y=182 w=240 h=56 -->
-  <g class="cy-dullable" data-order="1">
-    <rect x="575" y="182" width="240" height="56" rx="10" fill="#000"/>
-    <text x="695" y="206" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">Misdiagnosis, delayed</text>
-    <text x="695" y="228" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">treatment, death</text>
-  </g>
-
-  <!-- ann23: arc midpoint ~(700,450). Box: x=616 y=432 w=188 h=36 -->
-  <g class="cy-dullable" data-order="2">
-    <rect x="616" y="432" width="196" height="36" rx="10" fill="#000"/>
-    <text x="714" y="456" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">Lack of evidence</text>
-  </g>
-
-  <!-- ann34: arc midpoint ~(298,452). Box centered at x=298 → x=166 y=430 w=264 h=56 -->
-  <g class="cy-dullable" data-order="3">
-    <rect x="166" y="430" width="264" height="56" rx="10" fill="#000"/>
-    <text x="298" y="454" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">Resources not allocated</text>
-    <text x="298" y="476" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">to pediatric TB diagnosis</text>
-  </g>
-
-  <!-- ann41: arc midpoint ~(307,207). Box centered x=307 → x=186 y=186 w=242 h=56
-       BUT red break is also here — shift ann41 further up and right -->
-  <g class="cy-dullable" data-order="4">
-    <rect x="140" y="228" width="242" height="56" rx="10" fill="#000"/>
-    <text x="261" y="252" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">Less incentive to design</text>
-    <text x="261" y="274" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">better tests for children</text>
-  </g>
-
-  <!-- ══ RED BREAK ══ -->
-  <g class="cy-dullable" data-order="4">
-    <!-- Fork touches arc near (308, 246), red arrow goes left to label at x=190 -->
-    <path d="M322 262 C294 250 260 238 218 228" fill="none" stroke="#ee0202" stroke-width="3" stroke-linecap="round"/>
-    <path d="M322 264 C290 260 256 252 218 244" fill="none" stroke="#ee0202" stroke-width="3" stroke-linecap="round"/>
-    <path d="M218 236 C192 228 164 218 138 212" fill="none" stroke="#ee0202" stroke-width="3" stroke-linecap="round" marker-end="url(#rd)"/>
-    <!-- Label: top-left area, clear of ann41 -->
-    <rect x="4" y="94" width="124" height="64" rx="10" fill="#000"/>
-    <text x="66" y="118" text-anchor="middle" font-family="Gaegu,cursive" font-size="13" fill="#ee0202" font-weight="700">NEW DIAGNOSIS</text>
-    <text x="66" y="144" text-anchor="middle" font-family="Gaegu,cursive" font-size="13" fill="#ee0202" font-weight="700">ALGORITHMS</text>
-  </g>
-
-  <!-- ══ MAIN CYCLE NODES ══ -->
-  <!-- N1: top — center (500,130), pill x=400 y=95 w=200 h=70 -->
-  <g class="cy-dullable" data-order="1">
-    <rect x="400" y="95" width="200" height="70" rx="35" fill="rgba(68,187,164,0.25)" stroke="#44bba4" stroke-width="1.5"/>
-    <text x="500" y="122" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(68,187,164,0.7)" font-weight="700" letter-spacing="2">1</text>
-    <text x="500" y="141" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">Adult tests return</text>
-    <text x="500" y="157" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">false negatives</text>
-  </g>
-
-  <!-- N2: right — center (714,340), pill x=614 y=305 w=200 h=70 -->
-  <g class="cy-dullable" data-order="2">
-    <rect x="614" y="305" width="200" height="70" rx="35" fill="rgba(68,187,164,0.25)" stroke="#44bba4" stroke-width="1.5"/>
-    <text x="714" y="332" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(68,187,164,0.7)" font-weight="700" letter-spacing="2">2</text>
-    <text x="714" y="351" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">Undercounted in</text>
-    <text x="714" y="367" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">surveillance data</text>
-  </g>
-
-  <!-- N3: bottom — center (500,553), pill x=400 y=518 w=200 h=70 -->
-  <g class="cy-dullable" data-order="3">
-    <rect x="400" y="518" width="200" height="70" rx="35" fill="rgba(68,187,164,0.25)" stroke="#44bba4" stroke-width="1.5"/>
-    <text x="500" y="545" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(68,187,164,0.7)" font-weight="700" letter-spacing="2">3</text>
-    <text x="500" y="564" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">Less policy</text>
-    <text x="500" y="580" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">attention</text>
-  </g>
-
-  <!-- N4: left — center (288,340), pill x=188 y=305 w=200 h=70 -->
-  <g class="cy-dullable" data-order="4">
-    <rect x="188" y="305" width="200" height="70" rx="35" fill="rgba(68,187,164,0.25)" stroke="#44bba4" stroke-width="1.5"/>
-    <text x="288" y="332" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(68,187,164,0.7)" font-weight="700" letter-spacing="2">4</text>
-    <text x="288" y="351" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">Low diagnosis and</text>
-    <text x="288" y="367" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" fill="#fff" font-weight="500">continued invisibility</text>
-  </g>
-
-  <!-- VISCOUS CYCLE — faint text center -->
-  <text x="500" y="346" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11"
-        fill="rgba(255,255,255,0.2)" font-weight="700" letter-spacing="3">VISCOUS CYCLE</text>
-
-  <!-- ══ PINK ARROWS ══ -->
-  <!-- PL → N3: from top-right of PL (290,668) to left of N3 (444,555) -->
-  <path d="M290 668 C340 640 400 600 444 592"
-        fill="none" stroke="rgba(200,100,150,0.65)" stroke-width="2.2" stroke-linecap="round" marker-end="url(#pk)"/>
-  <!-- PC → N3: straight up from PC top (500,668) to N3 bottom (500,592) -->
-  <path d="M500 668 L500 593"
-        fill="none" stroke="rgba(200,100,150,0.65)" stroke-width="2.2" stroke-linecap="round" marker-end="url(#pk)"/>
-  <!-- PR → N3: from top-left of PR (712,668) to right of N3 (556,555) -->
-  <path d="M710 668 C670 640 600 600 556 592"
-        fill="none" stroke="rgba(200,100,150,0.65)" stroke-width="2.2" stroke-linecap="round" marker-end="url(#pk)"/>
-  <!-- PB → PC: up from PB top (500,866) to PC bottom (500,772) -->
-  <path d="M500 866 L500 773"
-        fill="none" stroke="rgba(200,100,150,0.65)" stroke-width="2.2" stroke-linecap="round" marker-end="url(#pk)"/>
-
-  <!-- "Pediatric TB seen to have lower public health returns" — on PC→N3 arrow -->
-  <rect x="296" y="606" width="408" height="60" rx="10" fill="#000"/>
-  <text x="500" y="630" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">Pediatric TB seen to have</text>
-  <text x="500" y="654" text-anchor="middle" font-family="Gaegu,cursive" font-size="15" fill="#fff">lower public health returns</text>
-
-  <!-- ══ PINK EXTERNAL NODES ══ -->
-  <!-- PL: x=70 y=672 w=220 h=84 -->
-  <rect x="70"  y="672" width="220" height="84" rx="36" fill="rgba(255,146,194,0.18)" stroke="#ff92c2" stroke-width="1.5"/>
-  <text x="180" y="703" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">Policy systems favor</text>
-  <text x="180" y="721" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">short-term measurable</text>
-  <text x="180" y="739" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">outcomes</text>
-
-  <!-- PC: x=336 y=672 w=328 h=100 -->
-  <rect x="336" y="672" width="328" height="100" rx="42" fill="rgba(255,146,194,0.18)" stroke="#ff92c2" stroke-width="1.5"/>
-  <text x="500" y="702" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">Transmission-focused control</text>
-  <text x="500" y="720" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">strategies driven by</text>
-  <text x="500" y="738" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">diagnosing and treating</text>
-  <text x="500" y="756" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">infectious adults</text>
-
-  <!-- PR: x=712 y=672 w=220 h=84 -->
-  <rect x="712" y="672" width="220" height="84" rx="36" fill="rgba(255,146,194,0.18)" stroke="#ff92c2" stroke-width="1.5"/>
-  <text x="822" y="703" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">Children cannot vote,</text>
-  <text x="822" y="721" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">no intermediaries</text>
-  <text x="822" y="739" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">advocate for them</text>
-
-  <!-- PB: x=354 y=876 w=292 h=62 -->
-  <rect x="354" y="876" width="292" height="62" rx="31" fill="rgba(255,146,194,0.18)" stroke="#ff92c2" stroke-width="1.5"/>
-  <text x="500" y="902" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">Children are less infectious</text>
-  <text x="500" y="922" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="#ff92c2">than adults</text>
-
-  <!-- ══ RED BREAKOUT — downward into next section (Option A) ══ -->
-  <!-- Exits the "NEW DIAGNOSIS ALGORITHMS" label at bottom-center and sweeps
-       down to the bottom of the SVG, pointing toward the TDA section below.
-       Lights up with order=4 (end of the cycle reveal). -->
-  <g class="cy-dullable cy-breakout" data-order="4">
-    <path d="M66 158 C66 260 66 520 66 820 C66 920 150 1030 330 1100 C430 1140 480 1170 500 1190"
-          fill="none" stroke="#ee0202" stroke-width="3.2" stroke-linecap="round"
-          marker-end="url(#rd)" stroke-dasharray="10 6"/>
-  </g>
-
-</svg>
+      <div id="cycle-svg-mount" class="cycle-svg-mount" aria-label="Vicious cycle of pediatric TB underrepresentation"></div>
     </div>
   </div>
 </section>
@@ -980,6 +813,6 @@
 
 <script src="https://unpkg.com/scrollama"></script>
 <script src="images.js"></script>
-<script src="scroll.js?v=6"></script>
-<script src="main.js?v=6"></script>
+<script src="scroll.js?v=7"></script>
+<script src="main.js?v=7"></script>
 </html>
