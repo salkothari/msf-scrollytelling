@@ -257,6 +257,20 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .fng{opacity:0;transition:opacity .5s ease}
 .fng.lit{opacity:1}
 
+/* ── ALGORITHM A/B SVG TOGGLE ─────────────── */
+.algo-toggle{display:flex;gap:8px;margin-bottom:14px}
+.algo-pill{font-family:var(--font-body);font-size:.78rem;font-weight:600;padding:6px 18px;border-radius:100px;border:1.5px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.55);cursor:pointer;transition:all .2s}
+.algo-pill:hover{border-color:var(--teal);color:var(--teal)}
+.algo-pill.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.algo-board{position:relative;width:100%}
+.algo-mount{display:none;width:100%}
+.algo-mount.active{display:block}
+.algo-mount svg{width:100%;height:auto;display:block;max-width:100%}
+/* Depth-based dimming: shapes start hidden, reveal cumulatively as
+   the user scrolls through the flow section. */
+.dep-dullable{opacity:0;transition:opacity .5s ease}
+.dep-dullable.dep-lit{opacity:1}
+
 @media(max-width:700px){
   .ctx{padding:56px 24px 56px}
   .ctx-cards{grid-template-columns:1fr}

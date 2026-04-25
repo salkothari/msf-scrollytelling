@@ -227,37 +227,109 @@ stepEls.forEach(s=>obs.observe(s));
     .catch(function (e) { console.warn('cycle SVG load failed:', e); });
 })();
 
-// ── TDA progressive reveal (Phase 5) ─────────
-// Each .flow-step's data-lit SVG groups light cumulatively as scroll
-// progress through the section crosses the step's threshold. Step
-// cards gain .active cumulatively so previously-crossed descriptions
-// stay fully visible instead of being replaced.
+// ── TDA progressive reveal (Phase 5, v2 with A/B toggle) ─
+// Two algorithm SVGs (algo-a-tagged.svg / algo-b-tagged.svg) live
+// in #algo-mount-a and #algo-mount-b. The .algo-pill buttons toggle
+// which one is visible. Both SVGs share the same depth-banding
+// scheme (data-depth=1..7) so the same scroll-progress thresholds
+// drive whichever one is active.
+//
+// Reveal is bidirectional: scrolling up un-reveals the higher-depth
+// shapes, mirroring the cycle behaviour from earlier.
 (function () {
   var section = document.querySelector('section.flow-section');
   if (!section) return;
   if (!section.id) section.id = 'tda-anchor';
-  var steps = Array.from(section.querySelectorAll('.flow-step'));
-  if (!steps.length) return;
-  // 7 steps — thresholds biased slightly early so the first node
-  // appears as soon as the user starts scrolling into the section
-  // and the last one well before the section fully exits.
-  var defaults = [0.02, 0.18, 0.34, 0.50, 0.65, 0.80, 0.92];
-  var thresholds = steps.map(function (_, i) {
-    return defaults[i] != null ? defaults[i] : (i + 1) / (steps.length + 1);
-  });
-  window.onSectionProgress('#' + section.id, function (p) {
-    steps.forEach(function (step, i) {
-      if (p >= thresholds[i]) {
-        step.classList.add('active');
-        var ids = (step.getAttribute('data-lit') || '')
-          .split(',').map(function (s) { return s.trim(); }).filter(Boolean);
-        ids.forEach(function (id) {
-          var g = document.getElementById(id);
-          if (g) g.classList.add('lit');
-        });
-      }
+  var mounts = {
+    a: document.getElementById('algo-mount-a'),
+    b: document.getElementById('algo-mount-b'),
+  };
+  if (!mounts.a || !mounts.b) return;
+  var steps = Array.prototype.slice.call(section.querySelectorAll('.flow-step'));
+  // Depth thresholds in section-progress units (raw scroll math same
+  // as the cycle: 0 = section just entering, 1 = just left). Seven
+  // depths spaced from 0.05 → 0.55, ~0.08 between each — full reveal
+  // by the time the section is roughly half-passed.
+  var depthThresholds = [0.05, 0.13, 0.21, 0.29, 0.37, 0.45, 0.53];
+  // Mirror those onto the seven .flow-step cards on the right.
+  var stepThresholds = depthThresholds.slice();
+
+  function update() {
+    var rect = section.getBoundingClientRect();
+    var vh = window.innerHeight;
+    var span = section.offsetHeight + vh;
+    if (span <= 0) return;
+    var p = (vh - rect.top) / span;
+    if (p < 0) p = 0;
+    if (p > 1) p = 1;
+    // Light depth groups across BOTH mounts (only one is visible
+    // anyway, but keeping the inactive one in sync means switching
+    // doesn't pop everything in/out).
+    Object.keys(mounts).forEach(function (key) {
+      var parts = mounts[key].querySelectorAll('.dep-dullable');
+      parts.forEach(function (el) {
+        var d = parseInt(el.getAttribute('data-depth'), 10);
+        if (!d) return;
+        if (p >= depthThresholds[d - 1]) el.classList.add('dep-lit');
+        else el.classList.remove('dep-lit');
+      });
     });
-  }, { offset: 0 });
+    steps.forEach(function (step, i) {
+      if (p >= stepThresholds[i]) step.classList.add('active');
+      else step.classList.remove('active');
+    });
+  }
+
+  function loadSvg(key) {
+    return fetch('algo-' + key + '-tagged.svg')
+      .then(function (r) { return r.text(); })
+      .then(function (txt) {
+        mounts[key].innerHTML = txt;
+        var svg = mounts[key].querySelector('svg');
+        if (!svg) return;
+        // The exporter uses width="..px" height="..px" with no viewBox.
+        // Convert to a viewBox so the SVG scales with the container,
+        // then drop the absolute dimensions.
+        if (!svg.getAttribute('viewBox')) {
+          var w = parseFloat(svg.getAttribute('width') || '0');
+          var h = parseFloat(svg.getAttribute('height') || '0');
+          if (w > 0 && h > 0) {
+            svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+          }
+        }
+        svg.removeAttribute('width');
+        svg.removeAttribute('height');
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        svg.style.width = '100%';
+        svg.style.height = 'auto';
+      });
+  }
+
+  function activate(key) {
+    document.querySelectorAll('.algo-pill').forEach(function (b) {
+      b.classList.toggle('on', b.getAttribute('data-algo') === key);
+    });
+    document.querySelectorAll('.algo-mount').forEach(function (m) {
+      m.classList.toggle('active', m.getAttribute('data-algo') === key);
+    });
+  }
+
+  document.querySelectorAll('.algo-pill').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      activate(btn.getAttribute('data-algo'));
+      // Layout shifts when the mounts swap (A and B have slightly
+      // different aspect ratios). Recompute reveal state once the
+      // browser has applied the new layout.
+      requestAnimationFrame(update);
+    });
+  });
+
+  Promise.all([loadSvg('a'), loadSvg('b')]).then(function () {
+    activate('a');
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }).catch(function (e) { console.warn('algorithm SVG load failed:', e); });
 })();
 
 // ── Feasibility horizontal scroll ───────────

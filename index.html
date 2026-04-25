@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=8">
+<link rel="stylesheet" href="styles.css?v=12">
 
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -174,268 +174,19 @@
   <div class="flow-outer">
 
     <!-- STICKY DIAGRAM -->
+    <!-- STICKY DIAGRAM -->
     <div class="flow-left">
       <div class="flow-progress" id="fprog"></div>
 
-      <!--
-        LAYOUT (viewBox 560 × 1020):
-        Vertical spine down center (x=280).
-        Branches left/right max 1 level.
-        Generous vertical spacing — no overlaps.
+      <div class="algo-toggle">
+        <button type="button" class="algo-pill on" data-algo="a">Algorithm A</button>
+        <button type="button" class="algo-pill"    data-algo="b">Algorithm B</button>
+      </div>
 
-        y positions:
-          n0  (danger signs):          y=20
-          n_stab (stabilize):          y=20, x-right
-          n1  (high risk):             y=130
-          n_nonTB (treat non-TB):      y=240, x-left
-          n_persist (persistent?):     y=340, x-left
-          n2  (test samples):          y=240, x-right
-          n3  (TB detected?):          y=360, x-right
-          n4  (TB contact?):           y=480
-          n5  (score box):             y=590
-          n6  (sum ≥10?):              y=880
-          n7  (start treatment):       y=960
-          n_notreat (no TB):           y=880, x-left
-      -->
-
-      <svg id="flow-svg" viewBox="0 0 560 1040" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-            <path d="M1 1.5L8.5 5L1 8.5" fill="none" stroke="#ee0202" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </marker>
-          <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-            <path d="M1 1.5L8.5 5L1 8.5" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </marker>
-          <marker id="at" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
-            <path d="M1 1.5L8.5 5L1 8.5" fill="none" stroke="#44bba4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </marker>
-        </defs>
-
-        <!-- ══ STEP 1: Danger signs ══ -->
-
-        <!-- Node: Danger signs -->
-        <g class="fng" id="n0">
-          <rect x="140" y="20" width="280" height="54" rx="27" fill="#0b3d4a" stroke="#44bba4" stroke-width="1.5"/>
-          <text x="280" y="43" text-anchor="middle" font-family="DM Sans" font-size="12" fill="rgba(255,255,255,.9)" font-weight="500">Presence of danger signs</text>
-          <text x="280" y="62" text-anchor="middle" font-family="DM Sans" font-size="12" fill="rgba(255,255,255,.9)" font-weight="500">needing urgent medical care?</text>
-        </g>
-
-        <!-- Step 1 children: YES arrow + Stabilize, NO arrow down -->
-        <g class="fng" id="s1c">
-          <!-- YES arrow right -->
-          <path d="M420 47 C455 47 470 47 470 47" fill="none" stroke="#ee0202" stroke-width="1.5" marker-end="url(#ar)"/>
-          <text x="444" y="41" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#ee0202" font-weight="700">YES</text>
-          <!-- Stabilize box -->
-          <rect x="472" y="26" width="82" height="42" rx="8" fill="#2e1f08" stroke="#b87d2a" stroke-width="1.5"/>
-          <text x="513" y="43" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.8)" font-weight="500">Stabilize</text>
-          <text x="513" y="57" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.8)" font-weight="500">/ transfer</text>
-          <!-- NO arrow down -->
-          <path d="M280 74 C280 92 280 100 280 110" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5" marker-end="url(#ag)"/>
-          <text x="294" y="96" text-anchor="start" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.4)" font-weight="700">NO</text>
-        </g>
-
-        <!-- ══ STEP 2: High risk? ══ -->
-        <g class="fng" id="n1">
-          <rect x="140" y="112" width="280" height="54" rx="27" fill="#0b3d4a" stroke="#44bba4" stroke-width="1.5"/>
-          <text x="280" y="135" text-anchor="middle" font-family="DM Sans" font-size="12" fill="rgba(255,255,255,.9)" font-weight="500">Is the child "high risk"?</text>
-          <text x="280" y="154" text-anchor="middle" font-family="DM Sans" font-size="11" fill="rgba(255,255,255,.55)">Under 2 · HIV+ · SAM</text>
-        </g>
-
-        <!-- Step 2 children -->
-        <g class="fng" id="s2c">
-          <!-- YES arrow right -->
-          <path d="M420 139 C455 139 460 200 460 220" fill="none" stroke="#ee0202" stroke-width="1.5" marker-end="url(#ar)"/>
-          <text x="448" y="165" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#ee0202" font-weight="700">YES</text>
-          <!-- Test box (right) -->
-          <rect x="400" y="222" width="154" height="64" rx="10" fill="#2e1f08" stroke="#b87d2a" stroke-width="1.5"/>
-          <text x="477" y="244" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.85)" font-weight="500">Test: GeneXpert</text>
-          <text x="477" y="259" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.85)" font-weight="500">MTB/RIF + LF-LAM</text>
-          <rect x="410" y="270" width="134" height="14" rx="7" fill="rgba(68,187,164,.2)" stroke="rgba(68,187,164,.3)" stroke-width="1"/>
-          <text x="477" y="280" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#44bba4" font-weight="600">+ → treat immediately</text>
-          <!-- NO arrow left-down -->
-          <path d="M140 147 C80 147 60 200 60 220" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5" marker-end="url(#ag)"/>
-          <text x="82" y="176" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.4)" font-weight="700">NO</text>
-          <!-- Treat non-TB box (left) -->
-          <rect x="6" y="222" width="154" height="50" rx="10" fill="#2e1f08" stroke="#b87d2a" stroke-width="1.5"/>
-          <text x="83" y="243" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.85)" font-weight="500">Treat likely non-TB</text>
-          <text x="83" y="258" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.85)" font-weight="500">illness · follow up 1–2w</text>
-        </g>
-
-        <!-- ══ STEP 3: Lab test result + non-TB path ══ -->
-        <g class="fng" id="n2">
-          <!-- Arrows from test box downward -->
-          <path d="M477 286 C477 310 420 330 360 348" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" marker-end="url(#ag)"/>
-          <text x="435" y="312" text-anchor="middle" font-family="DM Sans" font-size="9" fill="rgba(255,255,255,.3)">neg / unavailable</text>
-          <!-- Arrows from non-TB box downward -->
-          <path d="M83 272 C83 300 83 318 140 338" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" marker-end="url(#ag)"/>
-          <!-- Persistent symptoms question (center-left) -->
-          <rect x="60" y="340" width="220" height="50" rx="25" fill="#0b3d4a" stroke="#44bba4" stroke-width="1.5"/>
-          <text x="170" y="360" text-anchor="middle" font-family="DM Sans" font-size="11" fill="rgba(255,255,255,.9)" font-weight="500">Persistent or worsening</text>
-          <text x="170" y="377" text-anchor="middle" font-family="DM Sans" font-size="11" fill="rgba(255,255,255,.9)" font-weight="500">symptoms?</text>
-        </g>
-
-        <!-- Step 3 children -->
-        <g class="fng" id="s3c">
-          <!-- Exit left -->
-          <path d="M60 365 L30 365" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" marker-end="url(#ag)"/>
-          <text x="45" y="358" text-anchor="middle" font-family="DM Sans" font-size="9" fill="rgba(255,255,255,.3)" font-weight="700">NO</text>
-          <rect x="4" y="354" width="24" height="22" rx="11" fill="#2d0a14" stroke="#ee0202" stroke-width="1"/>
-          <text x="16" y="368" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#ee0202" font-weight="700">✕</text>
-          <!-- YES  arrow right toward TB contact -->
-          <path d="M280 365 C320 365 320 420 320 440" fill="none" stroke="#ee0202" stroke-width="1.5" marker-end="url(#ar)"/>
-          <text x="306" y="400" text-anchor="start" font-family="DM Sans" font-size="10" fill="#ee0202" font-weight="700">YES</text>
-          <!-- TB detected? (from right branch, merges here) -->
-          <rect x="200" y="442" width="220" height="50" rx="25" fill="#0b3d4a" stroke="#44bba4" stroke-width="1.5"/>
-          <text x="310" y="462" text-anchor="middle" font-family="DM Sans" font-size="12" fill="rgba(255,255,255,.9)" font-weight="500">Was TB detected?</text>
-          <text x="310" y="480" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.5)">mWRD or LF-LAM positive?</text>
-          <!-- Arrow from test box down to TB detected -->
-          <path d="M477 286 C477 390 420 420 420 442" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1" stroke-dasharray="3,3"/>
-        </g>
-
-        <!-- ══ STEP 4: TB detected result ══ -->
-        <g class="fng" id="n3">
-          <path d="M310 442 L310 442" fill="none"/>
-        </g>
-
-        <!-- Step 4 children -->
-        <g class="fng" id="s4c">
-          <!-- YES → long right curve to START TREATMENT -->
-          <path d="M420 467 C500 467 530 700 530 940" fill="none" stroke="#ee0202" stroke-width="1.5" marker-end="url(#ar)"/>
-          <text x="510" y="490" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#ee0202" font-weight="700">YES</text>
-          <!-- NO → down to TB contact -->
-          <path d="M310 492 C310 510 310 518 310 530" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5" marker-end="url(#ag)"/>
-          <text x="324" y="516" text-anchor="start" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.4)" font-weight="700">NO</text>
-          <!-- TB Contact node -->
-          <rect x="160" y="532" width="280" height="54" rx="27" fill="#0b3d4a" stroke="#44bba4" stroke-width="1.5"/>
-          <text x="300" y="554" text-anchor="middle" font-family="DM Sans" font-size="11" fill="rgba(255,255,255,.9)" font-weight="500">Close household TB contact</text>
-          <text x="300" y="572" text-anchor="middle" font-family="DM Sans" font-size="11" fill="rgba(255,255,255,.9)" font-weight="500">in the last 12 months?</text>
-        </g>
-
-        <!-- ══ STEP 5: TB contact result ══ -->
-        <g class="fng" id="n4">
-          <path d="M300 532 L300 532" fill="none"/>
-        </g>
-
-        <!-- Step 5 children -->
-        <g class="fng" id="s5c">
-          <!-- YES → long right curve to START TREATMENT -->
-          <path d="M440 559 C510 559 530 700 530 940" fill="none" stroke="#ee0202" stroke-width="1.5" marker-end="url(#ar)"/>
-          <text x="508" y="545" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#ee0202" font-weight="700">YES</text>
-          <!-- NO → down to Score box -->
-          <path d="M300 586 C300 600 300 608 300 622" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5" marker-end="url(#ag)"/>
-          <text x="314" y="610" text-anchor="start" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.4)" font-weight="700">NO</text>
-          <!-- Score box -->
-          <rect x="30" y="624" width="480" height="252" rx="12" fill="#2e1f08" stroke="#b87d2a" stroke-width="1.5"/>
-          <!-- Score header -->
-          <text x="270" y="646" text-anchor="middle" font-family="DM Sans" font-size="12" fill="rgba(255,255,255,.9)" font-weight="600">Score signs and symptoms</text>
-          <!-- Divider line between columns -->
-          <line x1="270" y1="654" x2="270" y2="876" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
-          <!-- Col A header -->
-          <rect x="36" y="656" width="228" height="20" rx="6" fill="rgba(5,178,220,.12)"/>
-          <text x="150" y="669" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#05b2dc" font-weight="700">ALGORITHM A · WITH X-RAY</text>
-          <!-- Col B header -->
-          <rect x="274" y="656" width="230" height="20" rx="6" fill="rgba(68,187,164,.12)"/>
-          <text x="389" y="669" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#44bba4" font-weight="700">ALGORITHM B · NO X-RAY</text>
-          <!-- Score rows — paired side by side -->
-          <!-- Row: Cough -->
-          <text x="44" y="694" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Cough &gt;2 weeks</text>
-          <text x="254" y="694" text-anchor="end" font-family="DM Sans" font-size="11" fill="#05b2dc" font-weight="700">+2</text>
-          <text x="280" y="694" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Cough &gt;2 weeks</text>
-          <text x="504" y="694" text-anchor="end" font-family="DM Sans" font-size="11" fill="#44bba4" font-weight="700">+5</text>
-          <line x1="36" y1="700" x2="508" y2="700" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
-          <!-- Row: Fever -->
-          <text x="44" y="716" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Fever &gt;2 weeks</text>
-          <text x="254" y="716" text-anchor="end" font-family="DM Sans" font-size="11" fill="#05b2dc" font-weight="700">+5</text>
-          <text x="280" y="716" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Fever &gt;2 weeks</text>
-          <text x="504" y="716" text-anchor="end" font-family="DM Sans" font-size="11" fill="#44bba4" font-weight="700">+10</text>
-          <line x1="36" y1="722" x2="508" y2="722" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
-          <!-- Row: Lethargy -->
-          <text x="44" y="738" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Lethargy</text>
-          <text x="254" y="738" text-anchor="end" font-family="DM Sans" font-size="11" fill="#05b2dc" font-weight="700">+3</text>
-          <text x="280" y="738" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Lethargy</text>
-          <text x="504" y="738" text-anchor="end" font-family="DM Sans" font-size="11" fill="#44bba4" font-weight="700">+4</text>
-          <line x1="36" y1="744" x2="508" y2="744" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
-          <!-- Row: Weight loss -->
-          <text x="44" y="760" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Weight loss</text>
-          <text x="254" y="760" text-anchor="end" font-family="DM Sans" font-size="11" fill="#05b2dc" font-weight="700">+3</text>
-          <text x="280" y="760" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Weight loss</text>
-          <text x="504" y="760" text-anchor="end" font-family="DM Sans" font-size="11" fill="#44bba4" font-weight="700">+5</text>
-          <line x1="36" y1="766" x2="508" y2="766" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
-          <!-- Row: Coughing blood -->
-          <text x="44" y="782" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Coughing blood</text>
-          <text x="254" y="782" text-anchor="end" font-family="DM Sans" font-size="11" fill="#05b2dc" font-weight="700">+4</text>
-          <text x="280" y="782" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Coughing blood</text>
-          <text x="504" y="782" text-anchor="end" font-family="DM Sans" font-size="11" fill="#44bba4" font-weight="700">+9</text>
-          <line x1="36" y1="788" x2="508" y2="788" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
-          <!-- Row: Night sweats -->
-          <text x="44" y="804" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Night sweats</text>
-          <text x="254" y="804" text-anchor="end" font-family="DM Sans" font-size="11" fill="#05b2dc" font-weight="700">+2</text>
-          <text x="280" y="804" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Night sweats</text>
-          <text x="504" y="804" text-anchor="end" font-family="DM Sans" font-size="11" fill="#44bba4" font-weight="700">+6</text>
-          <line x1="36" y1="810" x2="508" y2="810" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
-          <!-- Row: Swollen lymph nodes -->
-          <text x="44" y="826" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Swollen lymph nodes</text>
-          <text x="254" y="826" text-anchor="end" font-family="DM Sans" font-size="11" fill="#05b2dc" font-weight="700">+4</text>
-          <text x="280" y="826" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Swollen lymph nodes</text>
-          <text x="504" y="826" text-anchor="end" font-family="DM Sans" font-size="11" fill="#44bba4" font-weight="700">+7</text>
-          <line x1="36" y1="832" x2="508" y2="832" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
-          <!-- Row: Tachycardia + Tachypnoea -->
-          <text x="44" y="847" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Tachycardia / Tachypnoea</text>
-          <text x="254" y="847" text-anchor="end" font-family="DM Sans" font-size="11" fill="#05b2dc" font-weight="700">+2/+1</text>
-          <text x="280" y="847" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">Tachycardia / Tachypnoea</text>
-          <text x="504" y="847" text-anchor="end" font-family="DM Sans" font-size="11" fill="#44bba4" font-weight="700">+4/+2</text>
-          <line x1="36" y1="853" x2="508" y2="853" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
-          <!-- Algo A only: X-ray section -->
-          <rect x="36" y="857" width="228" height="14" rx="4" fill="rgba(5,178,220,.08)"/>
-          <text x="150" y="867" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#05b2dc" font-weight="600">+ Chest X-ray: cavity +6 · lymph nodes +17 · opacities +5 · miliary +15 · effusion +8</text>
-          <!-- Algo B: no X-ray note -->
-          <rect x="274" y="857" width="230" height="14" rx="4" fill="rgba(68,187,164,.08)"/>
-          <text x="389" y="867" text-anchor="middle" font-family="DM Sans" font-size="9" fill="#44bba4" font-weight="600">No X-ray needed · higher symptom weights compensate</text>
-          <!-- Threshold footer -->
-          <line x1="30" y1="875" x2="510" y2="875" stroke="#b87d2a" stroke-width="0.5" stroke-opacity="0.4"/>
-          <text x="270" y="866" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,0)" font-weight="700">placeholder</text>
-        </g>
-
-        <!-- Threshold footer inside score box -->
-        <g class="fng" id="n5">
-          <rect x="30" y="876" width="480" height="0" rx="0" fill="transparent"/>
-          <text x="270" y="876" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,0)" font-weight="700">x</text>
-        </g>
-
-        <!-- ══ STEP 6: Score threshold ══ -->
-        <g class="fng" id="s6c">
-          <!-- Arrow down from score box -->
-          <path d="M270 876 C270 892 270 900 270 912" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="1.5" marker-end="url(#ag)"/>
-          <!-- Is sum ≥10? node -->
-          <rect x="120" y="914" width="290" height="50" rx="25" fill="#0b3d4a" stroke="#44bba4" stroke-width="1.5"/>
-          <text x="265" y="934" text-anchor="middle" font-family="DM Sans" font-size="12" fill="rgba(255,255,255,.9)" font-weight="500">Is Sum ≥ 10?</text>
-          <text x="265" y="952" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.5)">(A: Sum A + Sum B ≥ 10)</text>
-          <!-- NO → left to No TB -->
-          <path d="M120 939 C80 939 60 980 55 990" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" marker-end="url(#ag)"/>
-          <text x="82" y="954" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.35)" font-weight="700">NO</text>
-          <rect x="6" y="992" width="92" height="40" rx="8" fill="#1a1208" stroke="#b87d2a" stroke-width="1"/>
-          <text x="52" y="1008" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.65)">No TB treatment</text>
-          <text x="52" y="1022" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.45)">Follow up 1–2 weeks</text>
-          <!-- YES → right to START TREATMENT -->
-          <path d="M410 939 C460 939 500 960 530 972" fill="none" stroke="#ee0202" stroke-width="1.5" marker-end="url(#ar)"/>
-          <text x="468" y="933" text-anchor="middle" font-family="DM Sans" font-size="10" fill="#ee0202" font-weight="700">YES</text>
-        </g>
-
-        <!-- ══ START TREATMENT ══ -->
-        <g class="fng" id="n7">
-          <!-- Long YES arrows from TB detected and TB contact converge here -->
-          <rect x="100" y="974" width="430" height="56" rx="12" fill="#082e1f" stroke="#44bba4" stroke-width="2"/>
-          <text x="315" y="1000" text-anchor="middle" font-family="DM Sans" font-size="15" fill="#44bba4" font-weight="700">START TB TREATMENT</text>
-          <text x="315" y="1020" text-anchor="middle" font-family="DM Sans" font-size="10" fill="rgba(255,255,255,.4)">Via positive test · confirmed contact · or score ≥ 10</text>
-        </g>
-
-        <!-- Long YES arrows from TB detected + TB contact to treatment -->
-        <g class="fng" id="long_arrows">
-          <path d="M530 492 L530 974" fill="none" stroke="#ee0202" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar)"/>
-          <text x="543" y="740" font-family="DM Sans" font-size="9" fill="#ee0202" font-weight="700">YES</text>
-        </g>
-
-      </svg>
+      <div class="algo-board">
+        <div class="algo-mount algo-mount--a active" id="algo-mount-a" data-algo="a"></div>
+        <div class="algo-mount algo-mount--b"        id="algo-mount-b" data-algo="b"></div>
+      </div>
     </div>
 
     <!-- SCROLL STEPS -->
@@ -813,6 +564,6 @@
 
 <script src="https://unpkg.com/scrollama"></script>
 <script src="images.js"></script>
-<script src="scroll.js?v=10"></script>
-<script src="main.js?v=10"></script>
+<script src="scroll.js?v=14"></script>
+<script src="main.js?v=14"></script>
 </html>
