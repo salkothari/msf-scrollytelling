@@ -179,7 +179,7 @@ stepEls.forEach(s=>obs.observe(s));
   // Stage triggers in section-progress units (0 = just entering view,
   // 1 = just left). Spaced wider than the previous compressed values
   // so stages don't blur together.
-  var thresholds = [0.10, 0.22, 0.34, 0.46];
+  var thresholds = [0.20, 0.32, 0.44, 0.56];
   var parts = [];
 
   function update() {
