@@ -163,26 +163,49 @@ stepEls.forEach(s=>obs.observe(s));
 // ── Vicious cycle highlight (Phase 4) ────────
 // Inject cycle-tagged.svg into #cycle-svg-mount, then drive a
 // progressive scroll-reveal: each .cy-dullable[data-order="N"] gains
-// .cy-lit when scroll progress through .prob-designed crosses N/4.
+// .cy-lit when scroll progress through .prob-designed crosses
+// thresholds[N-1], and loses it again on scroll-up.
+//
+// Uses a raw scroll listener (not scrollama) so we can:
+//   * compute progress = (viewport-bottom - section.top) / (section.h + vh)
+//     so reveals start the moment the section first enters the
+//     viewport, not when its top hits the very top of the viewport
+//   * remove .cy-lit on scroll-up for a fully reversible reveal
 (function () {
   var mount = document.getElementById('cycle-svg-mount');
   var cycleSection = document.querySelector('section.prob-designed');
   if (!mount || !cycleSection) return;
   if (!cycleSection.id) cycleSection.id = 'cycle-anchor';
-  // Compressed: full reveal happens within the first ~30% of section
-  // scroll, with tight gaps between stages.
-  var thresholds = [0.02, 0.10, 0.20, 0.30];
+  // Stage triggers in section-progress units (0 = just entering view,
+  // 1 = just left). Spaced wider than the previous compressed values
+  // so stages don't blur together.
+  var thresholds = [0.10, 0.22, 0.34, 0.46];
+  var parts = [];
+
+  function update() {
+    var rect = cycleSection.getBoundingClientRect();
+    var vh = window.innerHeight;
+    var span = cycleSection.offsetHeight + vh;
+    if (span <= 0) return;
+    var p = (vh - rect.top) / span;
+    if (p < 0) p = 0;
+    if (p > 1) p = 1;
+    parts.forEach(function (el) {
+      var n = parseInt(el.getAttribute('data-order'), 10);
+      if (!n) return;
+      if (p >= thresholds[n - 1]) el.classList.add('cy-lit');
+      else el.classList.remove('cy-lit');
+    });
+  }
 
   function wireScroll() {
-    var parts = cycleSection.querySelectorAll('.cy-dullable');
+    parts = Array.prototype.slice.call(
+      cycleSection.querySelectorAll('.cy-dullable')
+    );
     if (!parts.length) return;
-    window.onSectionProgress('#' + cycleSection.id, function (p) {
-      parts.forEach(function (el) {
-        var n = parseInt(el.getAttribute('data-order'), 10);
-        if (!n) return;
-        if (p >= thresholds[n - 1]) el.classList.add('cy-lit');
-      });
-    }, { offset: 0 });
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
   }
 
   fetch('cycle-tagged.svg')
