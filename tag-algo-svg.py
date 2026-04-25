@@ -58,6 +58,16 @@ def tag(infile: str, outfile: str) -> None:
     tree = ET.parse(infile)
     root = tree.getroot()
 
+    # Strip the light-gray "board background" rect — it doesn't blend
+    # with the dark site theme.
+    removed_bg = 0
+    for rect in list(root.iter(SVG_NS + 'rect')):
+        if rect.get('id') == 'svg-board-background-color':
+            parent = next((p for p in root.iter() if rect in list(p)), None)
+            if parent is not None:
+                parent.remove(rect)
+                removed_bg += 1
+
     # Top-level shape groups: direct children of <svg> with both `width`
     # and `height` attributes, AND a translate transform. These wrap each
     # logical shape (box, label, arrow head/tail).
@@ -80,7 +90,7 @@ def tag(infile: str, outfile: str) -> None:
         tagged += 1
         counts[depth] = counts.get(depth, 0) + 1
 
-    print(f'  tagged {tagged} shapes  by depth: {dict(sorted(counts.items()))}')
+    print(f'  removed {removed_bg} bg rect | tagged {tagged} shapes  by depth: {dict(sorted(counts.items()))}')
     tree.write(outfile, xml_declaration=False, encoding='unicode')
 
 

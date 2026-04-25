@@ -258,10 +258,11 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .fng.lit{opacity:1}
 
 /* ── ALGORITHM A/B SVG TOGGLE ─────────────── */
-.algo-toggle{display:flex;gap:8px;margin-bottom:14px}
-.algo-pill{font-family:var(--font-body);font-size:.78rem;font-weight:600;padding:6px 18px;border-radius:100px;border:1.5px solid rgba(255,255,255,.2);background:transparent;color:rgba(255,255,255,.55);cursor:pointer;transition:all .2s}
-.algo-pill:hover{border-color:var(--teal);color:var(--teal)}
-.algo-pill.on{background:var(--teal);border-color:var(--teal);color:#fff}
+/* The toggle UI uses the existing .pill--a / .pill--b elements above
+   the flow section; main.js wires their clicks to swap mounts. */
+.pill[data-algo]{cursor:pointer;font:inherit;text-align:left}
+.pill[data-algo]:hover{border-color:var(--blue)}
+.pill[data-algo].on{background:rgba(255,255,255,.08);outline:2px solid currentColor}
 .algo-board{position:relative;width:100%}
 .algo-mount{display:none;width:100%}
 .algo-mount.active{display:block}

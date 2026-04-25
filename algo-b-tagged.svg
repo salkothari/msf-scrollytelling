@@ -135,7 +135,7 @@
   font-weight: 700;
   src: local(''), url("https://mirostatic.com/app/static/fa5a3d9073cdd58f.woff2") format('woff2'), url("https://mirostatic.com/app/static/7ded243557c83342.woff") format('woff');
 }
-</style><path id="LineHeadOpenArrow2" d="M-9.09090909090909,-9.09090909090909 L0,0 L-9.09090909090909,9.09090909090909 M-9.09090909090909,0 L0,0" /></defs><rect id="svg-board-background-color" width="100%" height="100%" fill="#f2f2f2" /><g width="526.18px" height="108.48px" transform="translate(1285.74, 207.82) scale(1) rotate(0, 263.09, 54.24)" class="dep-dullable" data-depth="1"><svg width="526.1788041671916" height="108.4834395637447" shape-border-width="shape-background" style="width:526.1788041671916px; height: 108.4834395637447px;" class="shape-background" preserveAspectRatio="none" version="1.1">
+</style><path id="LineHeadOpenArrow2" d="M-9.09090909090909,-9.09090909090909 L0,0 L-9.09090909090909,9.09090909090909 M-9.09090909090909,0 L0,0" /></defs><g width="526.18px" height="108.48px" transform="translate(1285.74, 207.82) scale(1) rotate(0, 263.09, 54.24)" class="dep-dullable" data-depth="1"><svg width="526.1788041671916" height="108.4834395637447" shape-border-width="shape-background" style="width:526.1788041671916px; height: 108.4834395637447px;" class="shape-background" preserveAspectRatio="none" version="1.1">
 	<clipPath id="111162731735">
 		<rect x="0" y="0" width="526.1788041671916" height="108.4834395637447" rx="22.570690416830036" ry="22.570690416830036" />
 	</clipPath>

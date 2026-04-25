@@ -306,7 +306,7 @@ stepEls.forEach(s=>obs.observe(s));
   }
 
   function activate(key) {
-    document.querySelectorAll('.algo-pill').forEach(function (b) {
+    document.querySelectorAll('.pill[data-algo]').forEach(function (b) {
       b.classList.toggle('on', b.getAttribute('data-algo') === key);
     });
     document.querySelectorAll('.algo-mount').forEach(function (m) {
@@ -314,7 +314,7 @@ stepEls.forEach(s=>obs.observe(s));
     });
   }
 
-  document.querySelectorAll('.algo-pill').forEach(function (btn) {
+  document.querySelectorAll('.pill[data-algo]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       activate(btn.getAttribute('data-algo'));
       // Layout shifts when the mounts swap (A and B have slightly
