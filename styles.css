@@ -253,10 +253,24 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 }
 .flow-step.active .step-card .snum{color:#ee0202}
 
-/* SVG node dimming */
-.fng{transition:opacity .4s ease}
-.fng.dim{opacity:.1}
+/* SVG node dimming — Phase 5: start hidden, reveal accumulatively via .lit */
+.fng{opacity:0;transition:opacity .5s ease}
 .fng.lit{opacity:1}
+
+/* ── ALGORITHM A/B SVG TOGGLE ─────────────── */
+/* The toggle UI uses the existing .pill--a / .pill--b elements above
+   the flow section; main.js wires their clicks to swap mounts. */
+.pill[data-algo]{cursor:pointer;font:inherit;text-align:left}
+.pill[data-algo]:hover{border-color:var(--blue)}
+.pill[data-algo].on{background:rgba(255,255,255,.08);outline:2px solid currentColor}
+.algo-board{position:relative;width:100%}
+.algo-mount{display:none;width:100%}
+.algo-mount.active{display:block}
+.algo-mount svg{width:100%;height:auto;display:block;max-width:100%}
+/* Depth-based dimming: shapes start hidden, reveal cumulatively as
+   the user scrolls through the flow section. */
+.dep-dullable{opacity:0;transition:opacity .5s ease}
+.dep-dullable.dep-lit{opacity:1}
 
 @media(max-width:700px){
   .ctx{padding:56px 24px 56px}
@@ -537,36 +551,21 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   display: block;
   overflow: visible;
 }
-
-
-/* Problem 3 placeholder layout */
-.prob-s3-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  align-items: start;
-  margin-top: 8px;
-}
-.prob-s3-img-placeholder {
+.cycle-svg-mount {
   width: 100%;
-  aspect-ratio: 4/3;
-  background: #f0efec;
-  border: 2px dashed #ccc;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  max-width: 960px;
+  margin: 0 auto;
 }
-.prob-s3-img-placeholder svg { width: 48px; height: 48px; }
-.prob-s3-img-placeholder span { font-size: 12px; color: #bbb; }
-.prob-s3-bullets {
-  padding-top: 8px;
+.cycle-svg-mount svg {
+  width: 100%;
+  height: auto;
+  display: block;
 }
-@media(max-width:700px) {
-  .prob-s3-layout { grid-template-columns: 1fr; }
-}
+
+
+/* Vicious cycle highlight states — Phase 4 */
+.cy-dullable { opacity: .25; transition: opacity .5s ease; }
+.cy-dullable.cy-lit { opacity: 1; }
 
 
 /* Evidence section restructured intro */
@@ -913,3 +912,22 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .feas-bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
 .feas-bar-pct{font-size:12px;font-weight:700;color:#333;min-width:36px;text-align:right}
 @media(max-width:700px){.feas-grid{grid-template-columns:1fr}.field-quote-row{grid-template-columns:1fr}.field-quote-row--rev{direction:ltr}}
+
+/* ── Phase 6: mobile simplification ──────────
+   Below 768px the sticky-graphic + scroll-progress choreography is
+   dropped. Flowcharts render in full from the start (no dim states),
+   because the vertical stacked layout leaves no stable "fixed pane"
+   for progressive reveal to read against. SVGs scale with the
+   container via width:100%;height:auto. */
+@media(max-width:768px){
+  .flow-outer{flex-direction:column;padding:0 20px;gap:20px}
+  .flow-left{position:relative;top:auto;flex:none;width:100%}
+  .flow-right{flex:none;width:100%;padding:1rem 0}
+  .flow-step{min-height:auto;padding:.6rem 0}
+  /* Reveal everything: no scroll choreography on mobile */
+  .fng{opacity:1 !important}
+  .flow-step .step-card{color:#fff}
+  .cy-dullable{opacity:1 !important}
+  /* Keep SVGs fluid */
+  #flow-svg,.loop-circle-svg{width:100%;height:auto;max-width:100%}
+}

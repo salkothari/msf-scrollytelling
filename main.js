@@ -160,6 +160,178 @@ stepEls.forEach(s=>obs.observe(s));
   check(); // run once in case user is already scrolled on load
 })();
 
+// ── Vicious cycle highlight (Phase 4) ────────
+// Inject cycle-tagged.svg into #cycle-svg-mount, then drive a
+// progressive scroll-reveal: each .cy-dullable[data-order="N"] gains
+// .cy-lit when scroll progress through .prob-designed crosses
+// thresholds[N-1], and loses it again on scroll-up.
+//
+// Uses a raw scroll listener (not scrollama) so we can:
+//   * compute progress = (viewport-bottom - section.top) / (section.h + vh)
+//     so reveals start the moment the section first enters the
+//     viewport, not when its top hits the very top of the viewport
+//   * remove .cy-lit on scroll-up for a fully reversible reveal
+(function () {
+  var mount = document.getElementById('cycle-svg-mount');
+  var cycleSection = document.querySelector('section.prob-designed');
+  if (!mount || !cycleSection) return;
+  if (!cycleSection.id) cycleSection.id = 'cycle-anchor';
+  // Stage triggers in section-progress units (0 = just entering view,
+  // 1 = just left). Spaced wider than the previous compressed values
+  // so stages don't blur together.
+  var thresholds = [0.20, 0.32, 0.44, 0.56];
+  var parts = [];
+
+  function update() {
+    var rect = cycleSection.getBoundingClientRect();
+    var vh = window.innerHeight;
+    var span = cycleSection.offsetHeight + vh;
+    if (span <= 0) return;
+    var p = (vh - rect.top) / span;
+    if (p < 0) p = 0;
+    if (p > 1) p = 1;
+    parts.forEach(function (el) {
+      var n = parseInt(el.getAttribute('data-order'), 10);
+      if (!n) return;
+      if (p >= thresholds[n - 1]) el.classList.add('cy-lit');
+      else el.classList.remove('cy-lit');
+    });
+  }
+
+  function wireScroll() {
+    parts = Array.prototype.slice.call(
+      cycleSection.querySelectorAll('.cy-dullable')
+    );
+    if (!parts.length) return;
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+
+  fetch('cycle-tagged.svg')
+    .then(function (r) { return r.text(); })
+    .then(function (txt) {
+      mount.innerHTML = txt;
+      // Make the SVG scale to its container
+      var svg = mount.querySelector('svg');
+      if (svg) {
+        svg.removeAttribute('width');
+        svg.removeAttribute('height');
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        svg.style.width = '100%';
+        svg.style.height = 'auto';
+        svg.style.display = 'block';
+      }
+      wireScroll();
+    })
+    .catch(function (e) { console.warn('cycle SVG load failed:', e); });
+})();
+
+// ── TDA progressive reveal (Phase 5, v2 with A/B toggle) ─
+// Two algorithm SVGs (algo-a-tagged.svg / algo-b-tagged.svg) live
+// in #algo-mount-a and #algo-mount-b. The .algo-pill buttons toggle
+// which one is visible. Both SVGs share the same depth-banding
+// scheme (data-depth=1..7) so the same scroll-progress thresholds
+// drive whichever one is active.
+//
+// Reveal is bidirectional: scrolling up un-reveals the higher-depth
+// shapes, mirroring the cycle behaviour from earlier.
+(function () {
+  var section = document.querySelector('section.flow-section');
+  if (!section) return;
+  if (!section.id) section.id = 'tda-anchor';
+  var mounts = {
+    a: document.getElementById('algo-mount-a'),
+    b: document.getElementById('algo-mount-b'),
+  };
+  if (!mounts.a || !mounts.b) return;
+  var steps = Array.prototype.slice.call(section.querySelectorAll('.flow-step'));
+  // Depth thresholds in section-progress units (raw scroll math same
+  // as the cycle: 0 = section just entering, 1 = just left). Seven
+  // depths spaced from 0.05 → 0.55, ~0.08 between each — full reveal
+  // by the time the section is roughly half-passed.
+  var depthThresholds = [0.05, 0.13, 0.21, 0.29, 0.37, 0.45, 0.53];
+  // Mirror those onto the seven .flow-step cards on the right.
+  var stepThresholds = depthThresholds.slice();
+
+  function update() {
+    var rect = section.getBoundingClientRect();
+    var vh = window.innerHeight;
+    var span = section.offsetHeight + vh;
+    if (span <= 0) return;
+    var p = (vh - rect.top) / span;
+    if (p < 0) p = 0;
+    if (p > 1) p = 1;
+    // Light depth groups across BOTH mounts (only one is visible
+    // anyway, but keeping the inactive one in sync means switching
+    // doesn't pop everything in/out).
+    Object.keys(mounts).forEach(function (key) {
+      var parts = mounts[key].querySelectorAll('.dep-dullable');
+      parts.forEach(function (el) {
+        var d = parseInt(el.getAttribute('data-depth'), 10);
+        if (!d) return;
+        if (p >= depthThresholds[d - 1]) el.classList.add('dep-lit');
+        else el.classList.remove('dep-lit');
+      });
+    });
+    steps.forEach(function (step, i) {
+      if (p >= stepThresholds[i]) step.classList.add('active');
+      else step.classList.remove('active');
+    });
+  }
+
+  function loadSvg(key) {
+    return fetch('algo-' + key + '-tagged.svg')
+      .then(function (r) { return r.text(); })
+      .then(function (txt) {
+        mounts[key].innerHTML = txt;
+        var svg = mounts[key].querySelector('svg');
+        if (!svg) return;
+        // The exporter uses width="..px" height="..px" with no viewBox.
+        // Convert to a viewBox so the SVG scales with the container,
+        // then drop the absolute dimensions.
+        if (!svg.getAttribute('viewBox')) {
+          var w = parseFloat(svg.getAttribute('width') || '0');
+          var h = parseFloat(svg.getAttribute('height') || '0');
+          if (w > 0 && h > 0) {
+            svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+          }
+        }
+        svg.removeAttribute('width');
+        svg.removeAttribute('height');
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        svg.style.width = '100%';
+        svg.style.height = 'auto';
+      });
+  }
+
+  function activate(key) {
+    document.querySelectorAll('.pill[data-algo]').forEach(function (b) {
+      b.classList.toggle('on', b.getAttribute('data-algo') === key);
+    });
+    document.querySelectorAll('.algo-mount').forEach(function (m) {
+      m.classList.toggle('active', m.getAttribute('data-algo') === key);
+    });
+  }
+
+  document.querySelectorAll('.pill[data-algo]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      activate(btn.getAttribute('data-algo'));
+      // Layout shifts when the mounts swap (A and B have slightly
+      // different aspect ratios). Recompute reveal state once the
+      // browser has applied the new layout.
+      requestAnimationFrame(update);
+    });
+  });
+
+  Promise.all([loadSvg('a'), loadSvg('b')]).then(function () {
+    activate('a');
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }).catch(function (e) { console.warn('algorithm SVG load failed:', e); });
+})();
+
 // ── Feasibility horizontal scroll ───────────
 // Feasibility horizontal scroll
 (function() {
