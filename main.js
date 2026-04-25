@@ -169,7 +169,9 @@ stepEls.forEach(s=>obs.observe(s));
   var cycleSection = document.querySelector('section.prob-designed');
   if (!mount || !cycleSection) return;
   if (!cycleSection.id) cycleSection.id = 'cycle-anchor';
-  var thresholds = [0.05, 0.30, 0.55, 0.80];
+  // Compressed: full reveal happens within the first ~30% of section
+  // scroll, with tight gaps between stages.
+  var thresholds = [0.02, 0.10, 0.20, 0.30];
 
   function wireScroll() {
     var parts = cycleSection.querySelectorAll('.cy-dullable');
