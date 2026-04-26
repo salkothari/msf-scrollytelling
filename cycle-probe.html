@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  html, body { margin: 0; background: #000; color: #fff; font-family: sans-serif; }
+  #wrap { width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+  svg { width: 100%; max-width: 100vw; max-height: 100vh; height: auto; display: block; overflow: visible; }
+  .cy-dullable { opacity: .25; transition: opacity .5s ease; }
+  .cy-dullable.cy-lit { opacity: 1; }
+  .flash > * { outline: 3px solid red !important; }
+  /* Fade every group so highlights pop */
+  .dim-others [data-probe-target="true"] ~ * { opacity: .15; }
+</style>
+</head>
+<body>
+<div id="wrap"></div>
+<script>
+fetch('cycle-tagged.svg').then(r => r.text()).then(txt => {
+  document.getElementById('wrap').innerHTML = txt;
+  window.__svg = document.querySelector('#wrap svg');
+  window.__ready = true;
+});
+</script>
+</body>
+</html>
