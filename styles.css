@@ -299,7 +299,7 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .prob-bio     { background:#f5f4f0; padding:80px 48px }
 /* prob-designed needs overflow:visible so the sticky cycle-pin inside
    actually pins (overflow:hidden on an ancestor disables sticky). */
-.prob-designed{ background:#000; padding:80px 48px 0; overflow:visible }
+.prob-designed{ background:#000; padding:80px 24px 0; overflow:visible }
 .prob-policy  { background:#f5f4f0; padding:0 }
 
 .prob-inner { max-width:1040px; margin:0 auto }
@@ -561,10 +561,10 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 }
 .cycle-pin {
   position: sticky;
-  top: 80px;
+  top: 60px;
   /* Limit height so the user can see headings above without the pin
      overlapping; SVG inside scales to fit. */
-  height: calc(100vh - 100px);
+  height: calc(100vh - 70px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -573,12 +573,18 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   width: 100%;
   max-height: 100%;
 }
+/* Inside the pin, let the SVG fill most of the available pin space.
+   Override the default 960px max-width and keep max-height so it
+   doesn't overflow vertically on shorter viewports. */
 .cycle-pin .cycle-svg-mount {
-  max-height: calc(100vh - 120px);
+  max-width: 1500px;
+  max-height: calc(100vh - 90px);
 }
 .cycle-pin .cycle-svg-mount svg {
-  max-height: calc(100vh - 120px);
+  max-height: calc(100vh - 90px);
+  max-width: 100%;
   width: auto;
+  height: auto;
   margin: 0 auto;
 }
 .loop-circle-wrap {
