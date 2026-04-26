@@ -202,7 +202,9 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .divider-row{display:flex;align-items:center;gap:14px;margin-bottom:24px}
 .divider-line{flex:1;height:1px;background:rgba(255,255,255,.08)}
 .divider-txt{font-size:11px;color:rgba(255,255,255,.28);white-space:nowrap;letter-spacing:.06em}
-.pills{display:flex;gap:10px;flex-wrap:wrap}
+.pills{display:flex;gap:10px;flex-wrap:nowrap;align-items:stretch}
+.pill[data-algo]{flex:1 1 0;min-width:0}
+.pill[data-algo] .pill__name{white-space:nowrap}
 .pill{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:9px;font-size:13px}
 .pill--a{background:rgba(5,178,220,.1);border:1.5px solid rgba(5,178,220,.35);color:#fff}
 .pill--b{background:rgba(68,187,164,.1);border:1.5px solid rgba(68,187,164,.35);color:#fff}
