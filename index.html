@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=15">
+<link rel="stylesheet" href="styles.css?v=16">
 
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -111,9 +111,16 @@
     <div class="prob-tag prob-tag--light">The Problem · 2 of 2</div>
     <h2 class="prob-h prob-h--light">Children are politically<br>underrepresented</h2>
     <p class="prob-intro-text">Public health systems and biotechnology prioritise what is scalable, profitable and measurable, resulting in a self-reinforcing cycle that keeps children with TB sidelined.</p>
+  </div>
 
-    <div class="loop-circle-wrap">
-      <div id="cycle-svg-mount" class="cycle-svg-mount" aria-label="Vicious cycle of pediatric TB underrepresentation"></div>
+  <!-- Tall stage giving scroll runway. The cycle-pin is sticky inside,
+       so the diagram stays put while the user scrolls the runway,
+       which drives the progressive reveal. -->
+  <div class="cycle-stage">
+    <div class="cycle-pin">
+      <div class="loop-circle-wrap">
+        <div id="cycle-svg-mount" class="cycle-svg-mount" aria-label="Vicious cycle of pediatric TB underrepresentation"></div>
+      </div>
     </div>
   </div>
 </section>
@@ -559,6 +566,6 @@
 
 <script src="https://unpkg.com/scrollama"></script>
 <script src="images.js"></script>
-<script src="scroll.js?v=15"></script>
-<script src="main.js?v=15"></script>
+<script src="scroll.js?v=16"></script>
+<script src="main.js?v=16"></script>
 </html>

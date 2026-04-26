@@ -163,31 +163,42 @@ stepEls.forEach(s=>obs.observe(s));
 // ── Vicious cycle highlight (Phase 4) ────────
 // Inject cycle-tagged.svg into #cycle-svg-mount, then drive a
 // progressive scroll-reveal: each .cy-dullable[data-order="N"] gains
-// .cy-lit when scroll progress through .prob-designed crosses
-// thresholds[N-1], and loses it again on scroll-up.
+// .cy-lit when the user has scrolled through the corresponding
+// fraction of the .cycle-stage runway, and loses it on scroll-up.
 //
-// Uses a raw scroll listener (not scrollama) so we can:
-//   * compute progress = (viewport-bottom - section.top) / (section.h + vh)
-//     so reveals start the moment the section first enters the
-//     viewport, not when its top hits the very top of the viewport
-//   * remove .cy-lit on scroll-up for a fully reversible reveal
+// The cycle-pin stays sticky while the user scrolls the runway, so
+// the diagram is "scroll-locked" until all four stages have revealed —
+// same pattern as the TDA flowchart's flow-left + flow-right.
 (function () {
   var mount = document.getElementById('cycle-svg-mount');
   var cycleSection = document.querySelector('section.prob-designed');
+  var stage = document.querySelector('.cycle-stage');
   if (!mount || !cycleSection) return;
   if (!cycleSection.id) cycleSection.id = 'cycle-anchor';
-  // Stage triggers in section-progress units (0 = just entering view,
-  // 1 = just left). Spaced wider than the previous compressed values
-  // so stages don't blur together.
-  var thresholds = [0.20, 0.32, 0.44, 0.56];
+  // Stage triggers as fractions of the runway scroll. 0 = pin just
+  // engaging (stage top hits top of viewport-ish), 1 = pin releasing.
+  var thresholds = [0.05, 0.30, 0.55, 0.80];
   var parts = [];
 
   function update() {
-    var rect = cycleSection.getBoundingClientRect();
     var vh = window.innerHeight;
-    var span = cycleSection.offsetHeight + vh;
-    if (span <= 0) return;
-    var p = (vh - rect.top) / span;
+    var p;
+    if (stage) {
+      // Progress through the cycle-stage runway: 0 when stage top
+      // reaches the top of the viewport (sticky pin engages), 1 when
+      // stage bottom reaches that same line (pin releases).
+      var rect = stage.getBoundingClientRect();
+      var travel = stage.offsetHeight - vh;
+      if (travel <= 0) return;
+      p = (-rect.top) / travel;
+    } else {
+      // Fallback: section-relative progress (used when stage missing,
+      // e.g. mobile layout where the pin is dropped).
+      var srect = cycleSection.getBoundingClientRect();
+      var span = cycleSection.offsetHeight + vh;
+      if (span <= 0) return;
+      p = (vh - srect.top) / span;
+    }
     if (p < 0) p = 0;
     if (p > 1) p = 1;
     parts.forEach(function (el) {

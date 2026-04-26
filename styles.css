@@ -286,7 +286,9 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 ═══════════════════════════════════════════ */
 .prob-section { position:relative; overflow:hidden }
 .prob-bio     { background:#f5f4f0; padding:80px 48px }
-.prob-designed{ background:#000; padding:80px 48px }
+/* prob-designed needs overflow:visible so the sticky cycle-pin inside
+   actually pins (overflow:hidden on an ancestor disables sticky). */
+.prob-designed{ background:#000; padding:80px 48px 0; overflow:visible }
 .prob-policy  { background:#f5f4f0; padding:0 }
 
 .prob-inner { max-width:1040px; margin:0 auto }
@@ -538,6 +540,36 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 
 
 /* ── LOOP CIRCLE ─────────────────────────── */
+/* Stage wraps the sticky cycle pin. Its height = the runway the user
+   scrolls through while the cycle stays pinned + reveals progressively.
+   ~250vh gives ~4 stages × ~60vh of scroll each. */
+.cycle-stage {
+  position: relative;
+  min-height: 280vh;
+  padding-bottom: 80px;
+}
+.cycle-pin {
+  position: sticky;
+  top: 80px;
+  /* Limit height so the user can see headings above without the pin
+     overlapping; SVG inside scales to fit. */
+  height: calc(100vh - 100px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cycle-pin .loop-circle-wrap {
+  width: 100%;
+  max-height: 100%;
+}
+.cycle-pin .cycle-svg-mount {
+  max-height: calc(100vh - 120px);
+}
+.cycle-pin .cycle-svg-mount svg {
+  max-height: calc(100vh - 120px);
+  width: auto;
+  margin: 0 auto;
+}
 .loop-circle-wrap {
   display: flex;
   justify-content: center;
@@ -930,4 +962,9 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   .cy-dullable{opacity:1 !important}
   /* Keep SVGs fluid */
   #flow-svg,.loop-circle-svg{width:100%;height:auto;max-width:100%}
+  /* Drop cycle scroll-pin on mobile — graphic flows inline. */
+  .cycle-stage{min-height:auto;padding-bottom:0}
+  .cycle-pin{position:relative;top:auto;height:auto;display:block}
+  .cycle-pin .cycle-svg-mount,
+  .cycle-pin .cycle-svg-mount svg{max-height:none;width:100%}
 }
