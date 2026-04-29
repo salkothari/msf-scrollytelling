@@ -789,7 +789,7 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 
 /* ── FEASIBILITY SECTION ──────────────────── */
 .feas-vw { background: #fff; }
-.feas-themes { padding: 8px 24px 28px; display: flex; flex-direction: column; gap: 40px; }
+.feas-single-wrap { padding: 8px 24px 28px; overflow: hidden; position: relative; }
 
 .feas-theme { border-top: 1px solid rgba(0,0,0,.07); padding-top: 28px; }
 
@@ -847,6 +847,16 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   line-height: 1.55; color: #333; font-style: italic; margin: 0;
 }
 .feas-qcard__attr { font-size: .75rem; color: #999; font-weight: 500; }
+.feas-qcard__meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.feas-qcard__tag {
+  font-size: 10px; font-weight: 700; padding: 3px 8px;
+  border-radius: 4px; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap;
+}
+.feas-qcard__tag--teal   { background: rgba(68,187,164,.12); color: #1a7a68; }
+.feas-qcard__tag--blue   { background: rgba(5,178,220,.12);  color: #0a6a8a; }
+.feas-qcard__tag--orange { background: rgba(255,167,55,.12); color: #8a5000; }
+.feas-qcard__tag--purple { background: rgba(111,115,210,.12);color: #3a3d9a; }
+.feas-qcard__flags { font-size: 13px; flex-shrink: 0; }
 
 /* Nav buttons */
 .feas-track-nav {
