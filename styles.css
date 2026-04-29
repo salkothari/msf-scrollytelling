@@ -286,7 +286,7 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .flow-step.active .step-card .snum{color:#ee0202}
 
 /* SVG node dimming — Phase 5: start hidden, reveal accumulatively via .lit */
-.fng{opacity:0;transition:opacity .5s ease}
+.fng{opacity:0;transition:opacity 1s ease}
 .fng.lit{opacity:1}
 
 /* ── ALGORITHM A/B SVG TOGGLE ─────────────── */
@@ -309,7 +309,7 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .algo-mount svg [stroke="#333333"]{stroke:rgba(255,255,255,.45)}
 /* Depth-based dimming: shapes start hidden, reveal cumulatively as
    the user scrolls through the flow section. */
-.dep-dullable{opacity:0;transition:opacity .5s ease}
+.dep-dullable{opacity:0;transition:opacity 1s ease}
 .dep-dullable.dep-lit{opacity:1}
 
 @media(max-width:700px){
