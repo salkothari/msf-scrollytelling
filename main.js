@@ -13,22 +13,19 @@ function tick(){const n=Math.floor((Date.now()-t0)/180000);['c1','c3'].forEach(i
 setInterval(tick,1000);tick();
 
 // ── Scroll hint ─────────────────────────────
-// Arrow visible on load, hides when the first section after the hero is
-// well into the viewport (offset 0.4 = 40% from top), reappears on scroll-up.
+// Arrow visible everywhere above the Act Now section; hides once Act Now
+// enters the viewport, reappears if the user scrolls back up.
 // Mobile hiding is handled by CSS media query.
 (function () {
   var sh = document.getElementById('sh');
-  if (!sh) return;
-  sh.classList.remove('gone'); // ensure visible on load
-  var firstPost = document.querySelector('section.prob-section');
-  if (!firstPost) return;
-  if (!firstPost.id) firstPost.id = 'post-hero-anchor';
-  window.onSectionEnter(
-    '#' + firstPost.id,
-    function () { sh.classList.add('gone'); },
-    function () { sh.classList.remove('gone'); },
-    0.4
-  );
+  var cta = document.getElementById('act-now');
+  if (!sh || !cta) return;
+  sh.classList.remove('gone');
+  new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      sh.classList.toggle('gone', e.isIntersecting);
+    });
+  }, { threshold: 0 }).observe(cta);
 })();
 
 // ── Baby grid fills ─────────────────────────
