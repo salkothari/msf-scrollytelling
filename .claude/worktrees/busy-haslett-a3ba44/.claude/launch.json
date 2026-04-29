@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "msf-site",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["/tmp/msf_serve.py"],
+      "port": 8765
+    }
+  ]
+}
