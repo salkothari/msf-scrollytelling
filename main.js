@@ -386,3 +386,64 @@ stepEls.forEach(s=>obs.observe(s));
     track.style.transform = 'translateX(-' + (positions[trackId] * cardW) + 'px)';
   };
 })();
+
+// ── Problem 1 scroll-featured cards ─────────────────
+(function () {
+  var seq = document.getElementById('prob-bio-seq');
+  if (!seq) return;
+  var cards = Array.from(seq.querySelectorAll('.prob-card'));
+  var N = cards.length;
+  var txCache = new Array(N).fill(0);
+  var txReady = false;
+
+  function computeTx() {
+    var vw2 = window.innerWidth / 2;
+    cards.forEach(function (card, i) {
+      var r = card.getBoundingClientRect();
+      txCache[i] = vw2 - (r.left + r.width / 2);
+    });
+    txReady = true;
+  }
+
+  function update() {
+    var rect = seq.getBoundingClientRect();
+    var scrolled = -rect.top;
+    var total = seq.offsetHeight - window.innerHeight;
+    var p = Math.max(0, Math.min(1, scrolled / total));
+
+    if (scrolled < 0) {
+      cards.forEach(function (c) {
+        c.classList.remove('pbc--featured', 'pbc--settled');
+        c.classList.add('pbc--hidden');
+        c.style.removeProperty('--tx');
+      });
+      return;
+    }
+
+    if (!txReady) { computeTx(); }
+
+    var stage = p * (N + 1);
+    cards.forEach(function (card, i) {
+      if (stage < i) {
+        card.classList.remove('pbc--featured', 'pbc--settled');
+        card.classList.add('pbc--hidden');
+        card.style.removeProperty('--tx');
+      } else if (stage >= i && stage < i + 1) {
+        card.classList.remove('pbc--hidden', 'pbc--settled');
+        card.classList.add('pbc--featured');
+        card.style.setProperty('--tx', txCache[i] + 'px');
+      } else {
+        card.classList.remove('pbc--hidden', 'pbc--featured');
+        card.classList.add('pbc--settled');
+        card.style.removeProperty('--tx');
+      }
+    });
+  }
+
+  // Set initial hidden state
+  cards.forEach(function (c) { c.classList.add('pbc--hidden'); });
+
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', function () { txReady = false; update(); });
+  update();
+})();

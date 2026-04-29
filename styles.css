@@ -486,6 +486,54 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 @media(max-width:560px) {
   .prob-cards-full { grid-template-columns: 1fr; }
 }
+/* ── Problem 1 scroll-featured card animation ── */
+.prob-bio-seq {
+  position: relative;
+  height: 500vh;
+}
+.prob-bio-seq > .prob-section.prob-bio {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  padding-top: 0;
+  padding-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.prob-bio-seq .prob-card {
+  transition: transform 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.45s ease;
+  will-change: transform, opacity;
+}
+.pbc--hidden {
+  opacity: 0 !important;
+  transform: scale(0.78) !important;
+  pointer-events: none;
+}
+.pbc--featured {
+  transform: translateX(var(--tx, 0px)) scale(1.28) !important;
+  position: relative;
+  z-index: 5;
+}
+.pbc--settled {
+  transform: none !important;
+  opacity: 1 !important;
+}
+@media (max-width: 768px) {
+  .prob-bio-seq { height: auto; }
+  .prob-bio-seq > .prob-section.prob-bio {
+    position: relative;
+    height: auto;
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+  .pbc--hidden, .pbc--featured, .pbc--settled {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
 /* Fix section 3 top padding since heading moved outside scroll-wrap */
 .prob-policy .prob-scroll-wrap { /* no top padding needed */ }
 .prob-sticky-photo {
