@@ -948,6 +948,31 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 }
 .feas-track-nav button:hover { border-color: #ee0202; color: #ee0202; }
 
+/* ── THE FEEDBACK SECTION ──────────────────── */
+.feedback-section {
+  background: #f5f4f0;
+  padding: 80px 48px;
+}
+.feedback-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+.feedback-hd {
+  margin-bottom: 32px;
+}
+.feedback-hd h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(24px, 3.5vw, 40px);
+  line-height: 1.12;
+  letter-spacing: -.02em;
+  color: #000;
+  margin: 8px 0 0;
+  max-width: 600px;
+}
+.feedback-section .feas-single-wrap {
+  padding: 0;
+  background: transparent;
+}
 
 
 .hero-caption-tr {
