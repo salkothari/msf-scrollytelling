@@ -890,54 +890,26 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 }
 
 
-/* TDA origin story block */
-.ctx-origin {
+/* Sensitivity / Specificity stat strip */
+.ctx-stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  margin: 28px 0 28px;
-  padding: 24px 28px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 14px;
-}
-.ctx-origin__label {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
-  margin-bottom: 12px;
-}
-.ctx-origin__text {
-  font-size: 13.5px;
-  line-height: 1.72;
-  color: rgba(255,255,255,0.62);
-  margin: 0 0 12px;
-}
-.ctx-origin__text strong { color: #fff; font-weight: 600; }
-.ctx-origin__glossary {
-  display: flex;
-  flex-direction: column;
   gap: 20px;
-  justify-content: center;
-  border-left: 1px solid rgba(255,255,255,0.08);
-  padding-left: 28px;
+  margin: 0 0 32px;
+  padding-top: 4px;
 }
-.ctx-origin__def-term {
+.ctx-stat__term {
   font-size: 13px;
   font-weight: 700;
   margin-bottom: 5px;
 }
-.ctx-origin__def-body {
-  font-size: 12.5px;
+.ctx-stat__body {
+  font-size: 12px;
   line-height: 1.62;
-  color: rgba(255,255,255,0.48);
+  color: rgba(255,255,255,0.45);
 }
-.ctx-origin__def-body strong { color: rgba(255,255,255,0.82); font-weight: 600; }
 @media(max-width:700px) {
-  .ctx-origin { grid-template-columns: 1fr; }
-  .ctx-origin__glossary { border-left: none; border-top: 1px solid rgba(255,255,255,0.08); padding-left: 0; padding-top: 16px; }
+  .ctx-stats { grid-template-columns: 1fr; gap: 14px; }
 }
 
 .field-quote-row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,4vw,4rem);align-items:center;max-width:1040px;margin:32px auto}
