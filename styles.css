@@ -948,14 +948,15 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 }
 .feas-track-nav button:hover { border-color: #ee0202; color: #ee0202; }
 
-/* ── THE FEEDBACK SECTION ──────────────────── */
+/* ── THE FEEDBACK SECTION (dark) ──────────────────── */
 .feedback-section {
-  background: #f5f4f0;
   padding: 80px 48px;
 }
 .feedback-inner {
   max-width: 1040px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 .feedback-hd {
   margin-bottom: 32px;
@@ -965,13 +966,41 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   font-size: clamp(24px, 3.5vw, 40px);
   line-height: 1.12;
   letter-spacing: -.02em;
-  color: #000;
+  color: #fff;
   margin: 8px 0 0;
   max-width: 600px;
 }
 .feedback-section .feas-single-wrap {
   padding: 0;
   background: transparent;
+}
+
+/* ── IN THE FIELD (light mode) ──────────────────── */
+.itf-light {
+  background: #f5f4f0;
+  position: relative;
+  overflow: hidden;
+}
+.itf-light .faq-heading {
+  color: #888;
+}
+.itf-light .faq__item {
+  border-top-color: rgba(0,0,0,.1);
+}
+.itf-light .faq__item:last-child {
+  border-bottom-color: rgba(0,0,0,.1);
+}
+.itf-light .faq__q {
+  color: #000;
+}
+.itf-light .faq__q::after {
+  color: rgba(0,0,0,.35);
+}
+.itf-light details[open] .faq__q::after {
+  color: #ee0202;
+}
+.itf-light .faq__a {
+  color: #555;
 }
 
 
