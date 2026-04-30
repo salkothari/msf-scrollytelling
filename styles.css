@@ -1123,3 +1123,23 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   .cycle-pin .cycle-svg-mount,
   .cycle-pin .cycle-svg-mount svg{max-height:none;width:100%}
 }
+
+/* ── Feedback section circular headshots ──────────── */
+.feedback-section .feas-qcard__img {
+  width: 72px;
+  height: 72px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #2a2a2a;
+  align-self: flex-start;
+  flex-shrink: 0;
+}
+.feedback-section .feas-qcard__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.feedback-section .feas-qcard__img svg { width: 28px; height: 28px; opacity: .4; }
+.feedback-section .feas-qcard__img span { display: none; }
