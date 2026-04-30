@@ -1124,15 +1124,73 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   .cycle-pin .cycle-svg-mount svg{max-height:none;width:100%}
 }
 
-/* ── Feedback section circular headshots ──────────── */
+/* ── Feedback section card redesign ──────────────── */
+.feedback-section .feas-qcard {
+  background: #161616;
+  border-color: rgba(255,255,255,.07);
+  padding: 24px 22px 20px;
+  gap: 0;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Large opening quote mark */
+.feas-qcard__openq {
+  font-family: 'DM Serif Display', serif;
+  font-size: 4.5rem;
+  line-height: 0.75;
+  color: #ee0202;
+  display: block;
+  margin-bottom: 10px;
+  user-select: none;
+}
+
+/* Quote text on dark bg */
+.feedback-section .feas-qcard__quote {
+  color: #d8d8d4;
+  font-size: clamp(.9rem, 1.3vw, 1rem);
+  line-height: 1.6;
+  flex: 1;
+  margin-bottom: 18px;
+}
+
+/* Highlighted phrases with wavy underline */
+.qh { font-style: inherit; text-decoration: underline wavy; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+.qh--teal   { color: #44bba4; text-decoration-color: #44bba4; }
+.qh--blue   { color: #3bc9f5; text-decoration-color: #3bc9f5; }
+.qh--orange { color: #ffa737; text-decoration-color: #ffa737; }
+.qh--purple { color: #9699e0; text-decoration-color: #9699e0; }
+
+/* Byline row at card bottom */
+.feas-qcard__byline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  margin-top: auto;
+}
+.feas-qcard__byline-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* Circular headshot in byline */
 .feedback-section .feas-qcard__img {
-  width: 72px;
-  height: 72px;
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
   aspect-ratio: 1;
   border-radius: 50%;
   overflow: hidden;
   background: #2a2a2a;
-  align-self: flex-start;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 .feedback-section .feas-qcard__img img {
@@ -1141,5 +1199,30 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   object-fit: cover;
   display: block;
 }
-.feedback-section .feas-qcard__img svg { width: 28px; height: 28px; opacity: .4; }
+.feedback-section .feas-qcard__img svg { width: 22px; height: 22px; opacity: .3; }
 .feedback-section .feas-qcard__img span { display: none; }
+
+/* Name / role / tag in byline */
+.feedback-section .feas-qcard__attr {
+  font-size: .78rem;
+  color: #e0ddd8;
+  font-weight: 600;
+}
+.feas-qcard__role {
+  font-size: .7rem;
+  color: #777;
+  line-height: 1.3;
+}
+.feedback-section .feas-qcard__meta {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Brighter tags on dark background */
+.feedback-section .feas-qcard__tag--teal   { background: rgba(68,187,164,.15); color: #44bba4; }
+.feedback-section .feas-qcard__tag--blue   { background: rgba(59,201,245,.15); color: #3bc9f5; }
+.feedback-section .feas-qcard__tag--orange { background: rgba(255,167,55,.15); color: #ffa737; }
+.feedback-section .feas-qcard__tag--purple { background: rgba(150,153,224,.15);color: #9699e0; }
