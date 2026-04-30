@@ -1138,29 +1138,40 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 /* Large opening quote mark */
 .feas-qcard__openq {
   font-family: 'DM Serif Display', serif;
-  font-size: 4.5rem;
-  line-height: 0.75;
+  font-size: 5.5rem;
+  line-height: 0.65;
   color: #ee0202;
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   user-select: none;
+  letter-spacing: -.05em;
 }
 
 /* Quote text on dark bg */
 .feedback-section .feas-qcard__quote {
+  font-family: 'DM Sans', sans-serif;
+  font-style: normal;
+  font-weight: 400;
   color: #d8d8d4;
-  font-size: clamp(.9rem, 1.3vw, 1rem);
-  line-height: 1.6;
+  font-size: clamp(.88rem, 1.25vw, .98rem);
+  line-height: 1.65;
   flex: 1;
   margin-bottom: 18px;
 }
 
-/* Highlighted phrases with wavy underline */
-.qh { font-style: inherit; text-decoration: underline wavy; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
-.qh--teal   { color: #44bba4; text-decoration-color: #44bba4; }
-.qh--blue   { color: #3bc9f5; text-decoration-color: #3bc9f5; }
-.qh--orange { color: #ffa737; text-decoration-color: #ffa737; }
-.qh--purple { color: #9699e0; text-decoration-color: #9699e0; }
+/* Highlighter-style phrase marks (no underline, background only) */
+.qh {
+  color: inherit;
+  text-decoration: none;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: 1px 4px;
+  border-radius: 3px 2px 4px 1px;
+}
+.qh--teal   { background: rgba(68,187,164,.28); }
+.qh--blue   { background: rgba(59,201,245,.2); }
+.qh--orange { background: rgba(255,167,55,.35); }
+.qh--purple { background: rgba(150,153,224,.28); }
 
 /* Byline row at card bottom */
 .feas-qcard__byline {
@@ -1180,9 +1191,9 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 
 /* Circular headshot in byline */
 .feedback-section .feas-qcard__img {
-  width: 52px;
-  height: 52px;
-  min-width: 52px;
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
   aspect-ratio: 1;
   border-radius: 50%;
   overflow: hidden;
