@@ -24,6 +24,28 @@ body{font-family:var(--font-body);background:#000;color:#fff;overflow-x:hidden}
 .ey{display:inline-block;font-size:10px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);border:1px solid var(--red);padding:5px 16px;border-radius:100px;margin-bottom:24px}
 .hero h1{font-family:var(--font-display);font-size:clamp(40px,7vw,72px);line-height:1.05;color:#fff;letter-spacing:-.025em;margin-bottom:18px}
 .hero h1 em{font-style:italic;color:var(--red)}
+/* Handwritten TB annotation */
+.hero-tb { position: relative; display: inline-block; }
+.hero-tb-annot {
+  position: absolute;
+  left: calc(100% + 6px);
+  bottom: 100%;
+  margin-bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.hero-tb-arrow { width: clamp(60px,8vw,80px); height: auto; }
+.hero-tb-label {
+  font-family: 'Gaegu', cursive;
+  font-weight: 700;
+  font-size: clamp(1rem, 1.8vw, 1.5rem);
+  color: #fff;
+  line-height: 1;
+}
 .hero p{font-size:17px;color:rgba(255,255,255,.6);line-height:1.65;font-weight:300;max-width:540px}
 .sh{position:absolute;bottom:36px;right:52px;left:auto;transform:none;z-index:10;display:flex;flex-direction:row;align-items:center;gap:8px;transition:opacity .7s ease}
 .sh.gone{opacity:0;pointer-events:none}
@@ -1135,23 +1157,37 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   flex-direction: column;
 }
 
-/* Large opening quote mark */
+/* Card header: quote mark left, country/flag right */
+.feas-qcard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
 .feas-qcard__openq {
   font-family: 'DM Serif Display', serif;
   font-size: 5.5rem;
   line-height: 0.65;
   color: #ee0202;
   display: block;
-  margin-bottom: 12px;
   user-select: none;
   letter-spacing: -.05em;
+  flex-shrink: 0;
+}
+.feas-qcard__country {
+  font-size: .8rem;
+  font-weight: 600;
+  color: #c8c4bc;
+  white-space: nowrap;
+  padding-top: 2px;
+  letter-spacing: .01em;
 }
 
 /* Quote text on dark bg */
 .feedback-section .feas-qcard__quote {
   font-family: 'DM Sans', sans-serif;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500;
   color: #d8d8d4;
   font-size: clamp(.88rem, 1.25vw, .98rem);
   line-height: 1.65;
@@ -1168,10 +1204,10 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   padding: 1px 4px;
   border-radius: 3px 2px 4px 1px;
 }
-.qh--teal   { background: rgba(68,187,164,.28); }
-.qh--blue   { background: rgba(59,201,245,.2); }
-.qh--orange { background: rgba(255,167,55,.35); }
-.qh--purple { background: rgba(150,153,224,.28); }
+.qh--teal   { background: rgba(68,187,164,.48); }
+.qh--blue   { background: rgba(59,201,245,.38); }
+.qh--orange { background: rgba(255,167,55,.52); }
+.qh--purple { background: rgba(150,153,224,.45); }
 
 /* Byline row at card bottom */
 .feas-qcard__byline {
