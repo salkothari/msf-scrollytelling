@@ -30,7 +30,7 @@ body{font-family:var(--font-body);background:#000;color:#fff;overflow-x:hidden}
   position: absolute;
   left: calc(100% + 6px);
   bottom: 100%;
-  margin-bottom: 4px;
+  margin-bottom: -6px;
   display: flex;
   flex-direction: column;
   align-items: center;
