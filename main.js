@@ -968,3 +968,227 @@ stepEls.forEach(s=>obs.observe(s));
   }
   window.addEventListener('resize', render);
 })();
+
+// ── Sankey: reasons for diagnosis ─────────────────────────────────────────
+(function () {
+  var wrap = document.getElementById('sankey-wrap');
+  if (!wrap) return;
+  var NS = 'http://www.w3.org/2000/svg';
+
+  var COUNTRIES = [
+    { name: 'Guinea',       color: '#E31612' },
+    { name: 'Niger',        color: '#F58BAE' },
+    { name: 'Nigeria',      color: '#4AAE9B' },
+    { name: 'South Sudan',  color: '#6B6FB6' },
+    { name: 'Uganda',       color: '#F5A037' },
+  ];
+
+  // Ordered largest→smallest total
+  var REASONS = [
+    'Algorithm B score >10',
+    'Algorithm A score >10',
+    'TB contact',
+    'Positive TB-LAM test',
+    'Positive GeneXpert',
+    'Clinical suspicion',
+    'Other TB test',
+  ];
+
+  var RAW = [
+    { s: 'Guinea',       t: 'Positive TB-LAM test',  v: 24 },
+    { s: 'Guinea',       t: 'TB contact',             v: 24 },
+    { s: 'Guinea',       t: 'Algorithm A score >10',  v: 36 },
+    { s: 'Guinea',       t: 'Algorithm B score >10',  v: 18 },
+    { s: 'Niger',        t: 'Positive GeneXpert',     v: 8  },
+    { s: 'Niger',        t: 'TB contact',             v: 6  },
+    { s: 'Niger',        t: 'Algorithm A score >10',  v: 23 },
+    { s: 'Nigeria',      t: 'Positive GeneXpert',     v: 14 },
+    { s: 'Nigeria',      t: 'TB contact',             v: 8  },
+    { s: 'Nigeria',      t: 'Algorithm A score >10',  v: 31 },
+    { s: 'Nigeria',      t: 'Algorithm B score >10',  v: 56 },
+    { s: 'South Sudan',  t: 'Positive GeneXpert',     v: 3  },
+    { s: 'South Sudan',  t: 'Positive TB-LAM test',   v: 2  },
+    { s: 'South Sudan',  t: 'TB contact',             v: 18 },
+    { s: 'South Sudan',  t: 'Algorithm B score >10',  v: 93 },
+    { s: 'South Sudan',  t: 'Clinical suspicion',     v: 16 },
+    { s: 'Uganda',       t: 'Positive GeneXpert',     v: 3  },
+    { s: 'Uganda',       t: 'Positive TB-LAM test',   v: 4  },
+    { s: 'Uganda',       t: 'Other TB test',          v: 2  },
+    { s: 'Uganda',       t: 'TB contact',             v: 38 },
+    { s: 'Uganda',       t: 'Algorithm A score >10',  v: 39 },
+    { s: 'Uganda',       t: 'Algorithm B score >10',  v: 28 },
+    { s: 'Uganda',       t: 'Clinical suspicion',     v: 2  },
+  ];
+
+  var TOTAL = RAW.reduce(function (a, f) { return a + f.v; }, 0);
+
+  var srcTot = {}, tgtTot = {};
+  COUNTRIES.forEach(function (c) { srcTot[c.name] = 0; });
+  REASONS.forEach(function (r)   { tgtTot[r] = 0; });
+  RAW.forEach(function (f) { srcTot[f.s] += f.v; tgtTot[f.t] += f.v; });
+
+  var tipEl = null;
+  function getTip() {
+    if (!tipEl) {
+      tipEl = document.createElement('div');
+      tipEl.style.cssText = 'display:none;position:fixed;background:#111;color:#fff;font-size:12px;font-family:"DM Sans",sans-serif;line-height:1.5;padding:8px 12px;border-radius:6px;pointer-events:none;z-index:1000;white-space:nowrap';
+      document.body.appendChild(tipEl);
+    }
+    return tipEl;
+  }
+
+  function render() {
+    wrap.innerHTML = '';
+
+    var W   = Math.max(wrap.offsetWidth || 700, 540);
+    var H   = 540;
+    var PLx = 115;  // left label area width
+    var PRx = 230;  // right label area width
+    var PT  = 20;
+    var PB  = 20;
+    var NW  = 14;   // node bar width
+    var NG  = 10;   // gap between nodes
+
+    var cH  = H - PT - PB;
+    var nS  = COUNTRIES.length;
+    var nT  = REASONS.length;
+
+    // Scale fitted to the side with more gaps (targets)
+    var sc  = (cH - (nT - 1) * NG) / TOTAL;
+
+    function svgEl(tag, attrs) {
+      var e = document.createElementNS(NS, tag);
+      if (attrs) Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+      return e;
+    }
+
+    // Source (country) node positions — centred vertically
+    var srcColH = TOTAL * sc + (nS - 1) * NG;
+    var sY = PT + (cH - srcColH) / 2;
+    var srcNodes = COUNTRIES.map(function (c) {
+      var h = srcTot[c.name] * sc;
+      var node = { name: c.name, color: c.color, x: PLx, y: sY, h: h };
+      sY += h + NG;
+      return node;
+    });
+
+    // Target (reason) node positions
+    var tX = W - PRx - NW;
+    var tY = PT;
+    var tgtNodes = REASONS.map(function (r) {
+      var h = tgtTot[r] * sc;
+      var node = { name: r, x: tX, y: tY, h: h };
+      tY += h + NG;
+      return node;
+    });
+
+    // Build flow paths — sort by target order so stacking is consistent
+    var sorted = RAW.slice().sort(function (a, b) {
+      return REASONS.indexOf(a.t) - REASONS.indexOf(b.t);
+    });
+    var sCur = {}, tCur = {};
+    COUNTRIES.forEach(function (c) { sCur[c.name] = 0; });
+    REASONS.forEach(function (r)   { tCur[r] = 0; });
+
+    var flows = sorted.map(function (f) {
+      var sn  = srcNodes.find(function (n) { return n.name === f.s; });
+      var tn  = tgtNodes.find(function (n) { return n.name === f.t; });
+      var col = COUNTRIES.find(function (c) { return c.name === f.s; }).color;
+      var fh  = f.v * sc;
+      var x0  = sn.x + NW,  x1 = tn.x;
+      var sy0 = sn.y + sCur[f.s], sy1 = sy0 + fh;
+      var ty0 = tn.y + tCur[f.t], ty1 = ty0 + fh;
+      sCur[f.s] += fh;
+      tCur[f.t] += fh;
+      var cx = (x0 + x1) / 2;
+      var d  = 'M' + x0 + ',' + sy0
+             + 'C' + cx + ',' + sy0 + ' ' + cx + ',' + ty0 + ' ' + x1 + ',' + ty0
+             + 'L' + x1 + ',' + ty1
+             + 'C' + cx + ',' + ty1 + ' ' + cx + ',' + sy1 + ' ' + x0 + ',' + sy1 + 'Z';
+      return { d: d, color: col, src: f.s, tgt: f.t, val: f.v };
+    });
+
+    var svg = svgEl('svg', { width: W, height: H });
+
+    // Flow ribbons
+    var fg = svgEl('g', {});
+    flows.forEach(function (f) {
+      var p = svgEl('path', { d: f.d, fill: f.color, 'fill-opacity': '0.42', cursor: 'pointer' });
+      p.addEventListener('mouseenter', function () {
+        fg.querySelectorAll('path').forEach(function (x) { x.setAttribute('fill-opacity', '0.08'); });
+        p.setAttribute('fill-opacity', '0.88');
+        var t    = getTip();
+        var pct  = Math.round(f.val / TOTAL * 100);
+        var sPct = Math.round(f.val / srcTot[f.src] * 100);
+        t.innerHTML = '<strong>' + f.src + '</strong> → ' + f.tgt
+          + '<br>' + f.val + ' children &nbsp;·&nbsp; <strong>' + pct + '%</strong> of all diagnosed &nbsp;·&nbsp; ' + sPct + '% of ' + f.src;
+        t.style.display = 'block';
+      });
+      p.addEventListener('mousemove', function (e) {
+        var t = getTip();
+        t.style.left = (e.clientX + 14) + 'px';
+        t.style.top  = (e.clientY - 42) + 'px';
+      });
+      p.addEventListener('mouseleave', function () {
+        fg.querySelectorAll('path').forEach(function (x) { x.setAttribute('fill-opacity', '0.42'); });
+        getTip().style.display = 'none';
+      });
+      fg.appendChild(p);
+    });
+    svg.appendChild(fg);
+
+    // Source node bars + left labels
+    srcNodes.forEach(function (n) {
+      svg.appendChild(svgEl('rect', {
+        x: n.x, y: n.y, width: NW, height: Math.max(n.h, 2), fill: n.color, rx: 2,
+      }));
+      var lbl = svgEl('text', {
+        x: n.x - 8, y: n.y + n.h / 2,
+        'text-anchor': 'end', 'dominant-baseline': 'middle',
+        'font-size': '12', 'font-family': 'DM Sans,sans-serif', 'font-weight': '500', fill: '#222',
+      });
+      lbl.textContent = n.name;
+      svg.appendChild(lbl);
+    });
+
+    // Target node bars + right labels with % — push labels to avoid overlap
+    var lastLblBottom = -Infinity;
+    tgtNodes.forEach(function (n) {
+      var pct    = Math.round(tgtTot[n.name] / TOTAL * 100);
+      var pctStr = pct < 1 ? '<1%' : pct + '%';
+      var nodeH  = Math.max(n.h, 2);
+      svg.appendChild(svgEl('rect', {
+        x: n.x, y: n.y, width: NW, height: nodeH, fill: '#333', rx: 2,
+      }));
+      var idealY  = n.y + n.h / 2;
+      var labelY  = Math.max(idealY, lastLblBottom + 15);
+      lastLblBottom = labelY + 7;
+
+      var lx  = n.x + NW + 10;
+      var lbl = svgEl('text', {
+        x: lx, y: labelY,
+        'dominant-baseline': 'middle',
+        'font-size': '12', 'font-family': 'DM Sans,sans-serif', fill: '#222',
+      });
+      var ts1 = document.createElementNS(NS, 'tspan');
+      ts1.setAttribute('font-weight', '500');
+      ts1.textContent = n.name + ' ';
+      var ts2 = document.createElementNS(NS, 'tspan');
+      ts2.setAttribute('fill', '#ee0202');
+      ts2.setAttribute('font-weight', '700');
+      ts2.textContent = pctStr;
+      lbl.appendChild(ts1);
+      lbl.appendChild(ts2);
+      svg.appendChild(lbl);
+    });
+
+    wrap.appendChild(svg);
+  }
+
+  if (document.readyState === 'complete') {
+    requestAnimationFrame(render);
+  } else {
+    window.addEventListener('load', function () { requestAnimationFrame(render); });
+  }
+  window.addEventListener('resize', render);
+})();
