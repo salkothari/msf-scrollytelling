@@ -652,3 +652,128 @@ stepEls.forEach(s=>obs.observe(s));
   }
   window.addEventListener('resize', render);
 })();
+
+// ── Stacked pictogram: days until diagnosis ──────────────────────────────────
+(function () {
+  var wrap = document.getElementById('picto-wrap');
+  if (!wrap) return;
+
+  var COUNTRIES = [
+    { name: 'Guinea',      color: '#E31612' },
+    { name: 'Niger',       color: '#F58BAE' },
+    { name: 'Nigeria',     color: '#4AAE9B' },
+    { name: 'South Sudan', color: '#6B6FB6' },
+    { name: 'Uganda',      color: '#F5A037' },
+  ];
+
+  var ROWS = [
+    { label: '1–3',   Guinea: 96, Niger: 20, Nigeria: 32, 'South Sudan': 98, Uganda: 78 },
+    { label: '4–7',   Guinea: 7,  Niger: 10, Nigeria: 25, 'South Sudan': 17, Uganda: 12 },
+    { label: '8–14',  Guinea: 1,  Niger: 6,  Nigeria: 37, 'South Sudan': 10, Uganda: 16 },
+    { label: '15–21', Guinea: 0,  Niger: 1,  Nigeria: 8,  'South Sudan': 3,  Uganda: 4  },
+    { label: '22–30', Guinea: 0,  Niger: 0,  Nigeria: 4,  'South Sudan': 0,  Uganda: 4  },
+    { label: '31–60', Guinea: 1,  Niger: 1,  Nigeria: 5,  'South Sudan': 1,  Uganda: 1  },
+    { label: '61+',   Guinea: 0,  Niger: 0,  Nigeria: 0,  'South Sudan': 3,  Uganda: 1  },
+  ];
+
+  var IW = 8, IH = 12, IGX = 2, IGY = 2;
+  var SX = IW + IGX;
+  var SY = IH + IGY;
+  var LABEL_W = 52;
+  var PAD_X = 24;
+  var PAD_T = 16;
+  var PAD_B = 16;
+  var CAT_GAP = 10;
+  var MIN_ROW_H = 24;
+  var ns = 'http://www.w3.org/2000/svg';
+  var PERSON_D = 'M0.5,11.5 C0.5,7 2,5 4,5 C6,5 7.5,7 7.5,11.5 Z';
+
+  function svgEl(tag, attrs) {
+    var e = document.createElementNS(ns, tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+    return e;
+  }
+
+  function render() {
+    wrap.innerHTML = '';
+    var W = wrap.offsetWidth || 800;
+    var ipr = Math.max(1, Math.floor((W - PAD_X * 2 - LABEL_W) / SX));
+
+    var cats = ROWS.map(function (row) {
+      var icons = [];
+      COUNTRIES.forEach(function (c) {
+        for (var i = 0, n = row[c.name] || 0; i < n; i++) icons.push(c.color);
+      });
+      var lines = [];
+      for (var i = 0; i < icons.length; i += ipr) lines.push(icons.slice(i, i + ipr));
+      if (!lines.length) lines.push([]);
+      return { label: row.label, lines: lines };
+    });
+
+    var totalH = PAD_T + PAD_B + cats.reduce(function (acc, cat) {
+      return acc + Math.max(cat.lines.length * SY, MIN_ROW_H) + CAT_GAP;
+    }, 0);
+
+    var svg = svgEl('svg', { width: W, height: totalH });
+    svg.style.display = 'block';
+
+    var defs = document.createElementNS(ns, 'defs');
+    var sym = svgEl('symbol', { id: 'pi', viewBox: '0 0 8 12' });
+    sym.appendChild(svgEl('circle', { cx: '4', cy: '2.3', r: '2.2' }));
+    var bp = svgEl('path', {}); bp.setAttribute('d', PERSON_D);
+    sym.appendChild(bp);
+    defs.appendChild(sym);
+    svg.appendChild(defs);
+
+    var y = PAD_T;
+    cats.forEach(function (cat) {
+      var blockH = cat.lines.length * SY;
+      var rowH = Math.max(blockH, MIN_ROW_H);
+      var iconOffY = (rowH - blockH) / 2;
+      var midY = y + rowH / 2;
+
+      var t1 = svgEl('text', { x: PAD_X, y: midY - 3, 'font-size': 11, 'font-weight': 600, fill: '#333', 'font-family': 'DM Sans,sans-serif' });
+      t1.textContent = cat.label;
+      svg.appendChild(t1);
+
+      var t2 = svgEl('text', { x: PAD_X, y: midY + 9, 'font-size': 9, fill: '#aaa', 'font-family': 'DM Sans,sans-serif' });
+      t2.textContent = 'days';
+      svg.appendChild(t2);
+
+      cat.lines.forEach(function (line, li) {
+        line.forEach(function (color, ci) {
+          var u = svgEl('use', {
+            href: '#pi',
+            x: PAD_X + LABEL_W + ci * SX,
+            y: y + iconOffY + li * SY,
+            width: IW, height: IH, fill: color
+          });
+          svg.appendChild(u);
+        });
+      });
+
+      y += rowH + CAT_GAP;
+    });
+
+    wrap.appendChild(svg);
+
+    var leg = document.getElementById('picto-leg');
+    if (!leg) return;
+    leg.innerHTML = '';
+    COUNTRIES.forEach(function (c) {
+      var item = document.createElement('div');
+      item.className = 'picto-leg-item';
+      item.innerHTML =
+        '<svg width="8" height="12" viewBox="0 0 8 12" fill="' + c.color + '" style="vertical-align:middle;margin-right:5px">' +
+        '<circle cx="4" cy="2.3" r="2.2"/><path d="' + PERSON_D + '"/></svg>' + c.name;
+      leg.appendChild(item);
+    });
+  }
+
+  if (document.readyState === 'complete') {
+    requestAnimationFrame(render);
+  } else {
+    window.addEventListener('load', function () { requestAnimationFrame(render); });
+  }
+  window.addEventListener('resize', render);
+})();
