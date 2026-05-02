@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "static",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8765"],
+      "runtimeExecutable": "/usr/bin/python3",
+      "runtimeArgs": ["-c", "import http.server,os; os.chdir('/Users/salonikothari/Documents/GitHub/msf-scrollytelling/.claude/worktrees/gallant-buck-83910a'); http.server.test(HandlerClass=http.server.SimpleHTTPRequestHandler,port=8765,bind='127.0.0.1')"],
       "port": 8765
     }
   ]
