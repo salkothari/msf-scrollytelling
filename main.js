@@ -983,7 +983,52 @@ stepEls.forEach(s=>obs.observe(s));
     { name: 'Uganda',       color: '#F5A037' },
   ];
 
-  // Ordered largest total first
+  // Ordered largest total first.
+  // Algorithm A and B are combined into one node.
+  // To split them again, replace REASONS + RAW below with the commented block.
+  var REASONS = [
+    'Algorithm score >10',
+    'TB contact',
+    'Positive TB-LAM test',
+    'Positive GeneXpert',
+    'Clinical suspicion',
+    'Other TB test',
+  ];
+
+  var SHORT = {
+    'Algorithm score >10':  'Alg. score >10',
+    'TB contact':           'TB contact',
+    'Positive TB-LAM test': 'TB-LAM+',
+    'Positive GeneXpert':   'GeneXpert+',
+    'Clinical suspicion':   'Clinical',
+    'Other TB test':        'Other TB',
+  };
+
+  // Combined A+B flows
+  var RAW = [
+    { s: 'Guinea',       t: 'Algorithm score >10',  v: 54 }, // A:36 + B:18
+    { s: 'Guinea',       t: 'TB contact',            v: 24 },
+    { s: 'Guinea',       t: 'Positive TB-LAM test',  v: 24 },
+    { s: 'Niger',        t: 'Algorithm score >10',   v: 23 }, // A:23 + B:0
+    { s: 'Niger',        t: 'TB contact',            v: 6  },
+    { s: 'Niger',        t: 'Positive GeneXpert',    v: 8  },
+    { s: 'Nigeria',      t: 'Algorithm score >10',   v: 87 }, // A:31 + B:56
+    { s: 'Nigeria',      t: 'TB contact',            v: 8  },
+    { s: 'Nigeria',      t: 'Positive GeneXpert',    v: 14 },
+    { s: 'South Sudan',  t: 'Algorithm score >10',   v: 93 }, // A:0  + B:93
+    { s: 'South Sudan',  t: 'TB contact',            v: 18 },
+    { s: 'South Sudan',  t: 'Positive TB-LAM test',  v: 2  },
+    { s: 'South Sudan',  t: 'Positive GeneXpert',    v: 3  },
+    { s: 'South Sudan',  t: 'Clinical suspicion',    v: 16 },
+    { s: 'Uganda',       t: 'Algorithm score >10',   v: 67 }, // A:39 + B:28
+    { s: 'Uganda',       t: 'TB contact',            v: 38 },
+    { s: 'Uganda',       t: 'Positive TB-LAM test',  v: 4  },
+    { s: 'Uganda',       t: 'Positive GeneXpert',    v: 3  },
+    { s: 'Uganda',       t: 'Other TB test',         v: 2  },
+    { s: 'Uganda',       t: 'Clinical suspicion',    v: 2  },
+  ];
+
+  /* -- SPLIT A/B VERSION (uncomment to restore) --
   var REASONS = [
     'Algorithm B score >10',
     'Algorithm A score >10',
@@ -993,8 +1038,6 @@ stepEls.forEach(s=>obs.observe(s));
     'Clinical suspicion',
     'Other TB test',
   ];
-
-  // Abbreviated display names for the horizontal labels
   var SHORT = {
     'Algorithm B score >10': 'Alg. B >10',
     'Algorithm A score >10': 'Alg. A >10',
@@ -1004,7 +1047,6 @@ stepEls.forEach(s=>obs.observe(s));
     'Clinical suspicion':    'Clinical',
     'Other TB test':         'Other TB',
   };
-
   var RAW = [
     { s: 'Guinea',       t: 'Positive TB-LAM test',  v: 24 },
     { s: 'Guinea',       t: 'TB contact',             v: 24 },
@@ -1030,6 +1072,7 @@ stepEls.forEach(s=>obs.observe(s));
     { s: 'Uganda',       t: 'Algorithm B score >10',  v: 28 },
     { s: 'Uganda',       t: 'Clinical suspicion',     v: 2  },
   ];
+  -- END SPLIT VERSION -- */
 
   var TOTAL = RAW.reduce(function (a, f) { return a + f.v; }, 0);
   var srcTot = {}, tgtTot = {};
@@ -1053,18 +1096,16 @@ stepEls.forEach(s=>obs.observe(s));
     var W   = Math.max(wrap.offsetWidth || 700, 500);
     var PL  = 10;
     var PR  = 10;
-    var PT  = 48;   // top: room for country name labels
-    var NW  = 14;   // node bar height (thickness)
-    var NG  = 6;    // horizontal gap between nodes
-    var MID = 230;  // vertical flow area
-    // bottom: 14px for name label + 16px for pct label + 10px margin
+    var PT  = 48;
+    var NW  = 14;
+    var NG  = 6;
+    var MID = 230;
     var PB  = 40;
     var H   = PT + NW + MID + NW + PB;
 
     var AW  = W - PL - PR;
     var nT  = REASONS.length;
 
-    // Scale: fit target row (7 nodes, 6 gaps)
     var sc = (AW - (nT - 1) * NG) / TOTAL;
 
     function svgEl(tag, attrs) {
@@ -1073,7 +1114,7 @@ stepEls.forEach(s=>obs.observe(s));
       return e;
     }
 
-    // Source (country) nodes -- centred horizontally
+    // Source (country) nodes — centred
     var srcRowW = TOTAL * sc + (COUNTRIES.length - 1) * NG;
     var cxStart = PL + (AW - srcRowW) / 2;
     var srcNodes = COUNTRIES.map(function (c) {
@@ -1083,7 +1124,7 @@ stepEls.forEach(s=>obs.observe(s));
       return node;
     });
 
-    // Target (reason) nodes -- fill full AW
+    // Target (reason) nodes — fill full AW
     var txStart = PL;
     var tgtY = PT + NW + MID;
     var tgtNodes = REASONS.map(function (r) {
@@ -1093,7 +1134,7 @@ stepEls.forEach(s=>obs.observe(s));
       return node;
     });
 
-    // Build flows sorted by target order (consistent left-to-right stacking)
+    // Flows sorted by target order
     var sorted = RAW.slice().sort(function (a, b) {
       return REASONS.indexOf(a.t) - REASONS.indexOf(b.t);
     });
@@ -1150,7 +1191,7 @@ stepEls.forEach(s=>obs.observe(s));
     });
     svg.appendChild(fg);
 
-    // Source (country) node bars + labels above
+    // Source node bars + labels above
     srcNodes.forEach(function (n) {
       svg.appendChild(svgEl('rect', {
         x: n.x, y: n.y, width: Math.max(n.w, 2), height: NW, fill: n.color, rx: 2,
@@ -1164,8 +1205,7 @@ stepEls.forEach(s=>obs.observe(s));
       svg.appendChild(lbl);
     });
 
-    // Target (reason) node bars + horizontal two-line labels below
-    // Line 1: abbreviated name  Line 2: percentage in red
+    // Target node bars + two-line labels below (name + pct)
     tgtNodes.forEach(function (n) {
       var pct    = Math.round(tgtTot[n.name] / TOTAL * 100);
       var pctStr = pct < 1 ? '<1%' : pct + '%';
@@ -1175,7 +1215,6 @@ stepEls.forEach(s=>obs.observe(s));
         x: n.x, y: n.y, width: Math.max(n.w, 2), height: NW, fill: '#333', rx: 2,
       }));
 
-      // Name (abbreviated)
       var nm = svgEl('text', {
         x: cx, y: n.y + NW + 13,
         'text-anchor': 'middle',
@@ -1184,7 +1223,6 @@ stepEls.forEach(s=>obs.observe(s));
       nm.textContent = SHORT[n.name] || n.name;
       svg.appendChild(nm);
 
-      // Percentage
       var pt = svgEl('text', {
         x: cx, y: n.y + NW + 27,
         'text-anchor': 'middle',
