@@ -123,6 +123,8 @@ h2{font-family:var(--font-display);font-size:clamp(26px,4vw,40px);line-height:1.
 .vn{font-family:var(--font-body);font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--red);border:1.5px solid var(--red);border-radius:4px;padding:2px 6px}
 .vd{font-size:12px;color:#888}
 .viz-source{font-size:11px;color:#aaa;padding:8px 24px 12px}
+.picto-outer{position:relative}
+.picto-tip{display:none;position:absolute;background:#111;color:#fff;font-family:var(--font-body);font-size:12px;line-height:1.5;padding:8px 12px;border-radius:6px;pointer-events:none;white-space:nowrap;z-index:10}
 .picto-leg{display:flex;flex-wrap:wrap;gap:6px 20px;padding:4px 24px 16px;font-size:12px;color:#555;font-family:var(--font-body,sans-serif)}
 .picto-leg-item{display:flex;align-items:center;gap:0}
 .sb{padding:24px;background:#fff;height:210px;display:flex;align-items:stretch}

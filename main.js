@@ -656,7 +656,8 @@ stepEls.forEach(s=>obs.observe(s));
 // ── Stacked pictogram: days until diagnosis ──────────────────────────────────
 (function () {
   var wrap = document.getElementById('picto-wrap');
-  if (!wrap) return;
+  var tip  = document.getElementById('picto-tip');
+  if (!wrap || !tip) return;
 
   var COUNTRIES = [
     { name: 'Guinea',      color: '#E31612' },
@@ -676,87 +677,128 @@ stepEls.forEach(s=>obs.observe(s));
     { label: '61+',   Guinea: 0,  Niger: 0,  Nigeria: 0,  'South Sudan': 3,  Uganda: 1  },
   ];
 
-  var IW = 8, IH = 12, IGX = 2, IGY = 2;
-  var SX = IW + IGX;
-  var SY = IH + IGY;
-  var LABEL_W = 52;
-  var PAD_X = 24;
-  var PAD_T = 16;
-  var PAD_B = 16;
-  var CAT_GAP = 10;
-  var MIN_ROW_H = 24;
-  var ns = 'http://www.w3.org/2000/svg';
-  var PERSON_D = 'M0.5,11.5 C0.5,7 2,5 4,5 C6,5 7.5,7 7.5,11.5 Z';
+  var SCALE  = 5;   // children per circle (rounded, min 1 if n > 0)
+  var CR     = 4;   // circle radius px
+  var CGAP   = 2;   // gap between circles
+  var STEP   = CR * 2 + CGAP;   // 10px vertical step
+  var PAD_X  = 24;
+  var PAD_T  = 16;
+  var PAD_B  = 36;  // room for x-axis labels
+  var ns     = 'http://www.w3.org/2000/svg';
 
-  function svgEl(tag, attrs) {
+  function nc(n) { return n === 0 ? 0 : Math.max(1, Math.round(n / SCALE)); }
+
+  function el(tag, attrs) {
     var e = document.createElementNS(ns, tag);
     if (attrs) Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); });
     return e;
   }
 
+  var allGroups = [];
+
   function render() {
     wrap.innerHTML = '';
-    var W = wrap.offsetWidth || 800;
-    var ipr = Math.max(1, Math.floor((W - PAD_X * 2 - LABEL_W) / SX));
+    allGroups = [];
 
-    var cats = ROWS.map(function (row) {
-      var icons = [];
-      COUNTRIES.forEach(function (c) {
-        for (var i = 0, n = row[c.name] || 0; i < n; i++) icons.push(c.color);
-      });
-      var lines = [];
-      for (var i = 0; i < icons.length; i += ipr) lines.push(icons.slice(i, i + ipr));
-      if (!lines.length) lines.push([]);
-      return { label: row.label, lines: lines };
+    var W    = wrap.offsetWidth || 800;
+    var nCol = ROWS.length;
+    var colW = (W - PAD_X * 2) / nCol;
+
+    // tallest column
+    var maxC = 0;
+    ROWS.forEach(function (row) {
+      var tot = COUNTRIES.reduce(function (s, c) { return s + nc(row[c.name] || 0); }, 0);
+      if (tot > maxC) maxC = tot;
     });
 
-    var totalH = PAD_T + PAD_B + cats.reduce(function (acc, cat) {
-      return acc + Math.max(cat.lines.length * SY, MIN_ROW_H) + CAT_GAP;
-    }, 0);
+    var chartH = maxC * STEP;
+    var totalH = PAD_T + chartH + PAD_B;
+    var baseY  = PAD_T + chartH;   // bottom of chart area (circles grow upward)
 
-    var svg = svgEl('svg', { width: W, height: totalH });
-    svg.style.display = 'block';
+    var svg = el('svg', { width: W, height: totalH });
+    svg.style.cssText = 'display:block;overflow:visible';
 
-    var defs = document.createElementNS(ns, 'defs');
-    var sym = svgEl('symbol', { id: 'pi', viewBox: '0 0 8 12' });
-    sym.appendChild(svgEl('circle', { cx: '4', cy: '2.3', r: '2.2' }));
-    var bp = svgEl('path', {}); bp.setAttribute('d', PERSON_D);
-    sym.appendChild(bp);
-    defs.appendChild(sym);
-    svg.appendChild(defs);
+    ROWS.forEach(function (row, ci) {
+      var cx = PAD_X + colW * ci + colW / 2;
+      var yTop = baseY;   // next circle top (counting up)
 
-    var y = PAD_T;
-    cats.forEach(function (cat) {
-      var blockH = cat.lines.length * SY;
-      var rowH = Math.max(blockH, MIN_ROW_H);
-      var iconOffY = (rowH - blockH) / 2;
-      var midY = y + rowH / 2;
+      COUNTRIES.forEach(function (c) {
+        var n  = row[c.name] || 0;
+        var k  = nc(n);
+        if (k === 0) return;
 
-      var t1 = svgEl('text', { x: PAD_X, y: midY - 3, 'font-size': 11, 'font-weight': 600, fill: '#333', 'font-family': 'DM Sans,sans-serif' });
-      t1.textContent = cat.label;
-      svg.appendChild(t1);
+        var segTop = yTop - k * STEP;
+        var g = el('g', {});
+        g._meta = { country: c.name, color: c.color, day: row.label, count: n };
 
-      var t2 = svgEl('text', { x: PAD_X, y: midY + 9, 'font-size': 9, fill: '#aaa', 'font-family': 'DM Sans,sans-serif' });
-      t2.textContent = 'days';
-      svg.appendChild(t2);
+        for (var i = 0; i < k; i++) {
+          g.appendChild(el('circle', {
+            cx: cx,
+            cy: yTop - i * STEP - CR - CGAP / 2,
+            r: CR,
+            fill: c.color
+          }));
+        }
 
-      cat.lines.forEach(function (line, li) {
-        line.forEach(function (color, ci) {
-          var u = svgEl('use', {
-            href: '#pi',
-            x: PAD_X + LABEL_W + ci * SX,
-            y: y + iconOffY + li * SY,
-            width: IW, height: IH, fill: color
-          });
-          svg.appendChild(u);
-        });
+        // transparent hit zone over this segment
+        g.appendChild(el('rect', {
+          x: cx - colW / 2 + 2, y: segTop,
+          width: colW - 4,      height: k * STEP,
+          fill: 'transparent',  cursor: 'pointer'
+        }));
+
+        svg.appendChild(g);
+        allGroups.push(g);
+        yTop = segTop;
       });
 
-      y += rowH + CAT_GAP;
+      // x-axis label
+      var lbl = el('text', { x: cx, y: baseY + 16, 'text-anchor': 'middle',
+        'font-size': 11, 'font-weight': 600, fill: '#333', 'font-family': 'DM Sans,sans-serif' });
+      lbl.textContent = row.label;
+      svg.appendChild(lbl);
+
+      var sub = el('text', { x: cx, y: baseY + 28, 'text-anchor': 'middle',
+        'font-size': 9, fill: '#aaa', 'font-family': 'DM Sans,sans-serif' });
+      sub.textContent = row.label === '61+' ? 'days' : 'days';
+      svg.appendChild(sub);
+    });
+
+    // interactions
+    allGroups.forEach(function (g) {
+      g.addEventListener('mouseover', function () {
+        allGroups.forEach(function (h) {
+          h.querySelectorAll('circle').forEach(function (c) { c.setAttribute('fill-opacity', '0.2'); });
+        });
+        g.querySelectorAll('circle').forEach(function (c) { c.setAttribute('fill-opacity', '1'); });
+        var d = g._meta;
+        tip.innerHTML =
+          '<strong style="color:' + d.color + '">' + d.country + '</strong><br>' +
+          d.day + ' days<br>' +
+          '<span style="font-size:14px;font-weight:700">' + d.count + '</span> children';
+        tip.style.display = 'block';
+      });
+
+      g.addEventListener('mousemove', function (e) {
+        var r  = tip.parentElement.getBoundingClientRect();
+        var tx = e.clientX - r.left + 14;
+        var ty = e.clientY - r.top  - 10;
+        if (tx + 150 > r.width) tx = e.clientX - r.left - 150;
+        tip.style.left = tx + 'px';
+        tip.style.top  = ty + 'px';
+      });
+
+      g.addEventListener('mouseleave', function () {
+        allGroups.forEach(function (h) {
+          h.querySelectorAll('circle').forEach(function (c) { c.setAttribute('fill-opacity', '1'); });
+        });
+        tip.style.display = 'none';
+      });
     });
 
     wrap.appendChild(svg);
 
+    // legend
     var leg = document.getElementById('picto-leg');
     if (!leg) return;
     leg.innerHTML = '';
@@ -764,8 +806,8 @@ stepEls.forEach(s=>obs.observe(s));
       var item = document.createElement('div');
       item.className = 'picto-leg-item';
       item.innerHTML =
-        '<svg width="8" height="12" viewBox="0 0 8 12" fill="' + c.color + '" style="vertical-align:middle;margin-right:5px">' +
-        '<circle cx="4" cy="2.3" r="2.2"/><path d="' + PERSON_D + '"/></svg>' + c.name;
+        '<svg width="10" height="10" viewBox="0 0 10 10" style="vertical-align:middle;margin-right:5px">' +
+        '<circle cx="5" cy="5" r="4" fill="' + c.color + '"/></svg>' + c.name;
       leg.appendChild(item);
     });
   }
