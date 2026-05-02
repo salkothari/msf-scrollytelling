@@ -488,7 +488,7 @@ stepEls.forEach(s=>obs.observe(s));
     var H  = 400;
     var small = W < 500;
     var PL = small ? 100 : 150;
-    var PR = small ? 36  : 50;
+    var PR = small ? 60  : 130;
     var PT = 20, PB = 64;
     var IW = W - PL - PR;
     var IH = H - PT - PB;
@@ -518,7 +518,8 @@ stepEls.forEach(s=>obs.observe(s));
       var color   = isAll ? C_ALL : C_COUNTRY;
       var opacity = isAll ? 1 : 0.6;
       var sw      = isAll ? 3 : 1.5;
-      var pts     = d.v.map(function (v, i) { return xp(i) + ',' + yp(v); }).join(' ');
+      var indices = (isAll ? [0, 2] : [0, 1, 2]);
+      var pts     = indices.map(function (i) { return xp(i) + ',' + yp(d.v[i]); }).join(' ');
 
       var line = mk('polyline', {
         points: pts, fill: 'none', stroke: color,
@@ -527,9 +528,9 @@ stepEls.forEach(s=>obs.observe(s));
       });
       svg.appendChild(line);
 
-      d.v.forEach(function (v, i) {
+      indices.forEach(function (i) {
         svg.appendChild(mk('circle', {
-          cx: xp(i), cy: yp(v), r: isAll ? 5 : 3.5,
+          cx: xp(i), cy: yp(d.v[i]), r: isAll ? 5 : 3.5,
           fill: color, 'fill-opacity': opacity
         }));
       });
@@ -620,6 +621,14 @@ stepEls.forEach(s=>obs.observe(s));
         'font-family': 'DM Sans,sans-serif', 'font-size': fs,
         fill: color, 'font-weight': fw
       }, lb.val));
+      if (!small) {
+        svg.appendChild(txt({
+          x: xp(2) + 30, y: lb.y,
+          'text-anchor': 'start', 'dominant-baseline': 'middle',
+          'font-family': 'DM Sans,sans-serif', 'font-size': fs,
+          fill: color, 'font-weight': fw
+        }, lb.id));
+      }
     });
 
     // Column labels at bottom
