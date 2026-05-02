@@ -635,6 +635,11 @@ stepEls.forEach(s=>obs.observe(s));
     });
   }
 
-  render();
+  // Defer until layout is painted so clientWidth is non-zero
+  if (document.readyState === 'complete') {
+    requestAnimationFrame(render);
+  } else {
+    window.addEventListener('load', function () { requestAnimationFrame(render); });
+  }
   window.addEventListener('resize', render);
 })();
