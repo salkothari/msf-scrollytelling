@@ -969,7 +969,7 @@ stepEls.forEach(s=>obs.observe(s));
   window.addEventListener('resize', render);
 })();
 
-// ── Sankey: reasons for diagnosis ─────────────────────────────────────────
+// -- Sankey: reasons for diagnosis (vertical, top->bottom) -----------------
 (function () {
   var wrap = document.getElementById('sankey-wrap');
   if (!wrap) return;
@@ -983,7 +983,7 @@ stepEls.forEach(s=>obs.observe(s));
     { name: 'Uganda',       color: '#F5A037' },
   ];
 
-  // Ordered largest→smallest total
+  // Ordered largest total first
   var REASONS = [
     'Algorithm B score >10',
     'Algorithm A score >10',
@@ -1021,7 +1021,6 @@ stepEls.forEach(s=>obs.observe(s));
   ];
 
   var TOTAL = RAW.reduce(function (a, f) { return a + f.v; }, 0);
-
   var srcTot = {}, tgtTot = {};
   COUNTRIES.forEach(function (c) { srcTot[c.name] = 0; });
   REASONS.forEach(function (r)   { tgtTot[r] = 0; });
@@ -1040,21 +1039,22 @@ stepEls.forEach(s=>obs.observe(s));
   function render() {
     wrap.innerHTML = '';
 
-    var W   = Math.max(wrap.offsetWidth || 700, 540);
-    var H   = 540;
-    var PLx = 115;  // left label area width
-    var PRx = 230;  // right label area width
-    var PT  = 20;
-    var PB  = 20;
-    var NW  = 14;   // node bar width
-    var NG  = 10;   // gap between nodes
+    var W   = Math.max(wrap.offsetWidth || 700, 500);
+    var PL  = 10;
+    var PR  = 10;
+    var PT  = 48;   // top: room for country name labels
+    var PB  = 14;   // bottom margin
+    var NW  = 14;   // node bar height (thickness)
+    var NG  = 6;    // horizontal gap between nodes
+    var MID = 240;  // vertical flow area
+    var H   = PT + NW + MID + NW + PB;
 
-    var cH  = H - PT - PB;
+    var AW  = W - PL - PR;
     var nS  = COUNTRIES.length;
     var nT  = REASONS.length;
 
-    // Scale fitted to the side with more gaps (targets)
-    var sc  = (cH - (nT - 1) * NG) / TOTAL;
+    // Scale: fit target row (more nodes = more gaps)
+    var sc = (AW - (nT - 1) * NG) / TOTAL;
 
     function svgEl(tag, attrs) {
       var e = document.createElementNS(NS, tag);
@@ -1062,27 +1062,27 @@ stepEls.forEach(s=>obs.observe(s));
       return e;
     }
 
-    // Source (country) node positions — centred vertically
-    var srcColH = TOTAL * sc + (nS - 1) * NG;
-    var sY = PT + (cH - srcColH) / 2;
+    // Source (country) nodes -- centred horizontally
+    var srcRowW = TOTAL * sc + (nS - 1) * NG;
+    var cxStart = PL + (AW - srcRowW) / 2;
     var srcNodes = COUNTRIES.map(function (c) {
-      var h = srcTot[c.name] * sc;
-      var node = { name: c.name, color: c.color, x: PLx, y: sY, h: h };
-      sY += h + NG;
+      var w = srcTot[c.name] * sc;
+      var node = { name: c.name, color: c.color, x: cxStart, y: PT, w: w };
+      cxStart += w + NG;
       return node;
     });
 
-    // Target (reason) node positions
-    var tX = W - PRx - NW;
-    var tY = PT;
+    // Target (reason) nodes -- fill full AW left-aligned
+    var txStart = PL;
+    var tgtY = PT + NW + MID;
     var tgtNodes = REASONS.map(function (r) {
-      var h = tgtTot[r] * sc;
-      var node = { name: r, x: tX, y: tY, h: h };
-      tY += h + NG;
+      var w = tgtTot[r] * sc;
+      var node = { name: r, x: txStart, y: tgtY, w: w };
+      txStart += w + NG;
       return node;
     });
 
-    // Build flow paths — sort by target order so stacking is consistent
+    // Build flows sorted by target order (consistent left-to-right stacking)
     var sorted = RAW.slice().sort(function (a, b) {
       return REASONS.indexOf(a.t) - REASONS.indexOf(b.t);
     });
@@ -1090,21 +1090,23 @@ stepEls.forEach(s=>obs.observe(s));
     COUNTRIES.forEach(function (c) { sCur[c.name] = 0; });
     REASONS.forEach(function (r)   { tCur[r] = 0; });
 
+    var midY = PT + NW + MID / 2;
+
     var flows = sorted.map(function (f) {
       var sn  = srcNodes.find(function (n) { return n.name === f.s; });
       var tn  = tgtNodes.find(function (n) { return n.name === f.t; });
       var col = COUNTRIES.find(function (c) { return c.name === f.s; }).color;
-      var fh  = f.v * sc;
-      var x0  = sn.x + NW,  x1 = tn.x;
-      var sy0 = sn.y + sCur[f.s], sy1 = sy0 + fh;
-      var ty0 = tn.y + tCur[f.t], ty1 = ty0 + fh;
-      sCur[f.s] += fh;
-      tCur[f.t] += fh;
-      var cx = (x0 + x1) / 2;
-      var d  = 'M' + x0 + ',' + sy0
-             + 'C' + cx + ',' + sy0 + ' ' + cx + ',' + ty0 + ' ' + x1 + ',' + ty0
-             + 'L' + x1 + ',' + ty1
-             + 'C' + cx + ',' + ty1 + ' ' + cx + ',' + sy1 + ' ' + x0 + ',' + sy1 + 'Z';
+      var fw  = f.v * sc;
+      var sx0 = sn.x + sCur[f.s],  sx1 = sx0 + fw;
+      var tx0 = tn.x + tCur[f.t],  tx1 = tx0 + fw;
+      sCur[f.s] += fw;
+      tCur[f.t] += fw;
+      var srcBot = sn.y + NW;
+      var tgtTop = tn.y;
+      var d = 'M' + sx0 + ',' + srcBot
+            + 'C' + sx0 + ',' + midY + ' ' + tx0 + ',' + midY + ' ' + tx0 + ',' + tgtTop
+            + 'L' + tx1 + ',' + tgtTop
+            + 'C' + tx1 + ',' + midY + ' ' + sx1 + ',' + midY + ' ' + sx1 + ',' + srcBot + 'Z';
       return { d: d, color: col, src: f.s, tgt: f.t, val: f.v };
     });
 
@@ -1121,7 +1123,7 @@ stepEls.forEach(s=>obs.observe(s));
         var pct  = Math.round(f.val / TOTAL * 100);
         var sPct = Math.round(f.val / srcTot[f.src] * 100);
         t.innerHTML = '<strong>' + f.src + '</strong> → ' + f.tgt
-          + '<br>' + f.val + ' children &nbsp;·&nbsp; <strong>' + pct + '%</strong> of all diagnosed &nbsp;·&nbsp; ' + sPct + '% of ' + f.src;
+          + '<br>' + f.val + ' children  ·  <strong>' + pct + '%</strong> of all diagnosed  ·  ' + sPct + '% of ' + f.src;
         t.style.display = 'block';
       });
       p.addEventListener('mousemove', function (e) {
@@ -1137,42 +1139,39 @@ stepEls.forEach(s=>obs.observe(s));
     });
     svg.appendChild(fg);
 
-    // Source node bars + left labels
+    // Source (country) node bars + labels above
     srcNodes.forEach(function (n) {
       svg.appendChild(svgEl('rect', {
-        x: n.x, y: n.y, width: NW, height: Math.max(n.h, 2), fill: n.color, rx: 2,
+        x: n.x, y: n.y, width: Math.max(n.w, 2), height: NW, fill: n.color, rx: 2,
       }));
       var lbl = svgEl('text', {
-        x: n.x - 8, y: n.y + n.h / 2,
-        'text-anchor': 'end', 'dominant-baseline': 'middle',
-        'font-size': '12', 'font-family': 'DM Sans,sans-serif', 'font-weight': '500', fill: '#222',
+        x: n.x + n.w / 2, y: n.y - 6,
+        'text-anchor': 'middle',
+        'font-size': '11', 'font-family': 'DM Sans,sans-serif', 'font-weight': '600', fill: '#222',
       });
       lbl.textContent = n.name;
       svg.appendChild(lbl);
     });
 
-    // Target node bars + right labels with % — push labels to avoid overlap
-    var lastLblBottom = -Infinity;
+    // Target (reason) node bars + rotated labels below (-45 deg, text-anchor end)
+    // The label ends at node-centre-bottom and reads diagonally up-left
     tgtNodes.forEach(function (n) {
       var pct    = Math.round(tgtTot[n.name] / TOTAL * 100);
       var pctStr = pct < 1 ? '<1%' : pct + '%';
-      var nodeH  = Math.max(n.h, 2);
       svg.appendChild(svgEl('rect', {
-        x: n.x, y: n.y, width: NW, height: nodeH, fill: '#333', rx: 2,
+        x: n.x, y: n.y, width: Math.max(n.w, 2), height: NW, fill: '#333', rx: 2,
       }));
-      var idealY  = n.y + n.h / 2;
-      var labelY  = Math.max(idealY, lastLblBottom + 15);
-      lastLblBottom = labelY + 7;
-
-      var lx  = n.x + NW + 10;
+      var lx = n.x + Math.max(n.w, 2) / 2;
+      var ly = n.y + NW + 6;
       var lbl = svgEl('text', {
-        x: lx, y: labelY,
-        'dominant-baseline': 'middle',
-        'font-size': '12', 'font-family': 'DM Sans,sans-serif', fill: '#222',
+        x: lx, y: ly,
+        transform: 'rotate(-45,' + lx + ',' + ly + ')',
+        'text-anchor': 'end',
+        'font-size': '11', 'font-family': 'DM Sans,sans-serif', fill: '#222',
       });
       var ts1 = document.createElementNS(NS, 'tspan');
       ts1.setAttribute('font-weight', '500');
-      ts1.textContent = n.name + ' ';
+      ts1.textContent = n.name + ' ';
       var ts2 = document.createElementNS(NS, 'tspan');
       ts2.setAttribute('fill', '#ee0202');
       ts2.setAttribute('font-weight', '700');

@@ -131,7 +131,7 @@ h2{font-family:var(--font-display);font-size:clamp(26px,4vw,40px);line-height:1.
 .picto-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
 .picto-btn:hover:not(.active){border-color:var(--red);color:var(--red)}
 .picto-outer{position:relative}
-.sankey-outer{padding:20px 0 8px;overflow-x:auto;min-height:540px}
+.sankey-outer{padding:20px 0 8px;overflow-x:auto;min-height:340px}
 .picto-tip{display:none;position:absolute;background:#111;color:#fff;font-family:var(--font-body);font-size:12px;line-height:1.5;padding:8px 12px;border-radius:6px;pointer-events:none;white-space:nowrap;z-index:10}
 .picto-leg{display:flex;flex-wrap:wrap;gap:6px 20px;padding:4px 24px 16px;font-size:12px;color:#555;font-family:var(--font-body,sans-serif)}
 .picto-leg-item{display:flex;align-items:center;gap:0}
