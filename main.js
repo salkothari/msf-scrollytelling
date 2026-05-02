@@ -447,3 +447,194 @@ stepEls.forEach(s=>obs.observe(s));
   window.addEventListener('resize', function () { txReady = false; update(); });
   update();
 })();
+
+// ── Slope chart (Evidence viz 01) ────────────────────────────────────────────
+(function () {
+  var svg = document.getElementById('slope-svg');
+  var tip = document.getElementById('slope-tip');
+  if (!svg) return;
+
+  var DATA = [
+    { id: 'Guinea',      cat: 'country', v: [1.1, 3.4, 0.3] },
+    { id: 'Niger',       cat: 'country', v: [0.8, 2.2, 1.5] },
+    { id: 'Nigeria',     cat: 'country', v: [3.0, 5.9, 5.9] },
+    { id: 'South Sudan', cat: 'country', v: [2.3, 4.1, 3.5] },
+    { id: 'Uganda',      cat: 'country', v: [0.0, 0.8, 0.2] },
+    { id: 'All',         cat: 'all',     v: [1.5, 2.3, 2.9] },
+  ];
+  var COLS = [
+    ['Before diagnostic', 'flowcharts'],
+    ['MSF study with', 'diagnostic flowcharts'],
+    ['With diagnostic', 'flowcharts*']
+  ];
+  var C_COUNTRY = '#878AD9';
+  var C_ALL     = '#ee0202';
+  var YMAX = 7;
+  var NS = 'http://www.w3.org/2000/svg';
+
+  function mk(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
+    Object.keys(attrs).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+    return e;
+  }
+  function txt(attrs, label) {
+    var e = mk('text', attrs);
+    e.textContent = label;
+    return e;
+  }
+
+  function render() {
+    var W  = svg.parentElement.clientWidth || 600;
+    var H  = 400;
+    var small = W < 500;
+    var PL = small ? 100 : 150;
+    var PR = small ? 36  : 50;
+    var PT = 20, PB = 64;
+    var IW = W - PL - PR;
+    var IH = H - PT - PB;
+
+    function xp(i) { return PL + (i / 2) * IW; }
+    function yp(v) { return PT + IH * (1 - v / YMAX); }
+
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.setAttribute('width',  W);
+    svg.setAttribute('height', H);
+    svg.innerHTML = '';
+
+    // Axis columns
+    for (var ci = 0; ci < 3; ci++) {
+      svg.appendChild(mk('line', {
+        x1: xp(ci), y1: PT, x2: xp(ci), y2: PT + IH,
+        stroke: '#e4e4e4', 'stroke-width': 1
+      }));
+    }
+
+    // Draw country lines first, All on top
+    var order = DATA.filter(function (d) { return d.cat === 'country'; })
+                    .concat(DATA.filter(function (d) { return d.cat === 'all'; }));
+
+    order.forEach(function (d) {
+      var isAll   = d.cat === 'all';
+      var color   = isAll ? C_ALL : C_COUNTRY;
+      var opacity = isAll ? 1 : 0.6;
+      var sw      = isAll ? 3 : 1.5;
+      var pts     = d.v.map(function (v, i) { return xp(i) + ',' + yp(v); }).join(' ');
+
+      var line = mk('polyline', {
+        points: pts, fill: 'none', stroke: color,
+        'stroke-width': sw, 'stroke-opacity': opacity,
+        'stroke-linecap': 'round', 'stroke-linejoin': 'round'
+      });
+      svg.appendChild(line);
+
+      d.v.forEach(function (v, i) {
+        svg.appendChild(mk('circle', {
+          cx: xp(i), cy: yp(v), r: isAll ? 5 : 3.5,
+          fill: color, 'fill-opacity': opacity
+        }));
+      });
+
+      // Wide invisible hit area
+      var hit = mk('polyline', {
+        points: pts, fill: 'none', stroke: 'transparent',
+        'stroke-width': 24, style: 'cursor:pointer'
+      });
+      hit.addEventListener('mouseenter', function () {
+        line.setAttribute('stroke-opacity', 1);
+        line.setAttribute('stroke-width', isAll ? 4 : 2.5);
+        if (tip) {
+          tip.innerHTML = '<strong>' + d.id + '</strong><br>' +
+            'Before flowcharts: ' + d.v[0] + '<br>' +
+            'MSF study: ' + d.v[1] + '<br>' +
+            'With flowcharts: ' + d.v[2];
+          tip.style.display = 'block';
+        }
+      });
+      hit.addEventListener('mousemove', function (e) {
+        if (tip) {
+          var r = svg.getBoundingClientRect();
+          tip.style.left = (e.clientX - r.left + 14) + 'px';
+          tip.style.top  = (e.clientY - r.top  - 10) + 'px';
+        }
+      });
+      hit.addEventListener('mouseleave', function () {
+        line.setAttribute('stroke-opacity', opacity);
+        line.setAttribute('stroke-width', sw);
+        if (tip) tip.style.display = 'none';
+      });
+      svg.appendChild(hit);
+    });
+
+    // Left labels — sorted by y, then de-overlapped
+    var MIN_GAP = 15;
+    function deOverlap(labels) {
+      labels.sort(function (a, b) { return a.y - b.y; });
+      for (var i = 1; i < labels.length; i++) {
+        if (labels[i].y - labels[i-1].y < MIN_GAP) {
+          labels[i].y = labels[i-1].y + MIN_GAP;
+        }
+      }
+      return labels;
+    }
+
+    var leftLbls = deOverlap(DATA.map(function (d) {
+      return { id: d.id, cat: d.cat, val: d.v[0], y: yp(d.v[0]) };
+    }));
+
+    leftLbls.forEach(function (lb) {
+      var isAll = lb.cat === 'all';
+      var color = isAll ? C_ALL : C_COUNTRY;
+      var fs    = small ? 10 : (isAll ? 13 : 11);
+      var fw    = isAll ? '700' : '400';
+      // value
+      svg.appendChild(txt({
+        x: xp(0) - 8, y: lb.y,
+        'text-anchor': 'end', 'dominant-baseline': 'middle',
+        'font-family': 'DM Sans,sans-serif', 'font-size': fs,
+        fill: color, 'font-weight': fw
+      }, lb.val));
+      // name
+      if (!small) {
+        svg.appendChild(txt({
+          x: xp(0) - 34, y: lb.y,
+          'text-anchor': 'end', 'dominant-baseline': 'middle',
+          'font-family': 'DM Sans,sans-serif', 'font-size': fs,
+          fill: color, 'font-weight': fw
+        }, lb.id));
+      }
+    });
+
+    // Right labels
+    var rightLbls = deOverlap(DATA.map(function (d) {
+      return { id: d.id, cat: d.cat, val: d.v[2], y: yp(d.v[2]) };
+    }));
+
+    rightLbls.forEach(function (lb) {
+      var isAll = lb.cat === 'all';
+      var color = isAll ? C_ALL : C_COUNTRY;
+      var fs    = small ? 10 : (isAll ? 13 : 11);
+      var fw    = isAll ? '700' : '400';
+      svg.appendChild(txt({
+        x: xp(2) + 8, y: lb.y,
+        'text-anchor': 'start', 'dominant-baseline': 'middle',
+        'font-family': 'DM Sans,sans-serif', 'font-size': fs,
+        fill: color, 'font-weight': fw
+      }, lb.val));
+    });
+
+    // Column labels at bottom
+    COLS.forEach(function (lines, i) {
+      lines.forEach(function (line, j) {
+        svg.appendChild(txt({
+          x: xp(i), y: PT + IH + 18 + j * 15,
+          'text-anchor': 'middle',
+          'font-family': 'DM Sans,sans-serif', 'font-size': small ? 9 : 11,
+          fill: '#666'
+        }, line));
+      });
+    });
+  }
+
+  render();
+  window.addEventListener('resize', render);
+})();

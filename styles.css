@@ -745,6 +745,16 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 
 
 
+/* Slope chart */
+.slope-wrap { position: relative; padding: 8px 0 4px; }
+.slope-svg  { display: block; width: 100%; overflow: visible; }
+.slope-tip  {
+  display: none; position: absolute; background: #111; color: #fff;
+  font-family: var(--font-body); font-size: 12px; line-height: 1.5;
+  padding: 8px 12px; border-radius: 6px; pointer-events: none;
+  white-space: nowrap; z-index: 10;
+}
+
 /* Feasibility horizontal scroll cards */
 .feas-scroll-wrap {
   padding: 24px;
