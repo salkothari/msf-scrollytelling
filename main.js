@@ -716,7 +716,7 @@ stepEls.forEach(s=>obs.observe(s));
       return s + COUNTRIES.reduce(function (ss, c) { return ss + (row[c.name] || 0); }, 0);
     }, 0);
     var colW = (W - PAD_X * 2) / nCol;
-    var CPR  = Math.max(1, Math.floor(colW * 0.76 / STEP)); // 0.76 leaves visible inter-column gap
+    var CPR  = Math.max(1, Math.floor(colW * 0.87 / STEP)); // leaves visible inter-column gap
     var colTotals = ROWS.map(function (row) {
       return COUNTRIES.reduce(function (s, c) { return s + (row[c.name] || 0); }, 0);
     });
