@@ -290,16 +290,20 @@
 
   <!-- STACKED PICTOGRAM: Days until diagnosis -->
   <div class="vw">
-    <div class="vh">
-      <div class="vt"><span class="vn">02</span>Most children diagnosed within 3 days of using the flowchart</div>
-      <div class="vd">Of the children who got diagnosed, consistent across all countries and all high-risk subgroups.</div>
-    </div>
-    <div class="picto-filter" id="picto-filter">
-      <span class="picto-filter-lbl">Filter by subgroup:</span>
-      <button class="picto-btn active" data-grp="all">All</button>
-      <button class="picto-btn" data-grp="hiv">HIV+</button>
-      <button class="picto-btn" data-grp="under2">Under 2</button>
-      <button class="picto-btn" data-grp="sam">SAM</button>
+    <div class="vh picto-vh">
+      <div>
+        <div class="vt"><span class="vn">02</span>Most children diagnosed within 3 days of using the flowchart</div>
+        <div class="vd">Of the children who got diagnosed, consistent across all countries and all high-risk subgroups.</div>
+      </div>
+      <div class="picto-filter" id="picto-filter">
+        <span class="picto-filter-lbl">Filter by subgroup</span>
+        <div class="picto-btns">
+          <button class="picto-btn active" data-grp="all">All</button>
+          <button class="picto-btn" data-grp="hiv">HIV+</button>
+          <button class="picto-btn" data-grp="under2">Under 2</button>
+          <button class="picto-btn" data-grp="sam">SAM</button>
+        </div>
+      </div>
     </div>
     <div class="picto-outer">
       <div id="picto-wrap"></div>
@@ -738,5 +742,5 @@
 <script src="https://unpkg.com/scrollama"></script>
 <script src="images.js?v=3"></script>
 <script src="scroll.js?v=16"></script>
-<script src="main.js?v=26"></script>
+<script src="main.js?v=27"></script>
 </html>
