@@ -681,7 +681,7 @@ stepEls.forEach(s=>obs.observe(s));
   var CGAP = 2;              // gap between circles
   var STEP = CR * 2 + CGAP; // 10px per circle step
   var PAD_X = 24;
-  var PAD_T = 28;            // above circles for count labels
+  var PAD_T = 36;            // above circles for count labels
   var PAD_B = 46;            // below for day labels + axis title
   var FONT  = 'DM Sans,sans-serif';
   var ns    = 'http://www.w3.org/2000/svg';
@@ -712,8 +712,14 @@ stepEls.forEach(s=>obs.observe(s));
 
     var W    = wrap.offsetWidth || 800;
     var nCol = ROWS.length;
+    var grandTotal = ROWS.reduce(function (s, row) {
+      return s + COUNTRIES.reduce(function (ss, c) { return ss + (row[c.name] || 0); }, 0);
+    }, 0);
     var colW = (W - PAD_X * 2) / nCol;
-    var CPR  = Math.max(1, Math.floor(colW / STEP)); // circles per row
+    var CPR  = Math.max(1, Math.floor(colW * 0.76 / STEP)); // 0.76 leaves visible inter-column gap
+    var colTotals = ROWS.map(function (row) {
+      return COUNTRIES.reduce(function (s, c) { return s + (row[c.name] || 0); }, 0);
+    });
 
     // tallest column in rows
     var maxRows = 0;
@@ -777,13 +783,23 @@ stepEls.forEach(s=>obs.observe(s));
         groupMap[ci][c.name] = g;
       });
 
-      // total count label above column
+      // percentage + raw count label above column
       if (tot > 0) {
-        var cnt = el('text', { x: colCx, y: baseY - nRows * STEP - 6,
-          'text-anchor': 'middle', 'font-size': 11, 'font-weight': 700,
-          fill: '#333', 'font-family': FONT });
-        cnt.textContent = tot;
-        svg.appendChild(cnt);
+        var pctVal = (tot / grandTotal * 100).toFixed(1) + '%';
+        var lbl = el('text', { x: colCx, y: baseY - nRows * STEP - 8,
+          'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700,
+          fill: '#222', 'font-family': FONT });
+        var sp1 = document.createElementNS(ns, 'tspan');
+        sp1.textContent = pctVal;
+        var sp2 = document.createElementNS(ns, 'tspan');
+        sp2.setAttribute('fill', '#bbb');
+        sp2.setAttribute('font-size', '10');
+        sp2.setAttribute('font-weight', '400');
+        sp2.setAttribute('dx', '5');
+        sp2.textContent = tot;
+        lbl.appendChild(sp1);
+        lbl.appendChild(sp2);
+        svg.appendChild(lbl);
       }
 
       // x-axis label
@@ -854,10 +870,14 @@ stepEls.forEach(s=>obs.observe(s));
           });
         }
         var count = row[hovC.name] || 0;
+        var colTotal = colTotals[ci];
+        var colPct   = (count / colTotal * 100).toFixed(1) + '%';
+        var grandPct = (count / grandTotal * 100).toFixed(1) + '%';
         tip.innerHTML =
           '<strong style="font-size:13px">' + row.label + ' days</strong><br>' +
           '<span style="color:' + hovC.color + ';font-weight:600">' + hovC.name + '</span><br>' +
-          'Diagnosed children: <strong>' + count + '</strong>';
+          '<strong>' + count + '</strong> children' +
+          ' <span style="color:#aaa">(' + colPct + ' of group · ' + grandPct + ' of total)</span>';
         tip.style.display = 'block';
       }
 
