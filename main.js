@@ -994,6 +994,17 @@ stepEls.forEach(s=>obs.observe(s));
     'Other TB test',
   ];
 
+  // Abbreviated display names for the horizontal labels
+  var SHORT = {
+    'Algorithm B score >10': 'Alg. B >10',
+    'Algorithm A score >10': 'Alg. A >10',
+    'TB contact':            'TB contact',
+    'Positive TB-LAM test':  'TB-LAM+',
+    'Positive GeneXpert':    'GeneXpert+',
+    'Clinical suspicion':    'Clinical',
+    'Other TB test':         'Other TB',
+  };
+
   var RAW = [
     { s: 'Guinea',       t: 'Positive TB-LAM test',  v: 24 },
     { s: 'Guinea',       t: 'TB contact',             v: 24 },
@@ -1043,17 +1054,17 @@ stepEls.forEach(s=>obs.observe(s));
     var PL  = 10;
     var PR  = 10;
     var PT  = 48;   // top: room for country name labels
-    var PB  = 14;   // bottom margin
     var NW  = 14;   // node bar height (thickness)
     var NG  = 6;    // horizontal gap between nodes
-    var MID = 240;  // vertical flow area
+    var MID = 230;  // vertical flow area
+    // bottom: 14px for name label + 16px for pct label + 10px margin
+    var PB  = 40;
     var H   = PT + NW + MID + NW + PB;
 
     var AW  = W - PL - PR;
-    var nS  = COUNTRIES.length;
     var nT  = REASONS.length;
 
-    // Scale: fit target row (more nodes = more gaps)
+    // Scale: fit target row (7 nodes, 6 gaps)
     var sc = (AW - (nT - 1) * NG) / TOTAL;
 
     function svgEl(tag, attrs) {
@@ -1063,7 +1074,7 @@ stepEls.forEach(s=>obs.observe(s));
     }
 
     // Source (country) nodes -- centred horizontally
-    var srcRowW = TOTAL * sc + (nS - 1) * NG;
+    var srcRowW = TOTAL * sc + (COUNTRIES.length - 1) * NG;
     var cxStart = PL + (AW - srcRowW) / 2;
     var srcNodes = COUNTRIES.map(function (c) {
       var w = srcTot[c.name] * sc;
@@ -1072,7 +1083,7 @@ stepEls.forEach(s=>obs.observe(s));
       return node;
     });
 
-    // Target (reason) nodes -- fill full AW left-aligned
+    // Target (reason) nodes -- fill full AW
     var txStart = PL;
     var tgtY = PT + NW + MID;
     var tgtNodes = REASONS.map(function (r) {
@@ -1110,7 +1121,7 @@ stepEls.forEach(s=>obs.observe(s));
       return { d: d, color: col, src: f.s, tgt: f.t, val: f.v };
     });
 
-    var svg = svgEl('svg', { width: W, height: H });
+    var svg = svgEl('svg', { width: W, height: H, overflow: 'visible' });
 
     // Flow ribbons
     var fg = svgEl('g', {});
@@ -1122,8 +1133,8 @@ stepEls.forEach(s=>obs.observe(s));
         var t    = getTip();
         var pct  = Math.round(f.val / TOTAL * 100);
         var sPct = Math.round(f.val / srcTot[f.src] * 100);
-        t.innerHTML = '<strong>' + f.src + '</strong> → ' + f.tgt
-          + '<br>' + f.val + ' children  ·  <strong>' + pct + '%</strong> of all diagnosed  ·  ' + sPct + '% of ' + f.src;
+        t.innerHTML = '<strong>' + f.src + '</strong> to ' + f.tgt
+          + '<br>' + f.val + ' children  ·  <strong>' + pct + '%</strong> of all diagnosed  ·  ' + sPct + '% of ' + f.src;
         t.style.display = 'block';
       });
       p.addEventListener('mousemove', function (e) {
@@ -1153,32 +1164,34 @@ stepEls.forEach(s=>obs.observe(s));
       svg.appendChild(lbl);
     });
 
-    // Target (reason) node bars + rotated labels below (-45 deg, text-anchor end)
-    // The label ends at node-centre-bottom and reads diagonally up-left
+    // Target (reason) node bars + horizontal two-line labels below
+    // Line 1: abbreviated name  Line 2: percentage in red
     tgtNodes.forEach(function (n) {
       var pct    = Math.round(tgtTot[n.name] / TOTAL * 100);
       var pctStr = pct < 1 ? '<1%' : pct + '%';
+      var cx     = n.x + Math.max(n.w, 2) / 2;
+
       svg.appendChild(svgEl('rect', {
         x: n.x, y: n.y, width: Math.max(n.w, 2), height: NW, fill: '#333', rx: 2,
       }));
-      var lx = n.x + Math.max(n.w, 2) / 2;
-      var ly = n.y + NW + 6;
-      var lbl = svgEl('text', {
-        x: lx, y: ly,
-        transform: 'rotate(-45,' + lx + ',' + ly + ')',
-        'text-anchor': 'end',
-        'font-size': '11', 'font-family': 'DM Sans,sans-serif', fill: '#222',
+
+      // Name (abbreviated)
+      var nm = svgEl('text', {
+        x: cx, y: n.y + NW + 13,
+        'text-anchor': 'middle',
+        'font-size': '10', 'font-family': 'DM Sans,sans-serif', 'font-weight': '500', fill: '#555',
       });
-      var ts1 = document.createElementNS(NS, 'tspan');
-      ts1.setAttribute('font-weight', '500');
-      ts1.textContent = n.name + ' ';
-      var ts2 = document.createElementNS(NS, 'tspan');
-      ts2.setAttribute('fill', '#ee0202');
-      ts2.setAttribute('font-weight', '700');
-      ts2.textContent = pctStr;
-      lbl.appendChild(ts1);
-      lbl.appendChild(ts2);
-      svg.appendChild(lbl);
+      nm.textContent = SHORT[n.name] || n.name;
+      svg.appendChild(nm);
+
+      // Percentage
+      var pt = svgEl('text', {
+        x: cx, y: n.y + NW + 27,
+        'text-anchor': 'middle',
+        'font-size': '11', 'font-family': 'DM Sans,sans-serif', 'font-weight': '700', fill: '#ee0202',
+      });
+      pt.textContent = pctStr;
+      svg.appendChild(pt);
     });
 
     wrap.appendChild(svg);
