@@ -667,15 +667,46 @@ stepEls.forEach(s=>obs.observe(s));
     { name: 'Uganda',      color: '#F5A037' },
   ];
 
-  var ROWS = [
-    { label: '1–3',   Guinea: 96, Niger: 20, Nigeria: 32, 'South Sudan': 98, Uganda: 78 },
-    { label: '4–7',   Guinea: 7,  Niger: 10, Nigeria: 25, 'South Sudan': 17, Uganda: 12 },
-    { label: '8–14',  Guinea: 1,  Niger: 6,  Nigeria: 37, 'South Sudan': 10, Uganda: 16 },
-    { label: '15–21', Guinea: 0,  Niger: 1,  Nigeria: 8,  'South Sudan': 3,  Uganda: 4  },
-    { label: '22–30', Guinea: 0,  Niger: 0,  Nigeria: 4,  'South Sudan': 0,  Uganda: 4  },
-    { label: '31–60', Guinea: 1,  Niger: 1,  Nigeria: 5,  'South Sudan': 1,  Uganda: 1  },
-    { label: '61+',   Guinea: 0,  Niger: 0,  Nigeria: 0,  'South Sudan': 3,  Uganda: 1  },
-  ];
+  var DATASETS = {
+    all: [
+      { label: '1–3',   Guinea: 96, Niger: 20, Nigeria: 32, 'South Sudan': 98, Uganda: 78 },
+      { label: '4–7',   Guinea: 7,  Niger: 10, Nigeria: 25, 'South Sudan': 17, Uganda: 12 },
+      { label: '8–14',  Guinea: 1,  Niger: 6,  Nigeria: 37, 'South Sudan': 10, Uganda: 16 },
+      { label: '15–21', Guinea: 0,  Niger: 1,  Nigeria: 8,  'South Sudan': 3,  Uganda: 4  },
+      { label: '22–30', Guinea: 0,  Niger: 0,  Nigeria: 4,  'South Sudan': 0,  Uganda: 4  },
+      { label: '31–60', Guinea: 1,  Niger: 1,  Nigeria: 5,  'South Sudan': 1,  Uganda: 1  },
+      { label: '61+',   Guinea: 0,  Niger: 0,  Nigeria: 0,  'South Sudan': 3,  Uganda: 1  },
+    ],
+    hiv: [
+      { label: '1–3',   Guinea: 96, Niger: 1,  Nigeria: 2,  'South Sudan': 11, Uganda: 17 },
+      { label: '4–7',   Guinea: 7,  Niger: 2,  Nigeria: 0,  'South Sudan': 1,  Uganda: 2  },
+      { label: '8–14',  Guinea: 1,  Niger: 0,  Nigeria: 0,  'South Sudan': 1,  Uganda: 1  },
+      { label: '15–21', Guinea: 0,  Niger: 0,  Nigeria: 0,  'South Sudan': 0,  Uganda: 0  },
+      { label: '22–30', Guinea: 0,  Niger: 0,  Nigeria: 0,  'South Sudan': 0,  Uganda: 0  },
+      { label: '31–60', Guinea: 1,  Niger: 0,  Nigeria: 0,  'South Sudan': 0,  Uganda: 1  },
+      { label: '61+',   Guinea: 0,  Niger: 0,  Nigeria: 0,  'South Sudan': 0,  Uganda: 0  },
+    ],
+    under2: [
+      { label: '1–3',   Guinea: 10, Niger: 10, Nigeria: 13, 'South Sudan': 64, Uganda: 44 },
+      { label: '4–7',   Guinea: 1,  Niger: 6,  Nigeria: 11, 'South Sudan': 12, Uganda: 9  },
+      { label: '8–14',  Guinea: 1,  Niger: 2,  Nigeria: 20, 'South Sudan': 5,  Uganda: 6  },
+      { label: '15–21', Guinea: 0,  Niger: 0,  Nigeria: 4,  'South Sudan': 2,  Uganda: 3  },
+      { label: '22–30', Guinea: 0,  Niger: 0,  Nigeria: 0,  'South Sudan': 0,  Uganda: 3  },
+      { label: '31–60', Guinea: 0,  Niger: 1,  Nigeria: 0,  'South Sudan': 0,  Uganda: 0  },
+      { label: '61+',   Guinea: 0,  Niger: 0,  Nigeria: 0,  'South Sudan': 2,  Uganda: 0  },
+    ],
+    sam: [
+      { label: '1–3',   Guinea: 7,  Niger: 20, Nigeria: 27, 'South Sudan': 78, Uganda: 10 },
+      { label: '4–7',   Guinea: 0,  Niger: 10, Nigeria: 25, 'South Sudan': 16, Uganda: 5  },
+      { label: '8–14',  Guinea: 0,  Niger: 6,  Nigeria: 35, 'South Sudan': 6,  Uganda: 6  },
+      { label: '15–21', Guinea: 0,  Niger: 1,  Nigeria: 7,  'South Sudan': 3,  Uganda: 3  },
+      { label: '22–30', Guinea: 0,  Niger: 0,  Nigeria: 3,  'South Sudan': 0,  Uganda: 4  },
+      { label: '31–60', Guinea: 0,  Niger: 1,  Nigeria: 5,  'South Sudan': 0,  Uganda: 0  },
+      { label: '61+',   Guinea: 0,  Niger: 0,  Nigeria: 0,  'South Sudan': 2,  Uganda: 0  },
+    ],
+  };
+
+  var currentGroup = 'all';
 
   var CR   = 4;              // circle radius
   var CGAP = 2;              // gap between circles
@@ -710,6 +741,7 @@ stepEls.forEach(s=>obs.observe(s));
     groupMap = [];
     tip.style.display = 'none';
 
+    var ROWS = DATASETS[currentGroup];
     var W    = wrap.offsetWidth || 800;
     var nCol = ROWS.length;
     var grandTotal = ROWS.reduce(function (s, row) {
@@ -917,10 +949,22 @@ stepEls.forEach(s=>obs.observe(s));
     });
   }
 
+  function wireFilters() {
+    document.querySelectorAll('#picto-filter .picto-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('#picto-filter .picto-btn').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        currentGroup = btn.getAttribute('data-grp');
+        render();
+      });
+    });
+  }
+
   if (document.readyState === 'complete') {
+    wireFilters();
     requestAnimationFrame(render);
   } else {
-    window.addEventListener('load', function () { requestAnimationFrame(render); });
+    window.addEventListener('load', function () { wireFilters(); requestAnimationFrame(render); });
   }
   window.addEventListener('resize', render);
 })();
