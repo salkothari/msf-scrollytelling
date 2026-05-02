@@ -677,16 +677,14 @@ stepEls.forEach(s=>obs.observe(s));
     { label: '61+',   Guinea: 0,  Niger: 0,  Nigeria: 0,  'South Sudan': 3,  Uganda: 1  },
   ];
 
-  var SCALE  = 5;   // children per circle (rounded, min 1 if n > 0)
-  var CR     = 4;   // circle radius px
-  var CGAP   = 2;   // gap between circles
-  var STEP   = CR * 2 + CGAP;   // 10px vertical step
-  var PAD_X  = 24;
-  var PAD_T  = 16;
-  var PAD_B  = 36;  // room for x-axis labels
-  var ns     = 'http://www.w3.org/2000/svg';
-
-  function nc(n) { return n === 0 ? 0 : Math.max(1, Math.round(n / SCALE)); }
+  var CR   = 4;              // circle radius
+  var CGAP = 2;              // gap between circles
+  var STEP = CR * 2 + CGAP; // 10px per circle step
+  var PAD_X = 24;
+  var PAD_T = 28;            // above circles for count labels
+  var PAD_B = 46;            // below for day labels + axis title
+  var FONT  = 'DM Sans,sans-serif';
+  var ns    = 'http://www.w3.org/2000/svg';
 
   function el(tag, attrs) {
     var e = document.createElementNS(ns, tag);
@@ -694,106 +692,187 @@ stepEls.forEach(s=>obs.observe(s));
     return e;
   }
 
-  var allGroups = [];
+  // groupMap[ci][countryName] = <g> element
+  var groupMap = [];
+  var svgEl;
+
+  function clearHover() {
+    groupMap.forEach(function (col) {
+      Object.keys(col).forEach(function (k) {
+        col[k].querySelectorAll('circle').forEach(function (c) { c.setAttribute('fill-opacity', '1'); });
+      });
+    });
+    tip.style.display = 'none';
+  }
 
   function render() {
     wrap.innerHTML = '';
-    allGroups = [];
+    groupMap = [];
+    tip.style.display = 'none';
 
     var W    = wrap.offsetWidth || 800;
     var nCol = ROWS.length;
     var colW = (W - PAD_X * 2) / nCol;
+    var CPR  = Math.max(1, Math.floor(colW / STEP)); // circles per row
 
-    // tallest column
-    var maxC = 0;
+    // tallest column in rows
+    var maxRows = 0;
     ROWS.forEach(function (row) {
-      var tot = COUNTRIES.reduce(function (s, c) { return s + nc(row[c.name] || 0); }, 0);
-      if (tot > maxC) maxC = tot;
+      var tot = COUNTRIES.reduce(function (s, c) { return s + (row[c.name] || 0); }, 0);
+      maxRows = Math.max(maxRows, Math.ceil(tot / CPR));
     });
 
-    var chartH = maxC * STEP;
+    var chartH = maxRows * STEP;
     var totalH = PAD_T + chartH + PAD_B;
-    var baseY  = PAD_T + chartH;   // bottom of chart area (circles grow upward)
+    var baseY  = PAD_T + chartH;
 
     var svg = el('svg', { width: W, height: totalH });
     svg.style.cssText = 'display:block;overflow:visible';
+    svgEl = svg;
 
     ROWS.forEach(function (row, ci) {
-      var cx = PAD_X + colW * ci + colW / 2;
-      var yTop = baseY;   // next circle top (counting up)
+      var colLeft    = PAD_X + colW * ci;
+      var colCx      = colLeft + colW / 2;
+      var circAreaW  = CPR * STEP;
+      var circStartX = colLeft + (colW - circAreaW) / 2;
+      var tot = COUNTRIES.reduce(function (s, c) { return s + (row[c.name] || 0); }, 0);
+      var nRows = Math.ceil(tot / CPR);
+
+      groupMap[ci] = {};
+      var globalIdx = 0;
 
       COUNTRIES.forEach(function (c) {
-        var n  = row[c.name] || 0;
-        var k  = nc(n);
-        if (k === 0) return;
+        var n = row[c.name] || 0;
+        if (n === 0) return;
 
-        var segTop = yTop - k * STEP;
+        var startIdx = globalIdx;
+        globalIdx += n;
+        var endIdx   = globalIdx;
+        var startRow = Math.floor(startIdx / CPR);
+        var endRow   = Math.floor((endIdx - 1) / CPR);
+
         var g = el('g', {});
-        g._meta = { country: c.name, color: c.color, day: row.label, count: n };
+        g._meta = { ci: ci, country: c.name, color: c.color, day: row.label, count: n };
 
-        for (var i = 0; i < k; i++) {
+        for (var j = startIdx; j < endIdx; j++) {
+          var rj = Math.floor(j / CPR);
+          var cj = j % CPR;
           g.appendChild(el('circle', {
-            cx: cx,
-            cy: yTop - i * STEP - CR - CGAP / 2,
-            r: CR,
-            fill: c.color
+            cx: circStartX + cj * STEP + CR,
+            cy: baseY - rj * STEP - CR - CGAP / 2,
+            r: CR, fill: c.color
           }));
         }
 
-        // transparent hit zone over this segment
+        // transparent hit rect spanning the segment's row band
         g.appendChild(el('rect', {
-          x: cx - colW / 2 + 2, y: segTop,
-          width: colW - 4,      height: k * STEP,
-          fill: 'transparent',  cursor: 'pointer'
+          x: colLeft + 1,
+          y: baseY - (endRow + 1) * STEP,
+          width:  colW - 2,
+          height: (endRow - startRow + 1) * STEP,
+          fill: 'transparent', cursor: 'pointer'
         }));
 
         svg.appendChild(g);
-        allGroups.push(g);
-        yTop = segTop;
+        groupMap[ci][c.name] = g;
       });
+
+      // total count label above column
+      if (tot > 0) {
+        var cnt = el('text', { x: colCx, y: baseY - nRows * STEP - 6,
+          'text-anchor': 'middle', 'font-size': 11, 'font-weight': 700,
+          fill: '#333', 'font-family': FONT });
+        cnt.textContent = tot;
+        svg.appendChild(cnt);
+      }
 
       // x-axis label
-      var lbl = el('text', { x: cx, y: baseY + 16, 'text-anchor': 'middle',
-        'font-size': 11, 'font-weight': 600, fill: '#333', 'font-family': 'DM Sans,sans-serif' });
-      lbl.textContent = row.label;
-      svg.appendChild(lbl);
-
-      var sub = el('text', { x: cx, y: baseY + 28, 'text-anchor': 'middle',
-        'font-size': 9, fill: '#aaa', 'font-family': 'DM Sans,sans-serif' });
-      sub.textContent = row.label === '61+' ? 'days' : 'days';
-      svg.appendChild(sub);
+      var xl = el('text', { x: colCx, y: baseY + 16,
+        'text-anchor': 'middle', 'font-size': 11, 'font-weight': 600,
+        fill: '#333', 'font-family': FONT });
+      xl.textContent = row.label;
+      svg.appendChild(xl);
     });
 
-    // interactions
-    allGroups.forEach(function (g) {
-      g.addEventListener('mouseover', function () {
-        allGroups.forEach(function (h) {
-          h.querySelectorAll('circle').forEach(function (c) { c.setAttribute('fill-opacity', '0.2'); });
+    // x-axis title
+    var axT = el('text', { x: W / 2, y: totalH - 6,
+      'text-anchor': 'middle', 'font-size': 12, 'font-weight': 700,
+      fill: '#222', 'font-family': FONT });
+    axT.textContent = 'Days until diagnosis';
+    svg.appendChild(axT);
+
+    // hover via mousemove on SVG for pixel-accurate country detection
+    var lastKey = null;
+
+    svg.addEventListener('mousemove', function (e) {
+      var svgRect = svg.getBoundingClientRect();
+      var mx = e.clientX - svgRect.left;
+      var my = e.clientY - svgRect.top;
+
+      var ci = Math.floor((mx - PAD_X) / colW);
+      if (ci < 0 || ci >= nCol) { if (lastKey) { clearHover(); lastKey = null; } return; }
+
+      var row     = ROWS[ci];
+      var colLeft = PAD_X + colW * ci;
+      var circAreaW  = CPR * STEP;
+      var circStartX = colLeft + (colW - circAreaW) / 2;
+
+      var dy = baseY - my;
+      var rj = Math.floor(dy / STEP);
+      var dx = mx - circStartX;
+      var cj = Math.floor(dx / STEP);
+
+      if (rj < 0 || cj < 0 || cj >= CPR) { if (lastKey) { clearHover(); lastKey = null; } return; }
+
+      var totalIdx = rj * CPR + cj;
+      var tot = COUNTRIES.reduce(function (s, c) { return s + (row[c.name] || 0); }, 0);
+      if (totalIdx >= tot) { if (lastKey) { clearHover(); lastKey = null; } return; }
+
+      var cum = 0, hovC = null;
+      for (var k = 0; k < COUNTRIES.length; k++) {
+        var n = row[COUNTRIES[k].name] || 0;
+        if (totalIdx < cum + n) { hovC = COUNTRIES[k]; break; }
+        cum += n;
+      }
+      if (!hovC) { if (lastKey) { clearHover(); lastKey = null; } return; }
+
+      var key = ci + ':' + hovC.name;
+      if (key !== lastKey) {
+        lastKey = key;
+        // dim everything
+        groupMap.forEach(function (col) {
+          Object.keys(col).forEach(function (name) {
+            col[name].querySelectorAll('circle').forEach(function (c) {
+              c.setAttribute('fill-opacity', '0.2');
+            });
+          });
         });
-        g.querySelectorAll('circle').forEach(function (c) { c.setAttribute('fill-opacity', '1'); });
-        var d = g._meta;
+        // highlight hovered group
+        if (groupMap[ci] && groupMap[ci][hovC.name]) {
+          groupMap[ci][hovC.name].querySelectorAll('circle').forEach(function (c) {
+            c.setAttribute('fill-opacity', '1');
+          });
+        }
+        var count = row[hovC.name] || 0;
         tip.innerHTML =
-          '<strong style="color:' + d.color + '">' + d.country + '</strong><br>' +
-          d.day + ' days<br>' +
-          '<span style="font-size:14px;font-weight:700">' + d.count + '</span> children';
+          '<strong style="font-size:13px">' + row.label + ' days</strong><br>' +
+          '<span style="color:' + hovC.color + ';font-weight:600">' + hovC.name + '</span><br>' +
+          'Diagnosed children: <strong>' + count + '</strong>';
         tip.style.display = 'block';
-      });
+      }
 
-      g.addEventListener('mousemove', function (e) {
-        var r  = tip.parentElement.getBoundingClientRect();
-        var tx = e.clientX - r.left + 14;
-        var ty = e.clientY - r.top  - 10;
-        if (tx + 150 > r.width) tx = e.clientX - r.left - 150;
-        tip.style.left = tx + 'px';
-        tip.style.top  = ty + 'px';
-      });
+      // position tooltip
+      var pr  = tip.parentElement.getBoundingClientRect();
+      var tx  = e.clientX - pr.left + 14;
+      var ty  = e.clientY - pr.top  - 10;
+      if (tx + 170 > pr.width) tx = e.clientX - pr.left - 170;
+      tip.style.left = tx + 'px';
+      tip.style.top  = ty + 'px';
+    });
 
-      g.addEventListener('mouseleave', function () {
-        allGroups.forEach(function (h) {
-          h.querySelectorAll('circle').forEach(function (c) { c.setAttribute('fill-opacity', '1'); });
-        });
-        tip.style.display = 'none';
-      });
+    svg.addEventListener('mouseleave', function () {
+      clearHover();
+      lastKey = null;
     });
 
     wrap.appendChild(svg);
@@ -802,6 +881,12 @@ stepEls.forEach(s=>obs.observe(s));
     var leg = document.getElementById('picto-leg');
     if (!leg) return;
     leg.innerHTML = '';
+    var scl = document.createElement('div');
+    scl.className = 'picto-leg-item';
+    scl.innerHTML =
+      '<svg width="10" height="10" viewBox="0 0 10 10" style="vertical-align:middle;margin-right:4px">' +
+      '<circle cx="5" cy="5" r="4" fill="#999"/></svg><span style="margin-right:16px">= 1 child</span>';
+    leg.appendChild(scl);
     COUNTRIES.forEach(function (c) {
       var item = document.createElement('div');
       item.className = 'picto-leg-item';
