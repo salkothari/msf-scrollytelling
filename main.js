@@ -969,6 +969,7 @@ stepEls.forEach(s=>obs.observe(s));
   window.addEventListener('resize', render);
 })();
 
+
 // -- Sankey: reasons for diagnosis (multi-level, vertical) -----------------
 (function () {
   var wrap = document.getElementById('sankey-wrap');
@@ -983,52 +984,37 @@ stepEls.forEach(s=>obs.observe(s));
     { name: 'Uganda',       color: '#F5A037' },
   ];
 
-  // Destination levels top-to-bottom (visual order)
-  var LEVELS_MAIN = [
-    ['Positive GeneXpert', 'Positive TB-LAM test'],
-    ['TB contact'],
-    ['Algorithm score >10'],
-  ];
-  var LEVELS_RARE = [
-    ['Clinical suspicion', 'Other TB test'],
-  ];
-
-  // Order used to stack flows within source (country) bars — matches dest x-order
-  // (smallest total left, biggest right) to minimise ribbon crossings
-  var STACK_ORDER = [
-    'Other TB test',
-    'Clinical suspicion',
-    'Positive GeneXpert',
-    'Positive TB-LAM test',
-    'TB contact',
-    'Algorithm score >10',
-  ];
-
   var SHORT = {
-    'Algorithm score >10':  'Alg. score >10',
-    'TB contact':           'TB contact',
-    'Positive TB-LAM test': 'TB-LAM+',
-    'Positive GeneXpert':   'GeneXpert+',
-    'Clinical suspicion':   'Clinical',
-    'Other TB test':        'Other TB',
+    'Algorithm score >10':   'Alg. score >10',
+    'Algorithm A score >10': 'Alg. A >10',
+    'Algorithm B score >10': 'Alg. B >10',
+    'TB contact':            'TB contact',
+    'Positive TB-LAM test':  'TB-LAM+',
+    'Positive GeneXpert':    'GeneXpert+',
+    'Clinical suspicion':    'Clinical',
+    'Other TB test':         'Other TB',
   };
 
-  var RAW_ALL = [
-    { s: 'Guinea',       t: 'Algorithm score >10',  v: 54 },
+  // All subgroups combined, Algorithm A/B kept separate
+  var RAW_SPLIT = [
+    { s: 'Guinea',       t: 'Algorithm A score >10', v: 36 },
+    { s: 'Guinea',       t: 'Algorithm B score >10', v: 18 },
     { s: 'Guinea',       t: 'TB contact',            v: 24 },
     { s: 'Guinea',       t: 'Positive TB-LAM test',  v: 24 },
-    { s: 'Niger',        t: 'Algorithm score >10',   v: 23 },
+    { s: 'Niger',        t: 'Algorithm A score >10', v: 23 },
     { s: 'Niger',        t: 'TB contact',            v: 6  },
     { s: 'Niger',        t: 'Positive GeneXpert',    v: 8  },
-    { s: 'Nigeria',      t: 'Algorithm score >10',   v: 87 },
+    { s: 'Nigeria',      t: 'Algorithm A score >10', v: 31 },
+    { s: 'Nigeria',      t: 'Algorithm B score >10', v: 56 },
     { s: 'Nigeria',      t: 'TB contact',            v: 8  },
     { s: 'Nigeria',      t: 'Positive GeneXpert',    v: 14 },
-    { s: 'South Sudan',  t: 'Algorithm score >10',   v: 93 },
+    { s: 'South Sudan',  t: 'Algorithm B score >10', v: 93 },
     { s: 'South Sudan',  t: 'TB contact',            v: 18 },
     { s: 'South Sudan',  t: 'Positive TB-LAM test',  v: 2  },
     { s: 'South Sudan',  t: 'Positive GeneXpert',    v: 3  },
     { s: 'South Sudan',  t: 'Clinical suspicion',    v: 16 },
-    { s: 'Uganda',       t: 'Algorithm score >10',   v: 67 },
+    { s: 'Uganda',       t: 'Algorithm A score >10', v: 39 },
+    { s: 'Uganda',       t: 'Algorithm B score >10', v: 28 },
     { s: 'Uganda',       t: 'TB contact',            v: 38 },
     { s: 'Uganda',       t: 'Positive TB-LAM test',  v: 4  },
     { s: 'Uganda',       t: 'Positive GeneXpert',    v: 3  },
@@ -1036,11 +1022,89 @@ stepEls.forEach(s=>obs.observe(s));
     { s: 'Uganda',       t: 'Clinical suspicion',    v: 2  },
   ];
 
-  /* -- SPLIT A/B VERSION (uncomment to restore) --
-  ... see previous commit for split data ...
-  -- END SPLIT VERSION -- */
+  var RAW_HIV = [
+    { s: 'Guinea',       t: 'Algorithm A score >10', v: 36 },
+    { s: 'Guinea',       t: 'Algorithm B score >10', v: 18 },
+    { s: 'Guinea',       t: 'TB contact',            v: 24 },
+    { s: 'Guinea',       t: 'Positive TB-LAM test',  v: 24 },
+    { s: 'Niger',        t: 'Algorithm A score >10', v: 3  },
+    { s: 'Nigeria',      t: 'Algorithm B score >10', v: 2  },
+    { s: 'South Sudan',  t: 'Positive TB-LAM test',  v: 2  },
+    { s: 'South Sudan',  t: 'TB contact',            v: 2  },
+    { s: 'South Sudan',  t: 'Algorithm B score >10', v: 9  },
+    { s: 'Uganda',       t: 'Positive TB-LAM test',  v: 4  },
+    { s: 'Uganda',       t: 'TB contact',            v: 2  },
+    { s: 'Uganda',       t: 'Algorithm A score >10', v: 11 },
+    { s: 'Uganda',       t: 'Algorithm B score >10', v: 4  },
+  ];
+
+  var RAW_SAM = [
+    { s: 'Guinea',       t: 'Positive TB-LAM test',  v: 4  },
+    { s: 'Guinea',       t: 'Algorithm A score >10', v: 2  },
+    { s: 'Guinea',       t: 'Algorithm B score >10', v: 1  },
+    { s: 'Niger',        t: 'Positive GeneXpert',    v: 8  },
+    { s: 'Niger',        t: 'TB contact',            v: 6  },
+    { s: 'Niger',        t: 'Algorithm A score >10', v: 23 },
+    { s: 'Nigeria',      t: 'Positive GeneXpert',    v: 11 },
+    { s: 'Nigeria',      t: 'TB contact',            v: 7  },
+    { s: 'Nigeria',      t: 'Algorithm A score >10', v: 28 },
+    { s: 'Nigeria',      t: 'Algorithm B score >10', v: 54 },
+    { s: 'South Sudan',  t: 'Positive GeneXpert',    v: 2  },
+    { s: 'South Sudan',  t: 'Positive TB-LAM test',  v: 1  },
+    { s: 'South Sudan',  t: 'TB contact',            v: 16 },
+    { s: 'South Sudan',  t: 'Algorithm B score >10', v: 71 },
+    { s: 'South Sudan',  t: 'Clinical suspicion',    v: 15 },
+    { s: 'Uganda',       t: 'Positive GeneXpert',    v: 2  },
+    { s: 'Uganda',       t: 'Positive TB-LAM test',  v: 1  },
+    { s: 'Uganda',       t: 'TB contact',            v: 1  },
+    { s: 'Uganda',       t: 'Algorithm A score >10', v: 15 },
+    { s: 'Uganda',       t: 'Algorithm B score >10', v: 7  },
+    { s: 'Uganda',       t: 'Clinical suspicion',    v: 2  },
+  ];
+
+  var RAW_U2 = [
+    { s: 'Guinea',       t: 'Positive TB-LAM test',  v: 4  },
+    { s: 'Guinea',       t: 'TB contact',            v: 4  },
+    { s: 'Guinea',       t: 'Algorithm A score >10', v: 2  },
+    { s: 'Guinea',       t: 'Algorithm B score >10', v: 1  },
+    { s: 'Niger',        t: 'Positive GeneXpert',    v: 2  },
+    { s: 'Niger',        t: 'TB contact',            v: 5  },
+    { s: 'Niger',        t: 'Algorithm A score >10', v: 12 },
+    { s: 'Nigeria',      t: 'Positive GeneXpert',    v: 4  },
+    { s: 'Nigeria',      t: 'TB contact',            v: 2  },
+    { s: 'Nigeria',      t: 'Algorithm A score >10', v: 14 },
+    { s: 'Nigeria',      t: 'Algorithm B score >10', v: 28 },
+    { s: 'South Sudan',  t: 'Positive GeneXpert',    v: 2  },
+    { s: 'South Sudan',  t: 'Positive TB-LAM test',  v: 1  },
+    { s: 'South Sudan',  t: 'TB contact',            v: 17 },
+    { s: 'South Sudan',  t: 'Algorithm B score >10', v: 54 },
+    { s: 'South Sudan',  t: 'Clinical suspicion',    v: 11 },
+    { s: 'Uganda',       t: 'Positive GeneXpert',    v: 2  },
+    { s: 'Uganda',       t: 'Positive TB-LAM test',  v: 1  },
+    { s: 'Uganda',       t: 'Other TB test',         v: 2  },
+    { s: 'Uganda',       t: 'TB contact',            v: 17 },
+    { s: 'Uganda',       t: 'Algorithm A score >10', v: 23 },
+    { s: 'Uganda',       t: 'Algorithm B score >10', v: 18 },
+    { s: 'Uganda',       t: 'Clinical suspicion',    v: 2  },
+  ];
+
+  // Stack order: smallest dest (leftmost) first, biggest last
+  var STACK_ORDER = [
+    'Other TB test',
+    'Clinical suspicion',
+    'Positive GeneXpert',
+    'Positive TB-LAM test',
+    'TB contact',
+    'Algorithm A score >10',
+    'Algorithm B score >10',
+    'Algorithm score >10',
+  ];
 
   var RARE = ['Clinical suspicion', 'Other TB test'];
+
+  // State
+  var subgrp   = 'all';  // 'all' | 'hiv' | 'u2' | 'sam'
+  var algo     = 'all';  // 'all' | 'a'   | 'b'
   var showRare = false;
 
   var tipEl = null;
@@ -1053,7 +1117,79 @@ stepEls.forEach(s=>obs.observe(s));
     return tipEl;
   }
 
-  // Persistent containers so toggle button survives re-renders
+  function getFilteredRaw() {
+    var base = subgrp === 'hiv' ? RAW_HIV :
+               subgrp === 'sam' ? RAW_SAM :
+               subgrp === 'u2'  ? RAW_U2  : RAW_SPLIT;
+    if (algo === 'a') {
+      return base.filter(function (f) { return f.t !== 'Algorithm B score >10' && f.v > 0; });
+    }
+    if (algo === 'b') {
+      return base.filter(function (f) { return f.t !== 'Algorithm A score >10' && f.v > 0; });
+    }
+    // algo === 'all': merge A+B into single node
+    var combined = [];
+    var algTot = {};
+    base.forEach(function (f) {
+      if (f.t === 'Algorithm A score >10' || f.t === 'Algorithm B score >10') {
+        algTot[f.s] = (algTot[f.s] || 0) + f.v;
+      } else if (f.v > 0) {
+        combined.push({ s: f.s, t: f.t, v: f.v });
+      }
+    });
+    COUNTRIES.forEach(function (c) {
+      if (algTot[c.name] > 0) {
+        combined.push({ s: c.name, t: 'Algorithm score >10', v: algTot[c.name] });
+      }
+    });
+    return combined;
+  }
+
+  // ---- Persistent UI containers ----
+
+  // Filter rows (subgroup + flowchart) — styled to match viz 02
+  var filterWrap = document.createElement('div');
+  filterWrap.style.cssText = 'padding:14px 20px 0;display:flex;flex-direction:column;gap:6px';
+
+  function makeFilterRow(labelText, options, getValue, setValue) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap';
+    var lbl = document.createElement('span');
+    lbl.className = 'picto-filter-lbl';
+    lbl.textContent = labelText;
+    var btns = document.createElement('div');
+    btns.className = 'picto-btns';
+    options.forEach(function (opt) {
+      var b = document.createElement('button');
+      b.className = 'picto-btn' + (opt[0] === getValue() ? ' active' : '');
+      b.textContent = opt[1];
+      b.addEventListener('click', function () {
+        btns.querySelectorAll('.picto-btn').forEach(function (x) { x.classList.remove('active'); });
+        b.classList.add('active');
+        setValue(opt[0]);
+        render();
+      });
+      btns.appendChild(b);
+    });
+    row.appendChild(lbl);
+    row.appendChild(btns);
+    return row;
+  }
+
+  filterWrap.appendChild(makeFilterRow(
+    'Filter by subgroup',
+    [['all','All'],['hiv','HIV+'],['u2','Under 2'],['sam','SAM']],
+    function () { return subgrp; },
+    function (v) { subgrp = v; }
+  ));
+  filterWrap.appendChild(makeFilterRow(
+    'Filter by flowchart',
+    [['all','All'],['a','A (clinics with X-ray)'],['b','B (clinics without X-ray)']],
+    function () { return algo; },
+    function (v) { algo = v; }
+  ));
+  wrap.appendChild(filterWrap);
+
   var svgBox = document.createElement('div');
   wrap.appendChild(svgBox);
 
@@ -1068,7 +1204,7 @@ stepEls.forEach(s=>obs.observe(s));
 
   function updateBtn() {
     btn.textContent = showRare
-      ? '− Hide rare categories'
+      ? '- Hide rare categories'
       : '+ Show rare categories (clinical suspicion & other TB)';
   }
   updateBtn();
@@ -1082,18 +1218,22 @@ stepEls.forEach(s=>obs.observe(s));
   function render() {
     svgBox.innerHTML = '';
 
-    // Rare categories join level 0 (same row as GeneXpert/TB-LAM) when shown
-    var levels = showRare
-      ? [LEVELS_MAIN[0].concat(LEVELS_RARE[0])].concat(LEVELS_MAIN.slice(1))
-      : LEVELS_MAIN;
-    var raw = showRare ? RAW_ALL : RAW_ALL.filter(function (f) {
-      return RARE.indexOf(f.t) < 0;
+    var algoNode = algo === 'a' ? 'Algorithm A score >10' :
+                   algo === 'b' ? 'Algorithm B score >10' : 'Algorithm score >10';
+    var LEVEL0_BASE = ['Positive GeneXpert', 'Positive TB-LAM test'];
+    var LEVEL0 = showRare ? LEVEL0_BASE.concat(RARE) : LEVEL0_BASE;
+    var levels = [LEVEL0, ['TB contact'], [algoNode]];
+
+    var raw = getFilteredRaw().filter(function (f) {
+      return showRare || RARE.indexOf(f.t) < 0;
     });
 
     var allReasons = [];
     levels.forEach(function (lv) { lv.forEach(function (r) { allReasons.push(r); }); });
 
     var TOTAL = raw.reduce(function (a, f) { return a + f.v; }, 0);
+    if (TOTAL === 0) { svgBox.innerHTML = '<p style="padding:20px;color:#aaa;font-size:13px">No data for this selection.</p>'; return; }
+
     var srcTot = {}, tgtTot = {};
     COUNTRIES.forEach(function (c) { srcTot[c.name] = 0; });
     allReasons.forEach(function (r) { tgtTot[r] = 0; });
@@ -1117,44 +1257,51 @@ stepEls.forEach(s=>obs.observe(s));
       return e;
     }
 
-    // Source (country) nodes
+    // Source (country) nodes — fills full AW
+    var activeSrc = COUNTRIES.filter(function (c) { return srcTot[c.name] > 0; });
+    var sc2 = (AW - (activeSrc.length - 1) * NG) / TOTAL;
     var cx = PL;
     var srcNodes = COUNTRIES.map(function (c) {
-      var w = srcTot[c.name] * sc;
+      if (srcTot[c.name] === 0) return null;
+      var w = srcTot[c.name] * sc2;
       var node = { name: c.name, color: c.color, x: cx, y: srcY, w: w };
       cx += w + NG;
       return node;
-    });
+    }).filter(Boolean);
 
     // Destination nodes — globally sorted ascending by total (biggest rightmost)
     var reasonLevel = {};
     levels.forEach(function (lv, i) { lv.forEach(function (r) { reasonLevel[r] = i; }); });
 
-    var allReasonsSorted = allReasons.slice().sort(function (a, b) { return tgtTot[a] - tgtTot[b]; });
-    var dstTotalW = allReasonsSorted.reduce(function (a, r) { return a + Math.max(tgtTot[r] * sc, 2); }, 0)
+    var allReasonsSorted = allReasons.slice()
+      .filter(function (r) { return tgtTot[r] > 0; })
+      .sort(function (a, b) { return tgtTot[a] - tgtTot[b]; });
+    var dstTotalW = allReasonsSorted.reduce(function (a, r) { return a + tgtTot[r] * sc2; }, 0)
                  + (allReasonsSorted.length - 1) * NG;
     var dx = PL + (AW - dstTotalW) / 2;
     var tgtMap = {};
     allReasonsSorted.forEach(function (r) {
-      var w = Math.max(tgtTot[r] * sc, 2);
+      var w = tgtTot[r] * sc2;
       tgtMap[r] = { name: r, x: dx, y: levelYs[reasonLevel[r]], w: w };
       dx += w + NG;
     });
 
     // Flows — sorted by STACK_ORDER so source-bar segments align with dest x-order
-    var visibleSO = STACK_ORDER.filter(function (r) { return allReasons.indexOf(r) >= 0; });
+    var visibleSO = STACK_ORDER.filter(function (r) { return allReasonsSorted.indexOf(r) >= 0; });
     var sorted = raw.slice().sort(function (a, b) {
       return visibleSO.indexOf(a.t) - visibleSO.indexOf(b.t);
     });
     var sCur = {}, tCur = {};
-    COUNTRIES.forEach(function (c) { sCur[c.name] = 0; });
-    allReasons.forEach(function (r) { tCur[r] = 0; });
+    srcNodes.forEach(function (n) { sCur[n.name] = 0; });
+    allReasonsSorted.forEach(function (r) { tCur[r] = 0; });
 
-    var flows = sorted.map(function (f) {
+    var flows = sorted.filter(function (f) {
+      return tgtMap[f.t] && srcNodes.find(function (n) { return n.name === f.s; });
+    }).map(function (f) {
       var sn  = srcNodes.find(function (n) { return n.name === f.s; });
       var tn  = tgtMap[f.t];
       var col = COUNTRIES.find(function (c) { return c.name === f.s; }).color;
-      var fw  = f.v * sc;
+      var fw  = f.v * sc2;
       var sx0 = sn.x + sCur[f.s], sx1 = sx0 + fw;
       var tx0 = tn.x + tCur[f.t], tx1 = tx0 + fw;
       sCur[f.s] += fw;
@@ -1170,14 +1317,14 @@ stepEls.forEach(s=>obs.observe(s));
 
     var svg = svgEl('svg', { width: W, height: H, overflow: 'visible' });
 
-    // Arrowhead marker (shared by both axis arrows)
+    // Arrowhead marker
     var defs = svgEl('defs', {});
     var mk = svgEl('marker', { id: 'sk-arr', markerWidth: '7', markerHeight: '7', refX: '6', refY: '3.5', orient: 'auto' });
     mk.appendChild(svgEl('path', { d: 'M0,0 L7,3.5 L0,7 Z', fill: '#bbb' }));
     defs.appendChild(mk);
     svg.appendChild(defs);
 
-    // Flow ribbons — data-tgt attr used by destination-node hover
+    // Flow ribbons — data-tgt used by destination hover
     var fg = svgEl('g', {});
     flows.forEach(function (f) {
       var p = svgEl('path', { d: f.d, fill: f.color, 'fill-opacity': '0.42', cursor: 'pointer', 'data-tgt': f.tgt });
@@ -1187,8 +1334,8 @@ stepEls.forEach(s=>obs.observe(s));
         var t    = getTip();
         var pct  = Math.round(f.val / TOTAL * 100);
         var sPct = Math.round(f.val / srcTot[f.src] * 100);
-        t.innerHTML = '<strong>' + f.src + '</strong> → ' + f.tgt
-          + '<br>' + f.val + ' children  ·  <strong>' + pct + '%</strong> of all diagnosed  ·  ' + sPct + '% of ' + f.src;
+        t.innerHTML = '<strong>' + f.src + '</strong> to ' + f.tgt
+          + '<br>' + f.val + ' children  ·  <strong>' + pct + '%</strong> of all  ·  ' + sPct + '% of ' + f.src;
         t.style.display = 'block';
       });
       p.addEventListener('mousemove', function (e) {
@@ -1218,7 +1365,7 @@ stepEls.forEach(s=>obs.observe(s));
       svg.appendChild(lbl);
     });
 
-    // Destination node bars + labels + hover-to-highlight ribbons
+    // Destination node bars + labels + hover
     allReasonsSorted.forEach(function (r) {
       var n      = tgtMap[r];
       var pct    = Math.round(tgtTot[r] / TOTAL * 100);
@@ -1227,12 +1374,11 @@ stepEls.forEach(s=>obs.observe(s));
       var ncx    = n.x + nw / 2;
 
       var rect = svgEl('rect', { x: n.x, y: n.y, width: nw, height: NW, fill: '#333', rx: 2, cursor: 'pointer' });
-
       rect.addEventListener('mouseenter', function () {
         fg.querySelectorAll('path').forEach(function (p) {
           p.setAttribute('fill-opacity', p.getAttribute('data-tgt') === r ? '0.88' : '0.08');
         });
-        var t   = getTip();
+        var t    = getTip();
         var tpct = Math.round(tgtTot[r] / TOTAL * 100);
         t.innerHTML = '<strong>' + r + '</strong><br>' + tgtTot[r] + ' children  ·  <strong>' + tpct + '%</strong> of all diagnosed';
         t.style.display = 'block';
@@ -1265,7 +1411,7 @@ stepEls.forEach(s=>obs.observe(s));
       svg.appendChild(pt);
     });
 
-    // Y-axis arrow + label (left side, pointing down = later in flowchart)
+    // Y-axis arrow + label (left side, pointing down)
     var axX    = 10;
     var axYTop = srcY;
     var axYBot = levelYs[levels.length - 1] + NW;
@@ -1282,7 +1428,7 @@ stepEls.forEach(s=>obs.observe(s));
     yLbl.textContent = 'Chronological order in flowchart';
     svg.appendChild(yLbl);
 
-    // X-axis arrow + label (bottom, pointing right = bigger trigger)
+    // X-axis arrow + label (bottom, pointing right)
     var xArrY  = H - 20;
     var xLeft  = PL;
     var xRight = W - PR;
