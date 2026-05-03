@@ -646,20 +646,16 @@ stepEls.forEach(s=>obs.observe(s));
       }
     });
 
-    // Middle column value labels (de-overlapped, positioned right of axis)
-    var midLbls = deOverlap(DATA.map(function (d) {
-      return { id: d.id, cat: d.cat, val: d.v[1], y: yp(d.v[1]) };
+    // Middle column value labels — countries only (All has no midpoint), above each dot
+    var midLbls = deOverlap(DATA.filter(function (d) { return d.cat !== 'all'; }).map(function (d) {
+      return { val: d.v[1], y: yp(d.v[1]) };
     }));
     midLbls.forEach(function (lb) {
-      var isAll = lb.cat === 'all';
-      var color = isAll ? C_ALL : C_COUNTRY;
-      var fs    = small ? 9 : (isAll ? 12 : 10);
-      var fw    = isAll ? '700' : '400';
       svg.appendChild(txt({
-        x: xp(1) + 8, y: lb.y,
-        'text-anchor': 'start', 'dominant-baseline': 'middle',
-        'font-family': 'DM Sans,sans-serif', 'font-size': fs,
-        fill: color, 'font-weight': fw
+        x: xp(1), y: lb.y - 10,
+        'text-anchor': 'middle',
+        'font-family': 'DM Sans,sans-serif', 'font-size': small ? 9 : 10,
+        fill: C_COUNTRY, 'font-weight': '400'
       }, lb.val));
     });
 
