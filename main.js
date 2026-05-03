@@ -1425,6 +1425,23 @@ stepEls.forEach(s=>obs.observe(s));
     yLbl.textContent = 'Chronological order in flowchart';
     svg.appendChild(yLbl);
 
+    // Section labels: "Countries" at source row, "Diagnosis trigger" spanning dest levels
+    var secX = PL - 8;
+    function secLabel(labelY, text) {
+      var el = svgEl('text', {
+        transform: 'rotate(-90)',
+        x: -labelY, y: secX,
+        'text-anchor': 'middle',
+        'font-size': '8', 'font-family': 'DM Sans,sans-serif',
+        'font-weight': '700', 'letter-spacing': '.1em', fill: '#ccc',
+      });
+      el.textContent = text.toUpperCase();
+      svg.appendChild(el);
+    }
+    secLabel(srcY + NW / 2, 'Countries');
+    var destMidY = (levelYs[0] + levelYs[levels.length - 1] + NW) / 2;
+    secLabel(destMidY, 'Diagnosis trigger');
+
     // X-axis arrow + label (bottom, pointing right)
     var xArrY  = H - 20;
     var xLeft  = PL;
