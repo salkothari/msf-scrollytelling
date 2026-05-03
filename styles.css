@@ -318,6 +318,7 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
    (blue/orange/red) pop and the labels and arrows are crisp. */
 .algo-mount svg [fill="#1a1a1a"]{fill:#fff}
 .algo-mount svg [fill="#333333"]{fill:rgba(255,255,255,.7)}
+.algo-mount svg [fill="#bd0a0a"]{fill:#ee0202}
 .algo-mount svg [stroke="#1a1a1a"]{stroke:rgba(255,255,255,.7)}
 .algo-mount svg [stroke="#333333"]{stroke:rgba(255,255,255,.45)}
 /* Depth-based dimming: shapes start hidden, reveal cumulatively as
@@ -356,7 +357,8 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 
 /* ctx-facts icon list */
 .ctx-facts { margin:0 0 36px; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:18px 48px }
-.ctx-fact { display:flex; gap:12px; align-items:flex-start; font-size:14px; line-height:1.6; color:rgba(255,255,255,.72) }
+.ctx-fact { display:flex; gap:12px; align-items:flex-start; font-size:14px; line-height:1.6; color:rgba(255,255,255,.72); opacity:0; transform:translateY(10px); transition:opacity .5s ease, transform .5s ease }
+.ctx-fact.cf-lit { opacity:1; transform:translateY(0) }
 .ctx-fact__icon { flex-shrink:0; margin-top:2px }
 .ctx-fact strong { color:#fff; font-weight:600 }
 @media(max-width:640px){ .ctx-facts{ grid-template-columns:1fr } }

@@ -34,11 +34,11 @@ setInterval(tick,1000);tick();
 // ── TDA logic ───────────────────────────────
 // TDA scroll logic
 const NODES = [
-  {type:'question',label:'Presence of danger signs needing urgent medical care?',sub:'Entry point · All children under 10 with presumptive TB symptoms',yes:'Stabilise and transfer',no:'Continue assessment'},
+  {type:'question',label:'Is urgent medical care needed?',sub:'Entry point · All children under 10 with presumptive TB symptoms',yes:'Stabilise and transfer',no:'Continue assessment'},
   {type:'action',label:'Stabilise and/or transfer',sub:'Emergency stabilisation. Retain if stabilised, transfer if not.',via:'YES',viaColor:'#ee0202'},
-  {type:'question',label:'Is the child "high risk"?',sub:'Under 2 years old · HIV-positive · Severely malnourished (SAM)',yes:'Test immediately',no:'Treat likely non-TB illness'},
+  {type:'question',label:'Is the child "high risk"?',sub:'Under 2 years old · HIV+ · Severely malnourished',yes:'Test immediately',no:'Treat likely non-TB illness'},
   {type:'action',label:'Treat most likely non-TB illness',sub:'Follow up in 1–2 weeks. If symptoms persist, re-enter algorithm.',via:'NO',viaColor:'rgba(255,255,255,0.3)'},
-  {type:'action',label:'Test with mWRD + urine LF-LAM',sub:'GeneXpert MTB/RIF. Positive result → treat immediately.',via:'YES — high risk or persistent symptoms',viaColor:'#ee0202',badge:{text:'Positive test → treat immediately',color:'#44bba4'}},
+  {type:'action',label:'If available, molecularly test urine, respiratory or stool sample for TB',sub:'Positive result → treat immediately.',via:'YES — high risk or persistent symptoms',viaColor:'#ee0202',badge:{text:'Positive test → treat immediately',color:'#44bba4'}},
   {type:'question',label:'Close or household TB contact in the last 12 months?',sub:'When test is unavailable OR negative.',yes:'START TB TREATMENT',no:'Score signs & symptoms'},
   {type:'score'},
   {type:'question',label:'Is the total score ≥ 10?',sub:'Same threshold for both algorithms.',yes:'START TB TREATMENT',no:'No TB treatment · Follow up 1–2 weeks'},
@@ -1488,6 +1488,24 @@ stepEls.forEach(s=>obs.observe(s));
     window.addEventListener('load', function () { wireSankeyFilters(); requestAnimationFrame(render); });
   }
   window.addEventListener('resize', render);
+})();
+
+// ── ctx-facts staggered scroll reveal ────────────────────────────────────────
+(function () {
+  var facts = document.querySelectorAll('.ctx-fact');
+  if (!facts.length) return;
+  // Left column (indices 0,2,4) reveals first; right column (1,3,5) follows
+  var delays = [0, 320, 100, 420, 200, 520];
+  facts.forEach(function (f, i) { f.style.transitionDelay = (delays[i] || 0) + 'ms'; });
+  var container = document.querySelector('.ctx-facts');
+  if (!container) return;
+  var obs = new IntersectionObserver(function (entries) {
+    if (entries[0].isIntersecting) {
+      facts.forEach(function (f) { f.classList.add('cf-lit'); });
+      obs.disconnect();
+    }
+  }, { threshold: 0.15 });
+  obs.observe(container);
 })();
 
 // ── Problem 1 "hard to detect" magnifying glass ──────────────────────────────
