@@ -373,9 +373,9 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 
 /* Evidence bullets */
 .ev-bullets { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px }
-.ev-bullets li { padding-left:20px; position:relative; font-size:15px; line-height:1.65; color:rgba(255,255,255,.78) }
+.ev-bullets li { padding-left:20px; position:relative; font-size:15px; line-height:1.65; color:#444 }
 .ev-bullets li::before { content:'•'; position:absolute; left:0; color:#ee0202; font-size:18px; line-height:1.4 }
-.ctry-lbl { display:inline-block; padding:2px 9px; border-radius:5px; font-size:12px; font-weight:700; letter-spacing:.03em; color:#fff; margin:2px 3px }
+.ctry-lbl { display:inline-block; padding:2px 9px; border-radius:5px; font-size:12px; font-weight:700; letter-spacing:.03em; white-space:nowrap; margin:2px 3px; border:1.5px solid; background:none }
 
 /* FAQ accuracy stats */
 .faq__a--stats { display:flex; flex-direction:column; gap:14px }

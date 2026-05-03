@@ -166,10 +166,6 @@
       </div>
     </div>
 
-    <div class="pills">
-      <button type="button" class="pill pill--a on" data-algo="a"><div class="pill__dot"></div><span class="pill__name">Algorithm A</span><span class="pill__desc">— for clinics with chest X-ray</span></button>
-      <button type="button" class="pill pill--b" data-algo="b"><div class="pill__dot"></div><span class="pill__name">Algorithm B</span><span class="pill__desc">— for clinics without chest X-ray</span></button>
-    </div>
       </div>
     </div>
   </div>
@@ -180,9 +176,13 @@
   <div class="flow-outer">
 
     <!-- STICKY DIAGRAM -->
-    <!-- STICKY DIAGRAM -->
     <div class="flow-left">
       <div class="flow-progress" id="fprog"></div>
+
+      <div class="pills" style="margin-bottom:14px">
+        <button type="button" class="pill pill--a on" data-algo="a"><div class="pill__dot"></div><span class="pill__name">Algorithm A</span><span class="pill__desc">— for clinics with chest X-ray</span></button>
+        <button type="button" class="pill pill--b" data-algo="b"><div class="pill__dot"></div><span class="pill__name">Algorithm B</span><span class="pill__desc">— for clinics without chest X-ray</span></button>
+      </div>
 
       <div class="algo-board">
         <div class="algo-mount algo-mount--a active" id="algo-mount-a" data-algo="a"></div>
@@ -245,8 +245,6 @@
     </div>
   </div>
 </section>
-  </div>
-</section>
 
 <!-- HOW DO WE KNOW IT WORKS -->
 <div class="hwk-band">
@@ -268,11 +266,11 @@
         <li>MSF's TACTiC initiative conducted the TB ALGO PED study to investigate the effectiveness and implementability of these flowcharts</li>
         <li>The study enrolled 1,846 children under 10 with presumptive TB symptoms</li>
         <li>Countries included:
-          <span class="ctry-lbl" style="background:#E31612">Guinea</span>
-          <span class="ctry-lbl" style="background:#F58BAE;color:#1a1a1a">Niger</span>
-          <span class="ctry-lbl" style="background:#4AAE9B">Nigeria</span>
-          <span class="ctry-lbl" style="background:#6B6FB6">South Sudan</span>
-          <span class="ctry-lbl" style="background:#F5A037;color:#1a1a1a">Uganda</span>
+          <span class="ctry-lbl" style="color:#E31612;border-color:#E31612">Guinea</span>
+          <span class="ctry-lbl" style="color:#c45580;border-color:#c45580">Niger</span>
+          <span class="ctry-lbl" style="color:#3a9182;border-color:#3a9182">Nigeria</span>
+          <span class="ctry-lbl" style="color:#6B6FB6;border-color:#6B6FB6">South Sudan</span>
+          <span class="ctry-lbl" style="color:#d4891e;border-color:#d4891e">Uganda</span>
         </li>
       </ul>
     </div>
@@ -741,5 +739,5 @@
 <script src="https://unpkg.com/scrollama"></script>
 <script src="images.js?v=3"></script>
 <script src="scroll.js?v=16"></script>
-<script src="main.js?v=54"></script>
+<script src="main.js?v=55"></script>
 </html>
