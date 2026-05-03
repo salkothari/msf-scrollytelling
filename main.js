@@ -556,6 +556,12 @@ stepEls.forEach(s=>obs.observe(s));
         line.setAttribute('stroke-opacity', 1);
         line.setAttribute('stroke-width', isAll ? 4 : 2.5);
         circles.forEach(function (c) { c.setAttribute('fill', hoverColor); c.setAttribute('fill-opacity', 1); });
+        if (!isAll) {
+          svg.querySelectorAll('[data-country="' + d.id + '"]').forEach(function (el) {
+            el.setAttribute('fill', hoverColor);
+            el.setAttribute('font-weight', '700');
+          });
+        }
         if (tip) {
           tip.innerHTML = '<strong>' + d.id + '</strong><br>' +
             'Before flowcharts: ' + d.v[0] + '<br>' +
@@ -576,6 +582,12 @@ stepEls.forEach(s=>obs.observe(s));
         line.setAttribute('stroke-opacity', opacity);
         line.setAttribute('stroke-width', sw);
         circles.forEach(function (c) { c.setAttribute('fill', color); c.setAttribute('fill-opacity', opacity); });
+        if (!isAll) {
+          svg.querySelectorAll('[data-country="' + d.id + '"]').forEach(function (el) {
+            el.setAttribute('fill', C_COUNTRY);
+            el.setAttribute('font-weight', '400');
+          });
+        }
         if (tip) tip.style.display = 'none';
       });
       svg.appendChild(hit);
@@ -602,21 +614,20 @@ stepEls.forEach(s=>obs.observe(s));
       var color = isAll ? C_ALL : C_COUNTRY;
       var fs    = small ? 10 : (isAll ? 13 : 11);
       var fw    = isAll ? '700' : '400';
-      // value
-      svg.appendChild(txt({
+      var dc    = isAll ? {} : { 'data-country': lb.id };
+      svg.appendChild(txt(Object.assign({
         x: xp(0) - 8, y: lb.y,
         'text-anchor': 'end', 'dominant-baseline': 'middle',
         'font-family': 'DM Sans,sans-serif', 'font-size': fs,
         fill: color, 'font-weight': fw
-      }, lb.val));
-      // name
+      }, dc), lb.val));
       if (!small) {
-        svg.appendChild(txt({
+        svg.appendChild(txt(Object.assign({
           x: xp(0) - 34, y: lb.y,
           'text-anchor': 'end', 'dominant-baseline': 'middle',
           'font-family': 'DM Sans,sans-serif', 'font-size': fs,
           fill: color, 'font-weight': fw
-        }, lb.id));
+        }, dc), lb.id));
       }
     });
 
@@ -630,32 +641,33 @@ stepEls.forEach(s=>obs.observe(s));
       var color = isAll ? C_ALL : C_COUNTRY;
       var fs    = small ? 10 : (isAll ? 13 : 11);
       var fw    = isAll ? '700' : '400';
-      svg.appendChild(txt({
+      var dc    = isAll ? {} : { 'data-country': lb.id };
+      svg.appendChild(txt(Object.assign({
         x: xp(2) + 8, y: lb.y,
         'text-anchor': 'start', 'dominant-baseline': 'middle',
         'font-family': 'DM Sans,sans-serif', 'font-size': fs,
         fill: color, 'font-weight': fw
-      }, lb.val));
+      }, dc), lb.val));
       if (!small) {
-        svg.appendChild(txt({
+        svg.appendChild(txt(Object.assign({
           x: xp(2) + 30, y: lb.y,
           'text-anchor': 'start', 'dominant-baseline': 'middle',
           'font-family': 'DM Sans,sans-serif', 'font-size': fs,
           fill: color, 'font-weight': fw
-        }, lb.id));
+        }, dc), lb.id));
       }
     });
 
     // Middle column value labels — countries only (All has no midpoint), above each dot
     var midLbls = deOverlap(DATA.filter(function (d) { return d.cat !== 'all'; }).map(function (d) {
-      return { val: d.v[1], y: yp(d.v[1]) };
+      return { id: d.id, val: d.v[1], y: yp(d.v[1]) };
     }));
     midLbls.forEach(function (lb) {
       svg.appendChild(txt({
         x: xp(1), y: lb.y - 10,
         'text-anchor': 'middle',
         'font-family': 'DM Sans,sans-serif', 'font-size': small ? 9 : 10,
-        fill: C_COUNTRY, 'font-weight': '400'
+        fill: C_COUNTRY, 'font-weight': '400', 'data-country': lb.id
       }, lb.val));
     });
 
