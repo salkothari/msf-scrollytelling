@@ -1104,7 +1104,6 @@ stepEls.forEach(s=>obs.observe(s));
 
   // State
   var subgrp   = 'all';  // 'all' | 'hiv' | 'u2' | 'sam'
-  var algo     = 'all';  // 'all' | 'a'   | 'b'
   var showRare = false;
 
   var tipEl = null;
@@ -1121,13 +1120,7 @@ stepEls.forEach(s=>obs.observe(s));
     var base = subgrp === 'hiv' ? RAW_HIV :
                subgrp === 'sam' ? RAW_SAM :
                subgrp === 'u2'  ? RAW_U2  : RAW_SPLIT;
-    if (algo === 'a') {
-      return base.filter(function (f) { return f.t !== 'Algorithm B score >10' && f.v > 0; });
-    }
-    if (algo === 'b') {
-      return base.filter(function (f) { return f.t !== 'Algorithm A score >10' && f.v > 0; });
-    }
-    // algo === 'all': merge A+B into single node
+    // Always merge Algorithm A+B into a single node
     var combined = [];
     var algTot = {};
     base.forEach(function (f) {
@@ -1146,49 +1139,6 @@ stepEls.forEach(s=>obs.observe(s));
   }
 
   // ---- Persistent UI containers ----
-
-  // Filter rows (subgroup + flowchart) — styled to match viz 02
-  var filterWrap = document.createElement('div');
-  filterWrap.style.cssText = 'padding:14px 20px 0;display:flex;flex-direction:column;gap:6px';
-
-  function makeFilterRow(labelText, options, getValue, setValue) {
-    var row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap';
-    var lbl = document.createElement('span');
-    lbl.className = 'picto-filter-lbl';
-    lbl.textContent = labelText;
-    var btns = document.createElement('div');
-    btns.className = 'picto-btns';
-    options.forEach(function (opt) {
-      var b = document.createElement('button');
-      b.className = 'picto-btn' + (opt[0] === getValue() ? ' active' : '');
-      b.textContent = opt[1];
-      b.addEventListener('click', function () {
-        btns.querySelectorAll('.picto-btn').forEach(function (x) { x.classList.remove('active'); });
-        b.classList.add('active');
-        setValue(opt[0]);
-        render();
-      });
-      btns.appendChild(b);
-    });
-    row.appendChild(lbl);
-    row.appendChild(btns);
-    return row;
-  }
-
-  filterWrap.appendChild(makeFilterRow(
-    'Filter by subgroup',
-    [['all','All'],['hiv','HIV+'],['u2','Under 2'],['sam','SAM']],
-    function () { return subgrp; },
-    function (v) { subgrp = v; }
-  ));
-  filterWrap.appendChild(makeFilterRow(
-    'Filter by flowchart',
-    [['all','All'],['a','A (clinics with X-ray)'],['b','B (clinics without X-ray)']],
-    function () { return algo; },
-    function (v) { algo = v; }
-  ));
-  wrap.appendChild(filterWrap);
 
   var svgBox = document.createElement('div');
   wrap.appendChild(svgBox);
@@ -1218,8 +1168,7 @@ stepEls.forEach(s=>obs.observe(s));
   function render() {
     svgBox.innerHTML = '';
 
-    var algoNode = algo === 'a' ? 'Algorithm A score >10' :
-                   algo === 'b' ? 'Algorithm B score >10' : 'Algorithm score >10';
+    var algoNode = 'Algorithm score >10';
     var LEVEL0_BASE = ['Positive GeneXpert', 'Positive TB-LAM test'];
     var LEVEL0 = showRare ? LEVEL0_BASE.concat(RARE) : LEVEL0_BASE;
     var levels = [LEVEL0, ['TB contact'], [algoNode]];
@@ -1240,7 +1189,7 @@ stepEls.forEach(s=>obs.observe(s));
     raw.forEach(function (f) { srcTot[f.s] += f.v; tgtTot[f.t] += f.v; });
 
     var W   = Math.max(svgBox.offsetWidth || wrap.offsetWidth || 700, 500);
-    var PL  = 44, PR = 10, PT = 32, NW = 14, NG = 6, GAP = 96, PB = 64;
+    var PL  = 62, PR = 10, PT = 32, NW = 14, NG = 6, GAP = 96, PB = 64;
     var AW  = W - PL - PR;
 
     var srcY = PT;
@@ -1412,7 +1361,7 @@ stepEls.forEach(s=>obs.observe(s));
     });
 
     // Y-axis arrow + label (left side, pointing down)
-    var axX    = 10;
+    var axX    = 20;
     var axYTop = srcY;
     var axYBot = levelYs[levels.length - 1] + NW;
     svg.appendChild(svgEl('line', {
@@ -1421,9 +1370,9 @@ stepEls.forEach(s=>obs.observe(s));
     }));
     var yLbl = svgEl('text', {
       transform: 'rotate(-90)',
-      x: -((axYTop + axYBot) / 2), y: axX - 4,
+      x: -((axYTop + axYBot) / 2), y: axX - 8,
       'text-anchor': 'middle',
-      'font-size': '9', 'font-family': 'DM Sans,sans-serif', 'font-weight': '500', fill: '#aaa',
+      'font-size': '11', 'font-family': 'DM Sans,sans-serif', 'font-weight': '500', fill: '#aaa',
     });
     yLbl.textContent = 'Chronological order in flowchart';
     svg.appendChild(yLbl);
@@ -1437,9 +1386,9 @@ stepEls.forEach(s=>obs.observe(s));
       stroke: '#bbb', 'stroke-width': '1.5', 'marker-end': 'url(#sk-arr)',
     }));
     var xLbl = svgEl('text', {
-      x: xLeft + (xRight - xLeft) / 2, y: xArrY + 14,
+      x: xLeft + (xRight - xLeft) / 2, y: xArrY + 16,
       'text-anchor': 'middle',
-      'font-size': '9', 'font-family': 'DM Sans,sans-serif', 'font-weight': '500', fill: '#aaa',
+      'font-size': '11', 'font-family': 'DM Sans,sans-serif', 'font-weight': '500', fill: '#aaa',
     });
     xLbl.textContent = 'Smallest to biggest diagnosis trigger';
     svg.appendChild(xLbl);
@@ -1447,10 +1396,22 @@ stepEls.forEach(s=>obs.observe(s));
     svgBox.appendChild(svg);
   }
 
+  function wireSankeyFilters() {
+    document.querySelectorAll('#sankey-filter .picto-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('#sankey-filter .picto-btn').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        subgrp = btn.getAttribute('data-grp');
+        render();
+      });
+    });
+  }
+
   if (document.readyState === 'complete') {
+    wireSankeyFilters();
     requestAnimationFrame(render);
   } else {
-    window.addEventListener('load', function () { requestAnimationFrame(render); });
+    window.addEventListener('load', function () { wireSankeyFilters(); requestAnimationFrame(render); });
   }
   window.addEventListener('resize', render);
 })();

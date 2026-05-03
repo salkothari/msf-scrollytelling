@@ -315,9 +315,20 @@
 
   <!-- SANKEY: Reasons for diagnosis -->
   <div class="vw">
-    <div class="vh">
-      <div class="vt"><span class="vn">03</span>Diagnosis was mostly triggered by the scoring box in the flowchart</div>
-      <div class="vd">Of 496 children diagnosed using the TDA algorithm across 5 countries. Hover a flow to explore.</div>
+    <div class="vh picto-vh">
+      <div>
+        <div class="vt"><span class="vn">03</span>Diagnosis was mostly triggered by the scoring box in the flowchart</div>
+        <div class="vd">Of 496 children diagnosed using the TDA algorithm across 5 countries. Hover a flow to explore.</div>
+      </div>
+      <div class="picto-filter" id="sankey-filter">
+        <span class="picto-filter-lbl">Filter by subgroup</span>
+        <div class="picto-btns">
+          <button class="picto-btn active" data-grp="all">All</button>
+          <button class="picto-btn" data-grp="hiv">HIV+</button>
+          <button class="picto-btn" data-grp="u2">Under 2</button>
+          <button class="picto-btn" data-grp="sam">SAM</button>
+        </div>
+      </div>
     </div>
     <div class="sankey-outer">
       <div id="sankey-wrap"></div>
@@ -702,5 +713,5 @@
 <script src="https://unpkg.com/scrollama"></script>
 <script src="images.js?v=3"></script>
 <script src="scroll.js?v=16"></script>
-<script src="main.js?v=35"></script>
+<script src="main.js?v=36"></script>
 </html>
