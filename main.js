@@ -1499,7 +1499,7 @@ stepEls.forEach(s=>obs.observe(s));
   facts.forEach(function (f) { f.style.transitionDelay = '0ms'; });
 
   var revealOrder = [0, 2, 4, 1, 3, 5];
-  var thresholds  = [0.15, 0.25, 0.35, 0.52, 0.62, 0.72];
+  var thresholds  = [0.08, 0.20, 0.34, 0.52, 0.68, 0.84];
   var revealed    = new Array(facts.length).fill(false);
 
   function update() {
