@@ -1490,31 +1490,34 @@ stepEls.forEach(s=>obs.observe(s));
   window.addEventListener('resize', render);
 })();
 
-// ── ctx-facts staggered scroll reveal ────────────────────────────────────────
+// ── ctx-facts scroll-driven reveal ───────────────────────────────────────────
 (function () {
-  var facts = document.querySelectorAll('.ctx-fact');
-  if (!facts.length) return;
-  // Order: left col (0,2,4) point-by-point, then right col (1,3,5)
-  // Grid order → reveal order mapping
+  var section = document.querySelector('.ctx');
+  var facts   = document.querySelectorAll('.ctx-fact');
+  if (!section || !facts.length) return;
+
+  facts.forEach(function (f) { f.style.transitionDelay = '0ms'; });
+
   var revealOrder = [0, 2, 4, 1, 3, 5];
-  var baseDelay = 0;
-  var step = 500; // ms between each point
-  var rightColPause = 400; // extra pause before right column starts
-  revealOrder.forEach(function (gridIdx, seqIdx) {
-    var d = seqIdx < 3
-      ? seqIdx * step
-      : 3 * step + rightColPause + (seqIdx - 3) * step;
-    facts[gridIdx].style.transitionDelay = d + 'ms';
-  });
-  var container = document.querySelector('.ctx-facts');
-  if (!container) return;
-  var obs = new IntersectionObserver(function (entries) {
-    if (entries[0].isIntersecting) {
-      facts.forEach(function (f) { f.classList.add('cf-lit'); });
-      obs.disconnect();
-    }
-  }, { threshold: 0.1 });
-  obs.observe(container);
+  var thresholds  = [0.15, 0.25, 0.35, 0.52, 0.62, 0.72];
+  var revealed    = new Array(facts.length).fill(false);
+
+  function update() {
+    var rect = section.getBoundingClientRect();
+    var vh   = window.innerHeight;
+    var p    = (vh - rect.top) / (section.offsetHeight + vh);
+    p = Math.max(0, Math.min(1, p));
+    revealOrder.forEach(function (gridIdx, seqIdx) {
+      if (!revealed[gridIdx] && p >= thresholds[seqIdx]) {
+        facts[gridIdx].classList.add('cf-lit');
+        revealed[gridIdx] = true;
+      }
+    });
+  }
+
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
 })();
 
 // ── Problem 1 "hard to detect" magnifying glass ──────────────────────────────
