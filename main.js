@@ -1082,12 +1082,14 @@ stepEls.forEach(s=>obs.observe(s));
   function render() {
     svgBox.innerHTML = '';
 
-    var levels = showRare ? LEVELS_MAIN.concat(LEVELS_RARE) : LEVELS_MAIN;
-    var raw    = showRare ? RAW_ALL : RAW_ALL.filter(function (f) {
+    // Rare categories join level 0 (same row as GeneXpert/TB-LAM) when shown
+    var levels = showRare
+      ? [LEVELS_MAIN[0].concat(LEVELS_RARE[0])].concat(LEVELS_MAIN.slice(1))
+      : LEVELS_MAIN;
+    var raw = showRare ? RAW_ALL : RAW_ALL.filter(function (f) {
       return RARE.indexOf(f.t) < 0;
     });
 
-    // Flat list of all visible reason names (in level order, for target node rendering)
     var allReasons = [];
     levels.forEach(function (lv) { lv.forEach(function (r) { allReasons.push(r); }); });
 
@@ -1097,18 +1099,16 @@ stepEls.forEach(s=>obs.observe(s));
     allReasons.forEach(function (r) { tgtTot[r] = 0; });
     raw.forEach(function (f) { srcTot[f.s] += f.v; tgtTot[f.t] += f.v; });
 
-    var W  = Math.max(svgBox.offsetWidth || wrap.offsetWidth || 700, 500);
-    var PL = 10, PR = 10, PT = 48, NW = 14, NG = 6, GAP = 70, PB = 40;
-    var AW = W - PL - PR;
+    var W   = Math.max(svgBox.offsetWidth || wrap.offsetWidth || 700, 500);
+    var PL  = 44, PR = 10, PT = 32, NW = 14, NG = 6, GAP = 96, PB = 64;
+    var AW  = W - PL - PR;
 
-    // Y positions: source at PT, then one level per GAP+NW step
     var srcY = PT;
     var levelYs = [];
     var y = PT + NW + GAP;
     levels.forEach(function () { levelYs.push(y); y += NW + GAP; });
     var H = y - GAP + PB;
 
-    // Scale: source row fills full AW
     var sc = (AW - (COUNTRIES.length - 1) * NG) / TOTAL;
 
     function svgEl(tag, attrs) {
@@ -1117,7 +1117,7 @@ stepEls.forEach(s=>obs.observe(s));
       return e;
     }
 
-    // Source (country) nodes — left-aligned, fill full AW
+    // Source (country) nodes
     var cx = PL;
     var srcNodes = COUNTRIES.map(function (c) {
       var w = srcTot[c.name] * sc;
@@ -1126,8 +1126,7 @@ stepEls.forEach(s=>obs.observe(s));
       return node;
     });
 
-    // Destination nodes — all sorted globally by total value ascending (biggest rightmost)
-    // x-positions assigned in one pass; each node placed at its level's y
+    // Destination nodes — globally sorted ascending by total (biggest rightmost)
     var reasonLevel = {};
     levels.forEach(function (lv, i) { lv.forEach(function (r) { reasonLevel[r] = i; }); });
 
@@ -1142,7 +1141,7 @@ stepEls.forEach(s=>obs.observe(s));
       dx += w + NG;
     });
 
-    // Build flows — sorted by STACK_ORDER for clean source-bar stacking
+    // Flows — sorted by STACK_ORDER so source-bar segments align with dest x-order
     var visibleSO = STACK_ORDER.filter(function (r) { return allReasons.indexOf(r) >= 0; });
     var sorted = raw.slice().sort(function (a, b) {
       return visibleSO.indexOf(a.t) - visibleSO.indexOf(b.t);
@@ -1171,17 +1170,24 @@ stepEls.forEach(s=>obs.observe(s));
 
     var svg = svgEl('svg', { width: W, height: H, overflow: 'visible' });
 
-    // Flow ribbons
+    // Arrowhead marker (shared by both axis arrows)
+    var defs = svgEl('defs', {});
+    var mk = svgEl('marker', { id: 'sk-arr', markerWidth: '7', markerHeight: '7', refX: '6', refY: '3.5', orient: 'auto' });
+    mk.appendChild(svgEl('path', { d: 'M0,0 L7,3.5 L0,7 Z', fill: '#bbb' }));
+    defs.appendChild(mk);
+    svg.appendChild(defs);
+
+    // Flow ribbons — data-tgt attr used by destination-node hover
     var fg = svgEl('g', {});
     flows.forEach(function (f) {
-      var p = svgEl('path', { d: f.d, fill: f.color, 'fill-opacity': '0.42', cursor: 'pointer' });
+      var p = svgEl('path', { d: f.d, fill: f.color, 'fill-opacity': '0.42', cursor: 'pointer', 'data-tgt': f.tgt });
       p.addEventListener('mouseenter', function () {
         fg.querySelectorAll('path').forEach(function (x) { x.setAttribute('fill-opacity', '0.08'); });
         p.setAttribute('fill-opacity', '0.88');
         var t    = getTip();
         var pct  = Math.round(f.val / TOTAL * 100);
         var sPct = Math.round(f.val / srcTot[f.src] * 100);
-        t.innerHTML = '<strong>' + f.src + '</strong> to ' + f.tgt
+        t.innerHTML = '<strong>' + f.src + '</strong> → ' + f.tgt
           + '<br>' + f.val + ' children  ·  <strong>' + pct + '%</strong> of all diagnosed  ·  ' + sPct + '% of ' + f.src;
         t.style.display = 'block';
       });
@@ -1198,13 +1204,13 @@ stepEls.forEach(s=>obs.observe(s));
     });
     svg.appendChild(fg);
 
-    // Source node bars + labels above
+    // Source node bars + labels
     srcNodes.forEach(function (n) {
       svg.appendChild(svgEl('rect', {
         x: n.x, y: n.y, width: Math.max(n.w, 2), height: NW, fill: n.color, rx: 2,
       }));
       var lbl = svgEl('text', {
-        x: n.x + n.w / 2, y: n.y - 6,
+        x: n.x + n.w / 2, y: n.y - 5,
         'text-anchor': 'middle',
         'font-size': '11', 'font-family': 'DM Sans,sans-serif', 'font-weight': '600', fill: '#222',
       });
@@ -1212,16 +1218,35 @@ stepEls.forEach(s=>obs.observe(s));
       svg.appendChild(lbl);
     });
 
-    // Destination node bars + two-line labels below (abbreviated name + red pct)
-    allReasons.forEach(function (r) {
+    // Destination node bars + labels + hover-to-highlight ribbons
+    allReasonsSorted.forEach(function (r) {
       var n      = tgtMap[r];
       var pct    = Math.round(tgtTot[r] / TOTAL * 100);
       var pctStr = pct < 1 ? '<1%' : pct + '%';
-      var ncx    = n.x + Math.max(n.w, 2) / 2;
+      var nw     = Math.max(n.w, 2);
+      var ncx    = n.x + nw / 2;
 
-      svg.appendChild(svgEl('rect', {
-        x: n.x, y: n.y, width: Math.max(n.w, 2), height: NW, fill: '#333', rx: 2,
-      }));
+      var rect = svgEl('rect', { x: n.x, y: n.y, width: nw, height: NW, fill: '#333', rx: 2, cursor: 'pointer' });
+
+      rect.addEventListener('mouseenter', function () {
+        fg.querySelectorAll('path').forEach(function (p) {
+          p.setAttribute('fill-opacity', p.getAttribute('data-tgt') === r ? '0.88' : '0.08');
+        });
+        var t   = getTip();
+        var tpct = Math.round(tgtTot[r] / TOTAL * 100);
+        t.innerHTML = '<strong>' + r + '</strong><br>' + tgtTot[r] + ' children  ·  <strong>' + tpct + '%</strong> of all diagnosed';
+        t.style.display = 'block';
+      });
+      rect.addEventListener('mousemove', function (e) {
+        var t = getTip();
+        t.style.left = (e.clientX + 14) + 'px';
+        t.style.top  = (e.clientY - 42) + 'px';
+      });
+      rect.addEventListener('mouseleave', function () {
+        fg.querySelectorAll('path').forEach(function (p) { p.setAttribute('fill-opacity', '0.42'); });
+        getTip().style.display = 'none';
+      });
+      svg.appendChild(rect);
 
       var nm = svgEl('text', {
         x: ncx, y: n.y + NW + 13,
@@ -1239,6 +1264,39 @@ stepEls.forEach(s=>obs.observe(s));
       pt.textContent = pctStr;
       svg.appendChild(pt);
     });
+
+    // Y-axis arrow + label (left side, pointing down = later in flowchart)
+    var axX    = 10;
+    var axYTop = srcY;
+    var axYBot = levelYs[levels.length - 1] + NW;
+    svg.appendChild(svgEl('line', {
+      x1: axX, y1: axYTop, x2: axX, y2: axYBot - 1,
+      stroke: '#bbb', 'stroke-width': '1.5', 'marker-end': 'url(#sk-arr)',
+    }));
+    var yLbl = svgEl('text', {
+      transform: 'rotate(-90)',
+      x: -((axYTop + axYBot) / 2), y: axX - 4,
+      'text-anchor': 'middle',
+      'font-size': '9', 'font-family': 'DM Sans,sans-serif', 'font-weight': '500', fill: '#aaa',
+    });
+    yLbl.textContent = 'Chronological order in flowchart';
+    svg.appendChild(yLbl);
+
+    // X-axis arrow + label (bottom, pointing right = bigger trigger)
+    var xArrY  = H - 20;
+    var xLeft  = PL;
+    var xRight = W - PR;
+    svg.appendChild(svgEl('line', {
+      x1: xLeft, y1: xArrY, x2: xRight - 1, y2: xArrY,
+      stroke: '#bbb', 'stroke-width': '1.5', 'marker-end': 'url(#sk-arr)',
+    }));
+    var xLbl = svgEl('text', {
+      x: xLeft + (xRight - xLeft) / 2, y: xArrY + 14,
+      'text-anchor': 'middle',
+      'font-size': '9', 'font-family': 'DM Sans,sans-serif', 'font-weight': '500', fill: '#aaa',
+    });
+    xLbl.textContent = 'Smallest to biggest diagnosis trigger';
+    svg.appendChild(xLbl);
 
     svgBox.appendChild(svg);
   }
