@@ -993,15 +993,15 @@ stepEls.forEach(s=>obs.observe(s));
     ['Clinical suspicion', 'Other TB test'],
   ];
 
-  // Order used to stack flows within source (country) bars
-  // Algorithm first so its wide ribbon anchors the left side of each source bar
+  // Order used to stack flows within source (country) bars — matches dest x-order
+  // (smallest total left, biggest right) to minimise ribbon crossings
   var STACK_ORDER = [
-    'Algorithm score >10',
-    'TB contact',
+    'Other TB test',
+    'Clinical suspicion',
     'Positive GeneXpert',
     'Positive TB-LAM test',
-    'Clinical suspicion',
-    'Other TB test',
+    'TB contact',
+    'Algorithm score >10',
   ];
 
   var SHORT = {
@@ -1126,17 +1126,20 @@ stepEls.forEach(s=>obs.observe(s));
       return node;
     });
 
-    // Destination nodes — each level centred independently in AW
+    // Destination nodes — all sorted globally by total value ascending (biggest rightmost)
+    // x-positions assigned in one pass; each node placed at its level's y
+    var reasonLevel = {};
+    levels.forEach(function (lv, i) { lv.forEach(function (r) { reasonLevel[r] = i; }); });
+
+    var allReasonsSorted = allReasons.slice().sort(function (a, b) { return tgtTot[a] - tgtTot[b]; });
+    var dstTotalW = allReasonsSorted.reduce(function (a, r) { return a + Math.max(tgtTot[r] * sc, 2); }, 0)
+                 + (allReasonsSorted.length - 1) * NG;
+    var dx = PL + (AW - dstTotalW) / 2;
     var tgtMap = {};
-    levels.forEach(function (lv, li) {
-      var lvW = lv.reduce(function (a, r) { return a + tgtTot[r] * sc; }, 0)
-               + (lv.length - 1) * NG;
-      var lx  = PL + (AW - lvW) / 2;
-      lv.forEach(function (r) {
-        var w = tgtTot[r] * sc;
-        tgtMap[r] = { name: r, x: lx, y: levelYs[li], w: w };
-        lx += w + NG;
-      });
+    allReasonsSorted.forEach(function (r) {
+      var w = Math.max(tgtTot[r] * sc, 2);
+      tgtMap[r] = { name: r, x: dx, y: levelYs[reasonLevel[r]], w: w };
+      dx += w + NG;
     });
 
     // Build flows — sorted by STACK_ORDER for clean source-bar stacking
