@@ -467,8 +467,15 @@ stepEls.forEach(s=>obs.observe(s));
     ['MSF study with', 'diagnostic flowcharts'],
     ['With diagnostic', 'flowcharts*']
   ];
-  var C_COUNTRY = '#878AD9';
+  var C_COUNTRY = '#c0c0c0';
   var C_ALL     = '#ee0202';
+  var COUNTRY_COLORS = {
+    'Guinea':      '#E31612',
+    'Niger':       '#F58BAE',
+    'Nigeria':     '#4AAE9B',
+    'South Sudan': '#6B6FB6',
+    'Uganda':      '#F5A037',
+  };
   var YMAX = 7;
   var NS = 'http://www.w3.org/2000/svg';
 
@@ -528,11 +535,14 @@ stepEls.forEach(s=>obs.observe(s));
       });
       svg.appendChild(line);
 
+      var circles = [];
       indices.forEach(function (i) {
-        svg.appendChild(mk('circle', {
+        var c = mk('circle', {
           cx: xp(i), cy: yp(d.v[i]), r: isAll ? 5 : 3.5,
           fill: color, 'fill-opacity': opacity
-        }));
+        });
+        circles.push(c);
+        svg.appendChild(c);
       });
 
       // Wide invisible hit area
@@ -540,9 +550,12 @@ stepEls.forEach(s=>obs.observe(s));
         points: pts, fill: 'none', stroke: 'transparent',
         'stroke-width': 24, style: 'cursor:pointer'
       });
+      var hoverColor = isAll ? C_ALL : COUNTRY_COLORS[d.id];
       hit.addEventListener('mouseenter', function () {
+        line.setAttribute('stroke', hoverColor);
         line.setAttribute('stroke-opacity', 1);
         line.setAttribute('stroke-width', isAll ? 4 : 2.5);
+        circles.forEach(function (c) { c.setAttribute('fill', hoverColor); c.setAttribute('fill-opacity', 1); });
         if (tip) {
           tip.innerHTML = '<strong>' + d.id + '</strong><br>' +
             'Before flowcharts: ' + d.v[0] + '<br>' +
@@ -559,8 +572,10 @@ stepEls.forEach(s=>obs.observe(s));
         }
       });
       hit.addEventListener('mouseleave', function () {
+        line.setAttribute('stroke', color);
         line.setAttribute('stroke-opacity', opacity);
         line.setAttribute('stroke-width', sw);
+        circles.forEach(function (c) { c.setAttribute('fill', color); c.setAttribute('fill-opacity', opacity); });
         if (tip) tip.style.display = 'none';
       });
       svg.appendChild(hit);
