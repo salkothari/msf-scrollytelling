@@ -1489,3 +1489,16 @@ stepEls.forEach(s=>obs.observe(s));
   }
   window.addEventListener('resize', render);
 })();
+
+// ── Problem 2 "underrepresented" slide-in animation ─────────────────────────
+(function () {
+  var sec = document.querySelector('.prob-section.prob-designed');
+  if (!sec) return;
+  var obs = new IntersectionObserver(function (entries) {
+    if (entries[0].isIntersecting) {
+      sec.classList.add('prob-revealed');
+      obs.disconnect();
+    }
+  }, { threshold: 0.15 });
+  obs.observe(sec);
+})();
