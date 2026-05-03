@@ -289,7 +289,7 @@ stepEls.forEach(s=>obs.observe(s));
   }
 
   function loadSvg(key) {
-    return fetch('algo-' + key + '-tagged.svg?v=2')
+    return fetch('algo-' + key + '-tagged.svg?v=3')
       .then(function (r) { return r.text(); })
       .then(function (txt) {
         mounts[key].innerHTML = txt;
