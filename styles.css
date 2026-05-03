@@ -353,6 +353,22 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .ur-clip { display:block; overflow:hidden; line-height:inherit }
 .ur-word { display:block; transform:translateY(-110%); transition:transform .8s cubic-bezier(.16,1,.3,1) }
 .prob-revealed .ur-word { transform:translateY(0) }
+
+/* Problem 1 magnifying-glass reveal */
+.htd-dim { opacity: 0.28 }
+.htd-lens {
+  position: fixed;
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: none;
+  border: 1.5px solid rgba(0,0,0,0.18);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.13);
+  z-index: 9999;
+  display: none;
+  background: #f5f4f0;
+}
+.htd-lens.htd-active { display: block; }
+.htd-lens-h2 { position: absolute; margin: 0; }
 .prob-intro-text { font-size:15px; line-height:1.75; color:rgba(255,255,255,.6); max-width:600px; margin-bottom:48px }
 
 /* ── SECTION 1: Bio grid ── */

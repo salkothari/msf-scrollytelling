@@ -1490,6 +1490,48 @@ stepEls.forEach(s=>obs.observe(s));
   window.addEventListener('resize', render);
 })();
 
+// ── Problem 1 "hard to detect" magnifying glass ──────────────────────────────
+(function () {
+  var h2 = document.querySelector('.prob-section.prob-bio .prob-h');
+  if (!h2) return;
+
+  h2.innerHTML = 'Biologically <span class="htd-dim">hard</span><br><span class="htd-dim">to detect</span>';
+  h2.style.cursor = 'none';
+
+  var lens = document.createElement('div');
+  lens.className = 'htd-lens';
+  document.body.appendChild(lens);
+
+  var lensH2 = h2.cloneNode(true);
+  lensH2.className = 'prob-h htd-lens-h2';
+  lensH2.querySelectorAll('.htd-dim').forEach(function (s) { s.removeAttribute('class'); });
+  lens.appendChild(lensH2);
+
+  function updateLens(e) {
+    var fs = parseFloat(getComputedStyle(h2).fontSize);
+    var R  = Math.round(fs * 0.43);
+    lens.style.width  = (R * 2) + 'px';
+    lens.style.height = (R * 2) + 'px';
+    var lensLeft = e.clientX - R;
+    var lensTop  = e.clientY - R;
+    lens.style.left = lensLeft + 'px';
+    lens.style.top  = lensTop  + 'px';
+    var rect = h2.getBoundingClientRect();
+    lensH2.style.width = rect.width + 'px';
+    lensH2.style.left  = (rect.left - lensLeft) + 'px';
+    lensH2.style.top   = (rect.top  - lensTop)  + 'px';
+  }
+
+  h2.addEventListener('mousemove', function (e) {
+    updateLens(e);
+    lens.classList.add('htd-active');
+  });
+
+  h2.addEventListener('mouseleave', function () {
+    lens.classList.remove('htd-active');
+  });
+})();
+
 // ── Problem 2 "underrepresented" slide-in animation ─────────────────────────
 (function () {
   var sec = document.querySelector('.prob-section.prob-designed');
