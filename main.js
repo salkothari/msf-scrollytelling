@@ -1437,22 +1437,19 @@ stepEls.forEach(s=>obs.observe(s));
     yLbl.textContent = 'Chronological order in flowchart';
     svg.appendChild(yLbl);
 
-    // Section labels: "Countries" at source row, "Diagnosis trigger" spanning dest levels
-    var secX = PL - 8;
-    function secLabel(labelY, text) {
-      var el = svgEl('text', {
-        transform: 'rotate(-90)',
-        x: -labelY, y: secX,
-        'text-anchor': 'middle',
-        'font-size': '8', 'font-family': 'DM Sans,sans-serif',
-        'font-weight': '700', 'letter-spacing': '.1em', fill: '#ccc',
-      });
-      el.textContent = text.toUpperCase();
-      svg.appendChild(el);
-    }
-    secLabel(srcY + NW / 2, 'Countries');
-    var destMidY = (levelYs[0] + levelYs[levels.length - 1] + NW) / 2;
-    secLabel(destMidY, 'Diagnosis trigger');
+    // Legend: sample black bar + "= Diagnosis trigger" above x-axis, bottom-left
+    var legY  = H - 42;
+    var legX  = PL;
+    var legBH = NW;   // same height as dest node bars
+    var legBW = 28;   // representative bar width
+    svg.appendChild(svgEl('rect', { x: legX, y: legY, width: legBW, height: legBH, fill: '#333', rx: 2 }));
+    var legTxt = svgEl('text', {
+      x: legX + legBW + 7, y: legY + legBH / 2,
+      'dominant-baseline': 'middle',
+      'font-size': '10', 'font-family': 'DM Sans,sans-serif', 'font-weight': '500', fill: '#888',
+    });
+    legTxt.textContent = '= Diagnosis trigger';
+    svg.appendChild(legTxt);
 
     // X-axis arrow + label (bottom, pointing right)
     var xArrY  = H - 20;
