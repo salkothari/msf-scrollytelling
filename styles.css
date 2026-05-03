@@ -223,9 +223,7 @@ footer{background:#050505;border-top:1px solid rgba(255,255,255,.07);padding:20p
 body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 
 /* ── CONTEXT SECTION ──────────────────────── */
-.ctx{background:#000;position:relative;overflow:visible}
-.ctx-stage{position:relative;min-height:calc(100vh + 900px)}
-.ctx-pin{position:sticky;top:0;height:100vh;overflow:hidden;padding:80px 48px 72px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center}
+.ctx{background:#000;position:relative;overflow:hidden;padding:80px 48px 72px}
 .ctx-glow{position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,#ee0202,transparent 65%);opacity:.14;pointer-events:none}
 .ctx-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(238,2,2,.5) 1px,transparent 1px);background-size:32px 32px;opacity:.05;pointer-events:none}
 .ctx-inner{max-width:960px;margin:0 auto;position:relative;z-index:2}
@@ -259,7 +257,7 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .pill__desc{color:rgba(255,255,255,.45);margin-left:3px}
 
 /* ── FLOW SECTION ─────────────────────────── */
-.flow-section{background:#000;padding:16px 0 100px}
+.flow-section{background:#000;padding:16px 0 32px}
 .flow-outer{display:flex;max-width:1280px;margin:0 auto;padding:0 32px;gap:40px;align-items:flex-start}
 
 /* Left: sticky diagram — wider so the flowchart text is legible
@@ -329,7 +327,7 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .dep-dullable.dep-lit{opacity:1}
 
 @media(max-width:700px){
-  .ctx-pin{padding:56px 24px 56px}
+  .ctx{padding:56px 24px 56px}
   .ctx-cards{grid-template-columns:1fr}
   .flow-outer{flex-direction:column;padding:0 20px}
   .flow-left{position:relative;top:auto;flex:none;width:100%}
@@ -366,15 +364,17 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 @media(max-width:640px){ .ctx-facts{ grid-template-columns:1fr } }
 
 /* How do we know it works bridge */
-.hwk-band { background:#0a0a0a; padding:72px 48px; border-top:1px solid rgba(255,255,255,.06); display:flex; flex-direction:column; align-items:center; justify-content:center }
-.hwk-q { font-family:'DM Serif Display',serif; font-size:clamp(22px,3.5vw,36px); font-weight:400; color:#fff; margin:0 0 24px; letter-spacing:-.01em; text-align:center }
-.hwk-arrow { display:block; opacity:.5; animation:hwk-bob 1.8s ease-in-out infinite }
+.hwk-band { position:fixed; bottom:52px; left:50%; transform:translateX(-50%); z-index:100; padding:0; text-align:center; white-space:nowrap; opacity:0; transition:opacity .6s ease; pointer-events:none }
+.hwk-band.hwk-vis { opacity:1; pointer-events:auto }
+.hwk-q { font-family:'DM Serif Display',serif; font-size:clamp(18px,2.5vw,28px); font-weight:400; color:#fff; margin:0; letter-spacing:-.01em; text-align:center }
+.hwk-q em { font-style:italic; color:#ee0202 }
+.hwk-arrow { display:block; animation:hwk-bob 1.8s ease-in-out infinite }
 @keyframes hwk-bob { 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(8px) } }
 
 /* Evidence bullets — divs to avoid list-style cascade */
 .ev-bullets { margin:0; padding:0; display:flex; flex-direction:column; gap:10px }
-.ev-bullet { padding-left:20px; position:relative; font-size:15px; line-height:1.65; color:#444 }
-.ev-bullet::before { content:'•'; position:absolute; left:0; color:#ee0202; font-size:18px; line-height:1.4 }
+.ev-bullet { padding-left:22px; position:relative; font-size:15px; line-height:1.65; color:#444 }
+.ev-bullet::before { content:''; position:absolute; left:2px; top:.55em; width:6px; height:6px; border-radius:50%; background:#ee0202 }
 .ctry-lbl { display:inline-block; padding:2px 9px; border-radius:5px; font-size:12px; font-weight:700; letter-spacing:.03em; white-space:nowrap; margin:2px 3px; border:1.5px solid; background:none }
 
 /* FAQ accuracy stats */

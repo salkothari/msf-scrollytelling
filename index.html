@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=29">
+<link rel="stylesheet" href="styles.css?v=34">
 
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -133,10 +133,8 @@
   <div style="position:relative;z-index:2">
     <!-- ═══ CONTEXT ══════════════════════════════ -->
 <section class="ctx">
-  <div class="ctx-stage">
-    <div class="ctx-pin">
-      <div class="ctx-glow"></div><div class="ctx-dots"></div>
-      <div class="ctx-inner">
+  <div class="ctx-glow"></div><div class="ctx-dots"></div>
+  <div class="ctx-inner">
     <div class="tag">The Solution</div>
     <h2 class="ctx-h">Treatment Decision Algorithms:<br><em>a diagnostic flowchart that saves lives</em></h2>
     <div class="ctx-facts">
@@ -169,8 +167,6 @@
     <div class="pills" style="margin-top:20px">
       <button type="button" class="pill pill--a on" data-algo="a"><div class="pill__dot"></div><span class="pill__name">Algorithm A</span><span class="pill__desc">— for clinics with chest X-ray</span></button>
       <button type="button" class="pill pill--b" data-algo="b"><div class="pill__dot"></div><span class="pill__name">Algorithm B</span><span class="pill__desc">— for clinics without chest X-ray</span></button>
-    </div>
-      </div>
     </div>
   </div>
 </section>
@@ -243,15 +239,12 @@
 
     </div>
   </div>
-</section>
 
-<!-- HOW DO WE KNOW IT WORKS -->
-<div class="hwk-band">
-  <p class="hwk-q">How do we know it works?</p>
-  <svg class="hwk-arrow" width="28" height="36" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M14 0v28M2 20l12 14 12-14" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>
-</div>
+  <!-- HOW DO WE KNOW IT WORKS -->
+  <div class="hwk-band" id="hwk-band">
+    <p class="hwk-q">How do we know the flowcharts <em>work</em><span style="color:#ee0202">?</span><svg class="hwk-arrow" width="22" height="28" viewBox="0 0 30 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-left:10px"><path d="M15 2C14.2 10 15.8 20 15 34L4 23M15 34L26 23" stroke="#ee0202" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></p>
+  </div>
+</section>
 
 <!-- EVIDENCE -->
 <section class="sec-ev">
@@ -262,8 +255,8 @@
       <div class="tr">The Evidence</div>
       <h2>1,846 children.<br>5 countries.<br><span style="color:#ee0202">1</span> result.</h2>
       <div class="ev-bullets">
-        <div class="ev-bullet">MSF's TACTiC initiative conducted the TB ALGO PED study to investigate the effectiveness and implementability of these flowcharts</div>
-        <div class="ev-bullet">The study enrolled 1,846 children under 10 with presumptive TB symptoms</div>
+        <div class="ev-bullet">MSF's TACTiC initiative conducted the <strong>TB ALGO PED</strong> study to investigate the effectiveness and implementability of these flowcharts</div>
+        <div class="ev-bullet">The study enrolled <strong>1,846 children</strong> under 10 with presumptive TB symptoms</div>
         <div class="ev-bullet">Countries included:
           <span class="ctry-lbl" style="color:#E31612;border-color:#E31612">Guinea</span>
           <span class="ctry-lbl" style="color:#c45580;border-color:#c45580">Niger</span>
@@ -738,5 +731,5 @@
 <script src="https://unpkg.com/scrollama"></script>
 <script src="images.js?v=3"></script>
 <script src="scroll.js?v=16"></script>
-<script src="main.js?v=57"></script>
+<script src="main.js?v=61"></script>
 </html>

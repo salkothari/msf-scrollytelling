@@ -1490,35 +1490,77 @@ stepEls.forEach(s=>obs.observe(s));
   window.addEventListener('resize', render);
 })();
 
-// ── ctx-facts scroll-driven reveal (sticky runway) ───────────────────────────
+// ── ctx-facts wheel-intercept reveal ─────────────────────────────────────────
 (function () {
-  var stage = document.querySelector('.ctx-stage');
-  var facts  = document.querySelectorAll('.ctx-fact');
-  if (!stage || !facts.length) return;
+  var section = document.querySelector('.ctx');
+  var facts   = document.querySelectorAll('.ctx-fact');
+  if (!section || !facts.length) return;
 
-  facts.forEach(function (f) { f.style.transitionDelay = '0ms'; });
+  var revealOrder  = [0, 2, 4, 1, 3, 5];
+  var revealed     = 0;
+  var locked       = false;
+  var scrollAccum  = 0;
+  var SCROLL_PER_FACT = 120;
 
-  var revealOrder = [0, 2, 4, 1, 3, 5];
-  var thresholds  = [0.08, 0.20, 0.34, 0.52, 0.68, 0.84];
-  var revealed    = new Array(facts.length).fill(false);
-
-  function update() {
-    var rect   = stage.getBoundingClientRect();
-    var vh     = window.innerHeight;
-    var travel = stage.offsetHeight - vh;
-    if (travel <= 0) return;
-    var p = Math.max(0, Math.min(1, (-rect.top) / travel));
-    revealOrder.forEach(function (gridIdx, seqIdx) {
-      if (!revealed[gridIdx] && p >= thresholds[seqIdx]) {
-        facts[gridIdx].classList.add('cf-lit');
-        revealed[gridIdx] = true;
-      }
-    });
+  function revealNext() {
+    if (revealed < revealOrder.length) {
+      facts[revealOrder[revealed]].classList.add('cf-lit');
+      revealed++;
+    }
+    if (revealed >= revealOrder.length) unlock();
   }
 
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
-  update();
+  function lock() {
+    if (locked) return;
+    locked = true;
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('wheel', onWheel, { passive: false });
+    revealNext();
+  }
+
+  function unlock() {
+    locked = false;
+    document.body.style.overflow = '';
+    document.removeEventListener('wheel', onWheel);
+  }
+
+  function onWheel(e) {
+    e.preventDefault();
+    if (e.deltaY <= 0) return;
+    scrollAccum += e.deltaY;
+    if (scrollAccum >= SCROLL_PER_FACT) {
+      scrollAccum = 0;
+      revealNext();
+    }
+  }
+
+  var obs = new IntersectionObserver(function (entries) {
+    if (entries[0].isIntersecting && revealed === 0) {
+      obs.disconnect();
+      lock();
+    }
+  }, { threshold: 0.4 });
+  obs.observe(section);
+})();
+
+// ── "How do we know the flowcharts work?" fixed overlay reveal ───────────────
+(function () {
+  var band        = document.getElementById('hwk-band');
+  var flowSection = document.querySelector('.flow-section');
+  var ev          = document.querySelector('.sec-ev');
+  if (!band || !flowSection || !ev) return;
+
+  function check() {
+    var flowRect = flowSection.getBoundingClientRect();
+    var evRect   = ev.getBoundingClientRect();
+    var vh = window.innerHeight;
+    // show when bottom of flow-section is within viewport and ev hasn't crossed halfway
+    var show = flowRect.bottom < vh + 80 && flowRect.bottom > -80 && evRect.top > vh * 0.45;
+    band.classList.toggle('hwk-vis', show);
+  }
+
+  window.addEventListener('scroll', check, { passive: true });
+  check();
 })();
 
 // ── Problem 1 "hard to detect" magnifying glass ──────────────────────────────
@@ -1567,11 +1609,13 @@ stepEls.forEach(s=>obs.observe(s));
 (function () {
   var sec = document.querySelector('.prob-section.prob-designed');
   if (!sec) return;
-  var obs = new IntersectionObserver(function (entries) {
-    if (entries[0].isIntersecting) {
+  function check() {
+    var rect = sec.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.85 && rect.top > -rect.height) {
       sec.classList.add('prob-revealed');
-      obs.disconnect();
+      window.removeEventListener('scroll', check);
     }
-  }, { threshold: 0.15 });
-  obs.observe(sec);
+  }
+  window.addEventListener('scroll', check, { passive: true });
+  check();
 })();
