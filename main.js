@@ -969,7 +969,7 @@ stepEls.forEach(s=>obs.observe(s));
   window.addEventListener('resize', render);
 })();
 
-// -- Sankey: reasons for diagnosis (vertical, top->bottom) -----------------
+// -- Sankey: reasons for diagnosis (multi-level, vertical) -----------------
 (function () {
   var wrap = document.getElementById('sankey-wrap');
   if (!wrap) return;
@@ -983,14 +983,23 @@ stepEls.forEach(s=>obs.observe(s));
     { name: 'Uganda',       color: '#F5A037' },
   ];
 
-  // Ordered largest total first.
-  // Algorithm A and B are combined into one node.
-  // To split them again, replace REASONS + RAW below with the commented block.
-  var REASONS = [
+  // Destination levels top-to-bottom (visual order)
+  var LEVELS_MAIN = [
+    ['Positive GeneXpert', 'Positive TB-LAM test'],
+    ['TB contact'],
+    ['Algorithm score >10'],
+  ];
+  var LEVELS_RARE = [
+    ['Clinical suspicion', 'Other TB test'],
+  ];
+
+  // Order used to stack flows within source (country) bars
+  // Algorithm first so its wide ribbon anchors the left side of each source bar
+  var STACK_ORDER = [
     'Algorithm score >10',
     'TB contact',
-    'Positive TB-LAM test',
     'Positive GeneXpert',
+    'Positive TB-LAM test',
     'Clinical suspicion',
     'Other TB test',
   ];
@@ -1004,23 +1013,22 @@ stepEls.forEach(s=>obs.observe(s));
     'Other TB test':        'Other TB',
   };
 
-  // Combined A+B flows
-  var RAW = [
-    { s: 'Guinea',       t: 'Algorithm score >10',  v: 54 }, // A:36 + B:18
+  var RAW_ALL = [
+    { s: 'Guinea',       t: 'Algorithm score >10',  v: 54 },
     { s: 'Guinea',       t: 'TB contact',            v: 24 },
     { s: 'Guinea',       t: 'Positive TB-LAM test',  v: 24 },
-    { s: 'Niger',        t: 'Algorithm score >10',   v: 23 }, // A:23 + B:0
+    { s: 'Niger',        t: 'Algorithm score >10',   v: 23 },
     { s: 'Niger',        t: 'TB contact',            v: 6  },
     { s: 'Niger',        t: 'Positive GeneXpert',    v: 8  },
-    { s: 'Nigeria',      t: 'Algorithm score >10',   v: 87 }, // A:31 + B:56
+    { s: 'Nigeria',      t: 'Algorithm score >10',   v: 87 },
     { s: 'Nigeria',      t: 'TB contact',            v: 8  },
     { s: 'Nigeria',      t: 'Positive GeneXpert',    v: 14 },
-    { s: 'South Sudan',  t: 'Algorithm score >10',   v: 93 }, // A:0  + B:93
+    { s: 'South Sudan',  t: 'Algorithm score >10',   v: 93 },
     { s: 'South Sudan',  t: 'TB contact',            v: 18 },
     { s: 'South Sudan',  t: 'Positive TB-LAM test',  v: 2  },
     { s: 'South Sudan',  t: 'Positive GeneXpert',    v: 3  },
     { s: 'South Sudan',  t: 'Clinical suspicion',    v: 16 },
-    { s: 'Uganda',       t: 'Algorithm score >10',   v: 67 }, // A:39 + B:28
+    { s: 'Uganda',       t: 'Algorithm score >10',   v: 67 },
     { s: 'Uganda',       t: 'TB contact',            v: 38 },
     { s: 'Uganda',       t: 'Positive TB-LAM test',  v: 4  },
     { s: 'Uganda',       t: 'Positive GeneXpert',    v: 3  },
@@ -1029,56 +1037,11 @@ stepEls.forEach(s=>obs.observe(s));
   ];
 
   /* -- SPLIT A/B VERSION (uncomment to restore) --
-  var REASONS = [
-    'Algorithm B score >10',
-    'Algorithm A score >10',
-    'TB contact',
-    'Positive TB-LAM test',
-    'Positive GeneXpert',
-    'Clinical suspicion',
-    'Other TB test',
-  ];
-  var SHORT = {
-    'Algorithm B score >10': 'Alg. B >10',
-    'Algorithm A score >10': 'Alg. A >10',
-    'TB contact':            'TB contact',
-    'Positive TB-LAM test':  'TB-LAM+',
-    'Positive GeneXpert':    'GeneXpert+',
-    'Clinical suspicion':    'Clinical',
-    'Other TB test':         'Other TB',
-  };
-  var RAW = [
-    { s: 'Guinea',       t: 'Positive TB-LAM test',  v: 24 },
-    { s: 'Guinea',       t: 'TB contact',             v: 24 },
-    { s: 'Guinea',       t: 'Algorithm A score >10',  v: 36 },
-    { s: 'Guinea',       t: 'Algorithm B score >10',  v: 18 },
-    { s: 'Niger',        t: 'Positive GeneXpert',     v: 8  },
-    { s: 'Niger',        t: 'TB contact',             v: 6  },
-    { s: 'Niger',        t: 'Algorithm A score >10',  v: 23 },
-    { s: 'Nigeria',      t: 'Positive GeneXpert',     v: 14 },
-    { s: 'Nigeria',      t: 'TB contact',             v: 8  },
-    { s: 'Nigeria',      t: 'Algorithm A score >10',  v: 31 },
-    { s: 'Nigeria',      t: 'Algorithm B score >10',  v: 56 },
-    { s: 'South Sudan',  t: 'Positive GeneXpert',     v: 3  },
-    { s: 'South Sudan',  t: 'Positive TB-LAM test',   v: 2  },
-    { s: 'South Sudan',  t: 'TB contact',             v: 18 },
-    { s: 'South Sudan',  t: 'Algorithm B score >10',  v: 93 },
-    { s: 'South Sudan',  t: 'Clinical suspicion',     v: 16 },
-    { s: 'Uganda',       t: 'Positive GeneXpert',     v: 3  },
-    { s: 'Uganda',       t: 'Positive TB-LAM test',   v: 4  },
-    { s: 'Uganda',       t: 'Other TB test',          v: 2  },
-    { s: 'Uganda',       t: 'TB contact',             v: 38 },
-    { s: 'Uganda',       t: 'Algorithm A score >10',  v: 39 },
-    { s: 'Uganda',       t: 'Algorithm B score >10',  v: 28 },
-    { s: 'Uganda',       t: 'Clinical suspicion',     v: 2  },
-  ];
+  ... see previous commit for split data ...
   -- END SPLIT VERSION -- */
 
-  var TOTAL = RAW.reduce(function (a, f) { return a + f.v; }, 0);
-  var srcTot = {}, tgtTot = {};
-  COUNTRIES.forEach(function (c) { srcTot[c.name] = 0; });
-  REASONS.forEach(function (r)   { tgtTot[r] = 0; });
-  RAW.forEach(function (f) { srcTot[f.s] += f.v; tgtTot[f.t] += f.v; });
+  var RARE = ['Clinical suspicion', 'Other TB test'];
+  var showRare = false;
 
   var tipEl = null;
   function getTip() {
@@ -1090,23 +1053,63 @@ stepEls.forEach(s=>obs.observe(s));
     return tipEl;
   }
 
+  // Persistent containers so toggle button survives re-renders
+  var svgBox = document.createElement('div');
+  wrap.appendChild(svgBox);
+
+  var btnWrap = document.createElement('div');
+  btnWrap.style.cssText = 'text-align:center;padding:2px 0 14px';
+  var btn = document.createElement('button');
+  btn.style.cssText = 'font-size:10px;font-family:"DM Sans",sans-serif;font-weight:600;letter-spacing:.06em;color:#999;border:1.5px solid rgba(0,0,0,.15);background:transparent;cursor:pointer;padding:3px 14px;border-radius:4px;transition:border-color .15s,color .15s';
+  btn.addEventListener('mouseover', function () { btn.style.color = '#ee0202'; btn.style.borderColor = '#ee0202'; });
+  btn.addEventListener('mouseout',  function () { btn.style.color = '#999';    btn.style.borderColor = 'rgba(0,0,0,.15)'; });
+  btnWrap.appendChild(btn);
+  wrap.appendChild(btnWrap);
+
+  function updateBtn() {
+    btn.textContent = showRare
+      ? '− Hide rare categories'
+      : '+ Show rare categories (clinical suspicion & other TB)';
+  }
+  updateBtn();
+
+  btn.addEventListener('click', function () {
+    showRare = !showRare;
+    updateBtn();
+    render();
+  });
+
   function render() {
-    wrap.innerHTML = '';
+    svgBox.innerHTML = '';
 
-    var W   = Math.max(wrap.offsetWidth || 700, 500);
-    var PL  = 10;
-    var PR  = 10;
-    var PT  = 48;
-    var NW  = 14;
-    var NG  = 6;
-    var MID = 230;
-    var PB  = 40;
-    var H   = PT + NW + MID + NW + PB;
+    var levels = showRare ? LEVELS_MAIN.concat(LEVELS_RARE) : LEVELS_MAIN;
+    var raw    = showRare ? RAW_ALL : RAW_ALL.filter(function (f) {
+      return RARE.indexOf(f.t) < 0;
+    });
 
-    var AW  = W - PL - PR;
-    var nT  = REASONS.length;
+    // Flat list of all visible reason names (in level order, for target node rendering)
+    var allReasons = [];
+    levels.forEach(function (lv) { lv.forEach(function (r) { allReasons.push(r); }); });
 
-    var sc = (AW - (nT - 1) * NG) / TOTAL;
+    var TOTAL = raw.reduce(function (a, f) { return a + f.v; }, 0);
+    var srcTot = {}, tgtTot = {};
+    COUNTRIES.forEach(function (c) { srcTot[c.name] = 0; });
+    allReasons.forEach(function (r) { tgtTot[r] = 0; });
+    raw.forEach(function (f) { srcTot[f.s] += f.v; tgtTot[f.t] += f.v; });
+
+    var W  = Math.max(svgBox.offsetWidth || wrap.offsetWidth || 700, 500);
+    var PL = 10, PR = 10, PT = 48, NW = 14, NG = 6, GAP = 70, PB = 40;
+    var AW = W - PL - PR;
+
+    // Y positions: source at PT, then one level per GAP+NW step
+    var srcY = PT;
+    var levelYs = [];
+    var y = PT + NW + GAP;
+    levels.forEach(function () { levelYs.push(y); y += NW + GAP; });
+    var H = y - GAP + PB;
+
+    // Scale: source row fills full AW
+    var sc = (AW - (COUNTRIES.length - 1) * NG) / TOTAL;
 
     function svgEl(tag, attrs) {
       var e = document.createElementNS(NS, tag);
@@ -1114,47 +1117,48 @@ stepEls.forEach(s=>obs.observe(s));
       return e;
     }
 
-    // Source (country) nodes — centred
-    var srcRowW = TOTAL * sc + (COUNTRIES.length - 1) * NG;
-    var cxStart = PL + (AW - srcRowW) / 2;
+    // Source (country) nodes — left-aligned, fill full AW
+    var cx = PL;
     var srcNodes = COUNTRIES.map(function (c) {
       var w = srcTot[c.name] * sc;
-      var node = { name: c.name, color: c.color, x: cxStart, y: PT, w: w };
-      cxStart += w + NG;
+      var node = { name: c.name, color: c.color, x: cx, y: srcY, w: w };
+      cx += w + NG;
       return node;
     });
 
-    // Target (reason) nodes — fill full AW
-    var txStart = PL;
-    var tgtY = PT + NW + MID;
-    var tgtNodes = REASONS.map(function (r) {
-      var w = tgtTot[r] * sc;
-      var node = { name: r, x: txStart, y: tgtY, w: w };
-      txStart += w + NG;
-      return node;
+    // Destination nodes — each level centred independently in AW
+    var tgtMap = {};
+    levels.forEach(function (lv, li) {
+      var lvW = lv.reduce(function (a, r) { return a + tgtTot[r] * sc; }, 0)
+               + (lv.length - 1) * NG;
+      var lx  = PL + (AW - lvW) / 2;
+      lv.forEach(function (r) {
+        var w = tgtTot[r] * sc;
+        tgtMap[r] = { name: r, x: lx, y: levelYs[li], w: w };
+        lx += w + NG;
+      });
     });
 
-    // Flows sorted by target order
-    var sorted = RAW.slice().sort(function (a, b) {
-      return REASONS.indexOf(a.t) - REASONS.indexOf(b.t);
+    // Build flows — sorted by STACK_ORDER for clean source-bar stacking
+    var visibleSO = STACK_ORDER.filter(function (r) { return allReasons.indexOf(r) >= 0; });
+    var sorted = raw.slice().sort(function (a, b) {
+      return visibleSO.indexOf(a.t) - visibleSO.indexOf(b.t);
     });
     var sCur = {}, tCur = {};
     COUNTRIES.forEach(function (c) { sCur[c.name] = 0; });
-    REASONS.forEach(function (r)   { tCur[r] = 0; });
-
-    var midY = PT + NW + MID / 2;
+    allReasons.forEach(function (r) { tCur[r] = 0; });
 
     var flows = sorted.map(function (f) {
       var sn  = srcNodes.find(function (n) { return n.name === f.s; });
-      var tn  = tgtNodes.find(function (n) { return n.name === f.t; });
+      var tn  = tgtMap[f.t];
       var col = COUNTRIES.find(function (c) { return c.name === f.s; }).color;
       var fw  = f.v * sc;
-      var sx0 = sn.x + sCur[f.s],  sx1 = sx0 + fw;
-      var tx0 = tn.x + tCur[f.t],  tx1 = tx0 + fw;
+      var sx0 = sn.x + sCur[f.s], sx1 = sx0 + fw;
+      var tx0 = tn.x + tCur[f.t], tx1 = tx0 + fw;
       sCur[f.s] += fw;
       tCur[f.t] += fw;
-      var srcBot = sn.y + NW;
-      var tgtTop = tn.y;
+      var srcBot = sn.y + NW, tgtTop = tn.y;
+      var midY   = (srcBot + tgtTop) / 2;
       var d = 'M' + sx0 + ',' + srcBot
             + 'C' + sx0 + ',' + midY + ' ' + tx0 + ',' + midY + ' ' + tx0 + ',' + tgtTop
             + 'L' + tx1 + ',' + tgtTop
@@ -1205,26 +1209,27 @@ stepEls.forEach(s=>obs.observe(s));
       svg.appendChild(lbl);
     });
 
-    // Target node bars + two-line labels below (name + pct)
-    tgtNodes.forEach(function (n) {
-      var pct    = Math.round(tgtTot[n.name] / TOTAL * 100);
+    // Destination node bars + two-line labels below (abbreviated name + red pct)
+    allReasons.forEach(function (r) {
+      var n      = tgtMap[r];
+      var pct    = Math.round(tgtTot[r] / TOTAL * 100);
       var pctStr = pct < 1 ? '<1%' : pct + '%';
-      var cx     = n.x + Math.max(n.w, 2) / 2;
+      var ncx    = n.x + Math.max(n.w, 2) / 2;
 
       svg.appendChild(svgEl('rect', {
         x: n.x, y: n.y, width: Math.max(n.w, 2), height: NW, fill: '#333', rx: 2,
       }));
 
       var nm = svgEl('text', {
-        x: cx, y: n.y + NW + 13,
+        x: ncx, y: n.y + NW + 13,
         'text-anchor': 'middle',
         'font-size': '10', 'font-family': 'DM Sans,sans-serif', 'font-weight': '500', fill: '#555',
       });
-      nm.textContent = SHORT[n.name] || n.name;
+      nm.textContent = SHORT[r] || r;
       svg.appendChild(nm);
 
       var pt = svgEl('text', {
-        x: cx, y: n.y + NW + 27,
+        x: ncx, y: n.y + NW + 27,
         'text-anchor': 'middle',
         'font-size': '11', 'font-family': 'DM Sans,sans-serif', 'font-weight': '700', fill: '#ee0202',
       });
@@ -1232,7 +1237,7 @@ stepEls.forEach(s=>obs.observe(s));
       svg.appendChild(pt);
     });
 
-    wrap.appendChild(svg);
+    svgBox.appendChild(svg);
   }
 
   if (document.readyState === 'complete') {
