@@ -223,7 +223,9 @@ footer{background:#050505;border-top:1px solid rgba(255,255,255,.07);padding:20p
 body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 
 /* ── CONTEXT SECTION ──────────────────────── */
-.ctx{padding:80px 48px 72px;background:#000;position:relative;overflow:hidden}
+.ctx{background:#000;position:relative;overflow:visible}
+.ctx-stage{position:relative;min-height:calc(100vh + 1800px)}
+.ctx-pin{position:sticky;top:0;height:100vh;overflow:hidden;padding:80px 48px 72px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center}
 .ctx-glow{position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,#ee0202,transparent 65%);opacity:.14;pointer-events:none}
 .ctx-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(238,2,2,.5) 1px,transparent 1px);background-size:32px 32px;opacity:.05;pointer-events:none}
 .ctx-inner{max-width:960px;margin:0 auto;position:relative;z-index:2}
@@ -327,7 +329,7 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .dep-dullable.dep-lit{opacity:1}
 
 @media(max-width:700px){
-  .ctx{padding:56px 24px 56px}
+  .ctx-pin{padding:56px 24px 56px}
   .ctx-cards{grid-template-columns:1fr}
   .flow-outer{flex-direction:column;padding:0 20px}
   .flow-left{position:relative;top:auto;flex:none;width:100%}

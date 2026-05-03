@@ -41,8 +41,8 @@ const NODES = [
   {type:'action',label:'If available, molecularly test urine, respiratory or stool sample for TB',sub:'Positive result → treat immediately.',via:'YES — high risk or persistent symptoms',viaColor:'#ee0202',badge:{text:'Positive test → treat immediately',color:'#44bba4'}},
   {type:'question',label:'Close or household TB contact in the last 12 months?',sub:'When test is unavailable OR negative.',yes:'START TB TREATMENT',no:'Score signs & symptoms'},
   {type:'score'},
-  {type:'question',label:'Is the total score ≥ 10?',sub:'Same threshold for both algorithms.',yes:'START TB TREATMENT',no:'No TB treatment · Follow up 1–2 weeks'},
-  {type:'treat',label:'START TB TREATMENT',sub:'Initiated via: positive test · confirmed contact · score ≥ 10'}
+  {type:'question',label:'Is the total score > 10?',sub:'Same threshold for both algorithms.',yes:'START TB TREATMENT',no:'No TB treatment · Follow up 1–2 weeks'},
+  {type:'treat',label:'START TB TREATMENT',sub:'Initiated via: positive test · confirmed contact · score > 10'}
 ];
 
 const SCORES = {
@@ -75,7 +75,7 @@ function buildNode(i, algo) {
         ${s.syms.map(r=>`<div class="score-row"><span>${r[0]}</span><span class="score-val">${r[1]}</span></div>`).join('')}
         ${xHtml}
       </div>
-      <div class="score-threshold">Treat if total score ≥ 10</div>
+      <div class="score-threshold">Treat if total score > 10</div>
     </div>`;
   }
   if(n.type==='treat') return `<div class="tda-node treat"><div class="node-label">${n.label}</div><div class="node-sub">${n.sub}</div></div>`;
@@ -1490,11 +1490,11 @@ stepEls.forEach(s=>obs.observe(s));
   window.addEventListener('resize', render);
 })();
 
-// ── ctx-facts scroll-driven reveal ───────────────────────────────────────────
+// ── ctx-facts scroll-driven reveal (sticky runway) ───────────────────────────
 (function () {
-  var section = document.querySelector('.ctx');
-  var facts   = document.querySelectorAll('.ctx-fact');
-  if (!section || !facts.length) return;
+  var stage = document.querySelector('.ctx-stage');
+  var facts  = document.querySelectorAll('.ctx-fact');
+  if (!stage || !facts.length) return;
 
   facts.forEach(function (f) { f.style.transitionDelay = '0ms'; });
 
@@ -1503,10 +1503,11 @@ stepEls.forEach(s=>obs.observe(s));
   var revealed    = new Array(facts.length).fill(false);
 
   function update() {
-    var rect = section.getBoundingClientRect();
-    var vh   = window.innerHeight;
-    var p    = (vh - rect.top) / (section.offsetHeight + vh);
-    p = Math.max(0, Math.min(1, p));
+    var rect   = stage.getBoundingClientRect();
+    var vh     = window.innerHeight;
+    var travel = stage.offsetHeight - vh;
+    if (travel <= 0) return;
+    var p = Math.max(0, Math.min(1, (-rect.top) / travel));
     revealOrder.forEach(function (gridIdx, seqIdx) {
       if (!revealed[gridIdx] && p >= thresholds[seqIdx]) {
         facts[gridIdx].classList.add('cf-lit');

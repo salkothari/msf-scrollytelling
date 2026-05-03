@@ -133,8 +133,10 @@
   <div style="position:relative;z-index:2">
     <!-- ═══ CONTEXT ══════════════════════════════ -->
 <section class="ctx">
-  <div class="ctx-glow"></div><div class="ctx-dots"></div>
-  <div class="ctx-inner">
+  <div class="ctx-stage">
+    <div class="ctx-pin">
+      <div class="ctx-glow"></div><div class="ctx-dots"></div>
+      <div class="ctx-inner">
     <div class="tag">The Solution</div>
     <h2 class="ctx-h">Treatment Decision Algorithms:<br><em>a diagnostic flowchart that saves lives</em></h2>
     <div class="ctx-facts">
@@ -167,6 +169,8 @@
     <div class="pills">
       <button type="button" class="pill pill--a on" data-algo="a"><div class="pill__dot"></div><span class="pill__name">Algorithm A</span><span class="pill__desc">— for clinics with chest X-ray</span></button>
       <button type="button" class="pill pill--b" data-algo="b"><div class="pill__dot"></div><span class="pill__name">Algorithm B</span><span class="pill__desc">— for clinics without chest X-ray</span></button>
+    </div>
+      </div>
     </div>
   </div>
 </section>
@@ -227,14 +231,14 @@
       <div class="flow-step" data-lit="s5c,s6c">
         <div class="step-card">
           <span class="snum">Step 6: The scoring step · the only difference</span>
-          If no confirmed contact: <strong>score each symptom</strong>. Algorithm A adds chest X-ray findings with additional points. Algorithm B (for clinics without X-ray) assigns higher weights to clinical symptoms to compensate. <strong>Both treat if total ≥ 10.</strong>
+          If no confirmed contact: <strong>score each symptom</strong>. Algorithm A adds chest X-ray findings with additional points. Algorithm B (for clinics without X-ray) assigns higher weights to clinical symptoms to compensate. <strong>Both treat if total &gt; 10.</strong>
         </div>
       </div>
 
       <div class="flow-step" data-lit="s6c,n7,long_arrows">
         <div class="step-card">
           <span class="snum">Step 7: Treatment</span>
-          A score of <strong>10 or above</strong> triggers treatment, the same threshold for both algorithms.
+          A score <strong>above 10</strong> triggers treatment, the same threshold for both algorithms.
         </div>
       </div>
 
@@ -740,5 +744,5 @@
 <script src="https://unpkg.com/scrollama"></script>
 <script src="images.js?v=3"></script>
 <script src="scroll.js?v=16"></script>
-<script src="main.js?v=52"></script>
+<script src="main.js?v=53"></script>
 </html>
