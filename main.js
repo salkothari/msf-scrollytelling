@@ -646,6 +646,23 @@ stepEls.forEach(s=>obs.observe(s));
       }
     });
 
+    // Middle column value labels (de-overlapped, positioned right of axis)
+    var midLbls = deOverlap(DATA.map(function (d) {
+      return { id: d.id, cat: d.cat, val: d.v[1], y: yp(d.v[1]) };
+    }));
+    midLbls.forEach(function (lb) {
+      var isAll = lb.cat === 'all';
+      var color = isAll ? C_ALL : C_COUNTRY;
+      var fs    = small ? 9 : (isAll ? 12 : 10);
+      var fw    = isAll ? '700' : '400';
+      svg.appendChild(txt({
+        x: xp(1) + 8, y: lb.y,
+        'text-anchor': 'start', 'dominant-baseline': 'middle',
+        'font-family': 'DM Sans,sans-serif', 'font-size': fs,
+        fill: color, 'font-weight': fw
+      }, lb.val));
+    });
+
     // Column labels at bottom
     COLS.forEach(function (lines, i) {
       lines.forEach(function (line, j) {
@@ -1288,10 +1305,10 @@ stepEls.forEach(s=>obs.observe(s));
     defs.appendChild(mk);
     svg.appendChild(defs);
 
-    // Flow ribbons — data-tgt used by destination hover
+    // Flow ribbons — data-tgt and data-src used by node hover
     var fg = svgEl('g', {});
     flows.forEach(function (f) {
-      var p = svgEl('path', { d: f.d, fill: f.color, 'fill-opacity': '0.42', cursor: 'pointer', 'data-tgt': f.tgt });
+      var p = svgEl('path', { d: f.d, fill: f.color, 'fill-opacity': '0.42', cursor: 'pointer', 'data-tgt': f.tgt, 'data-src': f.src });
       p.addEventListener('mouseenter', function () {
         fg.querySelectorAll('path').forEach(function (x) { x.setAttribute('fill-opacity', '0.08'); });
         p.setAttribute('fill-opacity', '0.88');
@@ -1315,13 +1332,33 @@ stepEls.forEach(s=>obs.observe(s));
     });
     svg.appendChild(fg);
 
-    // Source node bars + labels
+    // Source node bars + labels + hover-to-highlight ribbons
     srcNodes.forEach(function (n) {
-      svg.appendChild(svgEl('rect', {
-        x: n.x, y: n.y, width: Math.max(n.w, 2), height: NW, fill: n.color, rx: 2,
-      }));
+      var nw   = Math.max(n.w, 2);
+      var ncx  = n.x + nw / 2;
+      var rect = svgEl('rect', { x: n.x, y: n.y, width: nw, height: NW, fill: n.color, rx: 2, cursor: 'pointer' });
+      rect.addEventListener('mouseenter', function () {
+        fg.querySelectorAll('path').forEach(function (p) {
+          p.setAttribute('fill-opacity', p.getAttribute('data-src') === n.name ? '0.88' : '0.08');
+        });
+        var t    = getTip();
+        var spct = Math.round(srcTot[n.name] / TOTAL * 100);
+        t.innerHTML = '<strong>' + n.name + '</strong><br>' + srcTot[n.name] + ' children diagnosed  ·  <strong>' + spct + '%</strong> of all';
+        t.style.display = 'block';
+      });
+      rect.addEventListener('mousemove', function (e) {
+        var t = getTip();
+        t.style.left = (e.clientX + 14) + 'px';
+        t.style.top  = (e.clientY - 42) + 'px';
+      });
+      rect.addEventListener('mouseleave', function () {
+        fg.querySelectorAll('path').forEach(function (p) { p.setAttribute('fill-opacity', '0.42'); });
+        getTip().style.display = 'none';
+      });
+      svg.appendChild(rect);
+
       var lbl = svgEl('text', {
-        x: n.x + n.w / 2, y: n.y - 5,
+        x: ncx, y: n.y - 5,
         'text-anchor': 'middle',
         'font-size': '11', 'font-family': 'DM Sans,sans-serif', 'font-weight': '600', fill: '#222',
       });
