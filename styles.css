@@ -308,7 +308,7 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 
 /* Right: scroll steps — narrower so the flowchart can grow.
    The padding-bottom is the runway HWK pins within before releasing. */
-.flow-right{flex:0 0 26%;padding:40vh 0 100vh}
+.flow-right{flex:0 0 26%;padding:40vh 0 130vh}
 .flow-step{min-height:46vh;display:flex;align-items:center;padding:1rem 0}
 .step-card{
   background:rgba(255,255,255,.03);
@@ -408,7 +408,7 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   min-height:46vh;
   z-index:5;
 }
-.flow-step--hwk.is-pinned { position:fixed; top:55vh }
+.flow-step--hwk.is-pinned { position:fixed }
 .flow-step--hwk-spacer { display:none }
 .flow-step--hwk-spacer.is-active { display:block }
 .hwk-q { font-family:'DM Serif Display',serif; font-size:clamp(18px,2.5vw,28px); font-weight:400; color:#fff; margin:0; letter-spacing:-.01em; text-align:left; white-space:normal }

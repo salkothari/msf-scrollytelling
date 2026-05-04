@@ -1576,15 +1576,32 @@ stepEls.forEach(s=>obs.observe(s));
     document.removeEventListener('keydown', onKey);
   }
 
-  // Engage the lock once the section's heading has reached the upper
-  // half of the viewport — i.e., the user is committed to this section.
-  var io = new IntersectionObserver(function (entries) {
+  function reset() {
+    if (locked) return;
+    revealed = 0;
+    facts.forEach(function (f) { f.classList.remove('cf-lit'); });
+  }
+
+  // Engage the lock once the heading itself has reached the top quarter
+  // of the viewport — that gives the user time to read "Treatment
+  // Decision Algorithms" before the cascade starts.
+  var heading = section.querySelector('.ctx-h');
+  var enterIO = new IntersectionObserver(function (entries) {
     if (entries[0].isIntersecting && revealed === 0 && !locked) {
-      io.disconnect();
       lock();
     }
-  }, { rootMargin: '0px 0px -50% 0px', threshold: 0 });
-  io.observe(section);
+  }, { rootMargin: '0px 0px -75% 0px', threshold: 0 });
+  enterIO.observe(heading || section);
+
+  // Reset cascade when the user scrolls fully back above the section,
+  // so the next pass through replays the lock-and-reveal.
+  var resetIO = new IntersectionObserver(function (entries) {
+    var e = entries[0];
+    if (!e.isIntersecting && e.boundingClientRect.top > 0 && revealed > 0) {
+      reset();
+    }
+  }, { threshold: 0 });
+  resetIO.observe(section);
 })();
 
 // ── Problem 1 "hard to detect" magnifying glass ──────────────────────────────
@@ -1630,19 +1647,25 @@ stepEls.forEach(s=>obs.observe(s));
 })();
 
 // ── Problem 2 "underrepresented" slide-in animation ─────────────────────────
-// Fire only once the h2 ("Children are politically …") has scrolled close
-// to the top of the viewport — that way the reveal feels deliberate and
-// the user actually sees the word slide in instead of catching it
-// already finished.
+// Fires when the h2 ("Children are politically …") scrolls to the top
+// third of the viewport. The class is removed once the user scrolls
+// fully past the section in either direction, so the next pass
+// re-plays the slide-in.
 (function () {
   var sec = document.querySelector('.prob-section.prob-designed');
   var h2  = sec && sec.querySelector('.prob-h');
   if (!sec || !h2) return;
   function check() {
-    var rect = h2.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.30 && rect.bottom > 0) {
+    var hRect = h2.getBoundingClientRect();
+    var sRect = sec.getBoundingClientRect();
+    var vh = window.innerHeight;
+    var revealed = sec.classList.contains('prob-revealed');
+    if (!revealed && hRect.top < vh * 0.30 && hRect.bottom > 0) {
       sec.classList.add('prob-revealed');
-      window.removeEventListener('scroll', check);
+    } else if (revealed && (sRect.top > vh || sRect.bottom < 0)) {
+      // section is fully off-screen (above or below) — reset so the
+      // next pass through replays the animation.
+      sec.classList.remove('prob-revealed');
     }
   }
   window.addEventListener('scroll', check, { passive: true });
@@ -1650,30 +1673,41 @@ stepEls.forEach(s=>obs.observe(s));
 })();
 
 // ── DOUBLE word stretch animation ─────────────────────────────────────────────
-// Fires only once viz 1 itself is the focused .vw — so the user sees
-// the stretch happen as the chart comes to centre, not before.
+// Fires whenever viz 1 becomes the focused .vw — re-plays on every pass.
 (function () {
   var wrap = document.querySelector('.dbl-wrap');
   if (!wrap) return;
   var vw = wrap.closest('.vw');
   if (!vw) return;
-  vw.addEventListener('vw-focus', function () {
-    wrap.classList.add('dbl-go');
-  }, { once: true });
-
-  // After animation ends: measure actual glyph bounds and snap lines precisely
   var word = wrap.querySelector('.dbl-word');
+  var lines = wrap.querySelectorAll('.dbl-line');
+
+  function reset() {
+    wrap.classList.remove('dbl-go');
+    wrap.style.clipPath = '';
+    word.style.transform = '';
+    if (lines[0]) lines[0].style.top = '';
+    if (lines[1]) lines[1].style.top = '';
+    if (lines[2]) lines[2].style.bottom = '';
+  }
+  function play() {
+    reset();
+    // Force reflow so the animation restarts cleanly.
+    void wrap.offsetWidth;
+    wrap.classList.add('dbl-go');
+  }
+  vw.addEventListener('vw-focus', play);
+
+  // After each animation: measure actual glyph bounds and snap lines precisely
   word.addEventListener('animationend', function (e) {
     if (e.animationName !== 'dbl-scale') return;
     requestAnimationFrame(function () {
       var wRect = wrap.getBoundingClientRect();
-      // Find baseline via a zero-height inline-block reference
       var ref = document.createElement('span');
       ref.style.cssText = 'display:inline-block;vertical-align:baseline;width:0;height:0';
       word.appendChild(ref);
       var bY = ref.getBoundingClientRect().top;
       word.removeChild(ref);
-      // Measure cap-height via Canvas at the visual (scaled) font size
       var cvs = document.createElement('canvas');
       var ctx = cvs.getContext('2d');
       ctx.font = '700 ' + wRect.height + 'px "DM Serif Display",Georgia,serif';
@@ -1682,8 +1716,6 @@ stepEls.forEach(s=>obs.observe(s));
       var topOff = Math.max(0, capTopY - wRect.top);
       var botOff = Math.max(0, wRect.bottom - bY);
       var midOff = (topOff + wRect.height - botOff) / 2;
-      var lines = wrap.querySelectorAll('.dbl-line');
-      // Freeze final visual state, then remove animation class
       wrap.style.clipPath = 'inset(0)';
       word.style.transform = 'scaleY(2)';
       lines[0].style.top = topOff + 'px';
@@ -1691,23 +1723,25 @@ stepEls.forEach(s=>obs.observe(s));
       lines[2].style.bottom = botOff + 'px';
       wrap.classList.remove('dbl-go');
     });
-  }, { once: true });
+  });
 })();
 
 // ── Ticker animation for viz 02 title "3" ─────────────────────────────────────
-// Fires only once viz 2 is the focused .vw.
+// Fires whenever viz 2 becomes the focused .vw — re-plays on every pass.
 (function () {
   var tick = document.getElementById('picto-tick');
   if (!tick) return;
   var vw = tick.closest('.vw');
   if (!vw) return;
   vw.addEventListener('vw-focus', function () {
+    tick.classList.remove('tick-go');
+    void tick.offsetWidth;
     tick.classList.add('tick-go');
-  }, { once: true });
+  });
 })();
 
 // ── Scoring-box scroll-in animation for viz 03 title ──────────────────────────
-// Fires only once viz 3 is the focused .vw.
+// Fires whenever viz 3 becomes the focused .vw — re-plays on every pass.
 (function () {
   var sbWrap = document.getElementById('sb-wrap');
   if (!sbWrap) return;
@@ -1720,8 +1754,10 @@ stepEls.forEach(s=>obs.observe(s));
   var vw = sbWrap.closest('.vw');
   if (!vw) return;
   vw.addEventListener('vw-focus', function () {
+    sbWrap.classList.remove('sb-go');
+    void sbWrap.offsetWidth;
     sbWrap.classList.add('sb-go');
-  }, { once: true });
+  });
 })();
 
 // ── HWK pin: keep "How do we know the flowcharts work?" at the level of
@@ -1746,15 +1782,16 @@ stepEls.forEach(s=>obs.observe(s));
     return spacer.getBoundingClientRect().top;
   }
 
-  function pin() {
-    if (pinned) return;
+  function pin(pinTop) {
+    if (pinned) {
+      syncPos(pinTop);
+      return;
+    }
     pinned = true;
-    var rightRect = flowRight.getBoundingClientRect();
     spacer.style.height = hwk.offsetHeight + 'px';
     spacer.classList.add('is-active');
     hwk.classList.add('is-pinned');
-    hwk.style.left = rightRect.left + 'px';
-    hwk.style.width = rightRect.width + 'px';
+    syncPos(pinTop);
   }
   function unpin() {
     if (!pinned) return;
@@ -1764,17 +1801,37 @@ stepEls.forEach(s=>obs.observe(s));
     hwk.classList.remove('is-pinned');
     hwk.style.left = '';
     hwk.style.width = '';
+    hwk.style.top = '';
   }
-  function syncWidth() {
-    if (!pinned) return;
+  function syncPos(pinTop) {
     var rightRect = flowRight.getBoundingClientRect();
     hwk.style.left = rightRect.left + 'px';
     hwk.style.width = rightRect.width + 'px';
+    hwk.style.top = pinTop + 'px';
+  }
+
+  function computePinTop(vh) {
+    // Align HWK with the "start TB treatment" node, which sits at the
+    // bottom of the algorithm SVG. flow-left is sticky:top:72px and its
+    // height equals the SVG's rendered height, so the bottom of the
+    // sticky algorithm in viewport coords = 72 + flow-left.height.
+    // We pin HWK so its top sits a touch above that bottom edge,
+    // putting the question text in line with the n7 box.
+    var flowLeft = document.querySelector('.flow-left');
+    if (flowLeft) {
+      var lh = flowLeft.offsetHeight;
+      // n7 sits at ~93% down the algorithm; place HWK's top at that level.
+      var n7Y = 72 + lh * 0.92;
+      // Don't go above 50vh or below 80vh, so the layout stays sane on
+      // unusual viewport heights.
+      return Math.max(vh * 0.50, Math.min(vh * 0.80, n7Y));
+    }
+    return vh * 0.65;
   }
 
   function update() {
     var vh = window.innerHeight;
-    var pinTop = vh * 0.55;
+    var pinTop = computePinTop(vh);
     var evRect = ev.getBoundingClientRect();
     // HWK should be pinned while:
     //   the natural slot has scrolled above pinTop,
@@ -1782,8 +1839,7 @@ stepEls.forEach(s=>obs.observe(s));
     var natTop = pinned ? spacer.getBoundingClientRect().top : hwk.getBoundingClientRect().top;
     var evTooClose = evRect.top < pinTop + hwk.offsetHeight + 40;
     if (natTop < pinTop && !evTooClose) {
-      pin();
-      syncWidth();
+      pin(pinTop);
     } else {
       unpin();
     }
