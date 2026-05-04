@@ -144,12 +144,13 @@ h2{font-family:var(--font-display);font-size:clamp(26px,4vw,40px);line-height:1.
 @keyframes tick-scroll{0%{transform:translateY(0)}25%{transform:translateY(-1em)}50%{transform:translateY(-2em)}72%,100%{transform:translateY(-3em)}}
 /* ── Scoring box (viz 03 title) ────────────────────────────────────────────── */
 .sb-wrap{display:inline;font-weight:700}
-.sb-wrap .sb{display:inline-block;height:1em;clip-path:inset(0);line-height:1;vertical-align:baseline;padding:0;background:none;align-items:initial}
-.sb-t{display:flex;flex-direction:column;line-height:1}
-.sb-t>span{display:block;height:1em;line-height:1;text-align:center}
-.sb-t>span:first-child{color:#bbb;font-weight:400}
-.sb-go .sb-t{animation:sb-scroll .45s cubic-bezier(.22,1,.36,1) both}
-@keyframes sb-scroll{from{transform:translateY(0)}to{transform:translateY(-1em)}}
+.sb-wrap .sb{display:inline-block;position:relative;height:1em;overflow:hidden;line-height:1;vertical-align:baseline;padding:0;background:none}
+.sb-wrap .sb-l{display:inline-block;height:1em;line-height:1;transform:translateY(1em)}
+.sb-wrap .sb-p{position:absolute;left:0;right:0;top:0;height:1em;line-height:1;text-align:center;color:#bbb;font-weight:400;transform:translateY(0)}
+.sb-go .sb-l{animation:sb-l-up .45s cubic-bezier(.22,1,.36,1) both}
+.sb-go .sb-p{animation:sb-p-up .45s cubic-bezier(.22,1,.36,1) both}
+@keyframes sb-l-up{from{transform:translateY(1em)}to{transform:translateY(0)}}
+@keyframes sb-p-up{from{transform:translateY(0)}to{transform:translateY(-1em)}}
 .vd{font-size:12px;color:#888}
 .viz-source{font-size:11px;color:#aaa;padding:8px 24px 12px}
 .picto-vh{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}

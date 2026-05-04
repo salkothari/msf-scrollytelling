@@ -1029,7 +1029,7 @@ stepEls.forEach(s=>obs.observe(s));
     'Algorithm A score >10': 'Alg. A >10',
     'Algorithm B score >10': 'Alg. B >10',
     'TB contact':            'TB contact',
-    'Positive TB-LAM test':  'TB-LAM+',
+    'Positive TB-LAM test':  'Urine test',
     'Positive GeneXpert':    'GeneXpert+',
     'Clinical suspicion':    'Clinical',
     'Other TB test':         'Other TB',
@@ -1688,7 +1688,9 @@ stepEls.forEach(s=>obs.observe(s));
   if (!sbWrap) return;
   var sbs = sbWrap.querySelectorAll('.sb');
   sbs.forEach(function (el, i) {
-    el.querySelector('.sb-t').style.animationDelay = (i * 0.06) + 's';
+    var d = (i * 0.06) + 's';
+    el.querySelector('.sb-l').style.animationDelay = d;
+    el.querySelector('.sb-p').style.animationDelay = d;
   });
   function check() {
     var r = sbWrap.getBoundingClientRect();

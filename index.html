@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=37">
+<link rel="stylesheet" href="styles.css?v=38">
 
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -285,10 +285,7 @@
       <svg id="slope-svg" class="slope-svg"></svg>
       <div id="slope-tip" class="slope-tip"></div>
     </div>
-    <div class="viz-source" style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
-      <span>Source:</span>
-      <span style="font-style:italic">*Uganda never implemented the diagnostic flowcharts into their national policies</span>
-    </div>
+    <div class="viz-source" style="font-style:italic">*Uganda never implemented the diagnostic flowcharts into their national policies</div>
   </div>
 
   <!-- STACKED PICTOGRAM: Days until diagnosis -->
@@ -304,7 +301,7 @@
           <button class="picto-btn active" data-grp="all">All</button>
           <button class="picto-btn" data-grp="hiv">HIV+</button>
           <button class="picto-btn" data-grp="under2">Under 2</button>
-          <button class="picto-btn" data-grp="sam">SAM</button>
+          <button class="picto-btn" data-grp="sam">Severely malnourished</button>
         </div>
       </div>
     </div>
@@ -313,14 +310,13 @@
       <div id="picto-tip" class="picto-tip"></div>
     </div>
     <div class="picto-leg" id="picto-leg"></div>
-    <div class="viz-source">Source:</div>
   </div>
 
   <!-- SANKEY: Reasons for diagnosis -->
   <div class="vw">
     <div class="vh picto-vh">
       <div>
-        <div class="vt"><span class="vn">03</span>Diagnosis was mostly triggered by the <span id="sb-wrap" class="sb-wrap"><span class="sb"><span class="sb-t"><span>+</span><span>s</span></span></span><span class="sb"><span class="sb-t"><span>+</span><span>c</span></span></span><span class="sb"><span class="sb-t"><span>+</span><span>o</span></span></span><span class="sb"><span class="sb-t"><span>+</span><span>r</span></span></span><span class="sb"><span class="sb-t"><span>+</span><span>i</span></span></span><span class="sb"><span class="sb-t"><span>+</span><span>n</span></span></span><span class="sb"><span class="sb-t"><span>+</span><span>g</span></span></span> <span class="sb"><span class="sb-t"><span>+</span><span>b</span></span></span><span class="sb"><span class="sb-t"><span>+</span><span>o</span></span></span><span class="sb"><span class="sb-t"><span>+</span><span>x</span></span></span></span> in the flowchart</div>
+        <div class="vt"><span class="vn">03</span>Diagnosis was mostly triggered by the <span id="sb-wrap" class="sb-wrap"><span class="sb"><span class="sb-l">s</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">c</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">o</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">r</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">i</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">n</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">g</span><span class="sb-p">+</span></span> <span class="sb"><span class="sb-l">b</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">o</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">x</span><span class="sb-p">+</span></span></span> in the flowchart</div>
         <div class="vd">Of 496 children diagnosed using the TDA algorithm across 5 countries. Hover a flow to explore.</div>
       </div>
       <div class="picto-filter" id="sankey-filter">
@@ -329,14 +325,13 @@
           <button class="picto-btn active" data-grp="all">All</button>
           <button class="picto-btn" data-grp="hiv">HIV+</button>
           <button class="picto-btn" data-grp="u2">Under 2</button>
-          <button class="picto-btn" data-grp="sam">SAM</button>
+          <button class="picto-btn" data-grp="sam">Severely malnourished</button>
         </div>
       </div>
     </div>
     <div class="sankey-outer">
       <div id="sankey-wrap"></div>
     </div>
-    <div class="viz-source">Source:</div>
   </div>
 
 
@@ -453,7 +448,69 @@
     <div class="feas-single-wrap">
       <div class="feas-track" id="track-feedback">
 
-        <!-- Diagnostic Shift × 5 -->
+        <!-- Featured top 5 -->
+        <div class="feas-qcard" data-theme="2">
+          <span class="feas-qcard__openq">“</span>
+          <blockquote class="feas-qcard__quote">Thanks to these algorithms, we have <span class="qh qh--blue">diagnosed tuberculosis earlier and saved more children</span> in health facilities with limited resources.</blockquote>
+          <div class="feas-qcard__byline">
+            <div class="feas-qcard__img"><img data-fbimg="barry" src="" alt="Dr Ibrahima Barry"></div>
+            <div class="feas-qcard__byline-text">
+              <div class="feas-qcard__attr">Dr Ibrahima Barry</div>
+              <div class="feas-qcard__role">Local Principal Investigator, Algo TB Ped study, Guinea 🇬🇳</div>
+              <div class="feas-qcard__meta"><span class="feas-qcard__tag feas-qcard__tag--blue">Impact</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="feas-qcard" data-theme="3">
+          <span class="feas-qcard__openq">“</span>
+          <blockquote class="feas-qcard__quote">In an already underfunded TB response, <span class="qh qh--orange">children are pushed further to the back of the line</span> when services are disrupted by aid cuts, conflict, or displacement.</blockquote>
+          <div class="feas-qcard__byline">
+            <div class="feas-qcard__img"><img data-fbimg="cathy" src="" alt="Dr Cathy Hewson"></div>
+            <div class="feas-qcard__byline-text">
+              <div class="feas-qcard__attr">Dr Cathy Hewson</div>
+              <div class="feas-qcard__role">MSF Working Group Lead</div>
+              <div class="feas-qcard__meta"><span class="feas-qcard__tag feas-qcard__tag--orange">Implementation Gap</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="feas-qcard" data-theme="4">
+          <span class="feas-qcard__openq">“</span>
+          <blockquote class="feas-qcard__quote">The impact of implementing the WHO treatment decision algorithms in Niger has been <span class="qh qh--purple">a catalyst for hope.</span></blockquote>
+          <div class="feas-qcard__byline">
+            <div class="feas-qcard__img"><img data-fbimg="farouk" src="" alt="Dr Moussa Mamane Oumarou Farouk"></div>
+            <div class="feas-qcard__byline-text">
+              <div class="feas-qcard__attr">Dr Moussa Mamane Oumarou Farouk</div>
+              <div class="feas-qcard__role">TB Focal Point, Niger 🇳🇪</div>
+              <div class="feas-qcard__meta"><span class="feas-qcard__tag feas-qcard__tag--purple">Call to Action</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="feas-qcard" data-theme="2">
+          <span class="feas-qcard__openq">“</span>
+          <blockquote class="feas-qcard__quote">The WHO's recommendations serve as a <span class="qh qh--blue">crucial tool to help health workers diagnose TB in children in all settings</span>, even when there is limited access to laboratory tests and X-ray…</blockquote>
+          <div class="feas-qcard__byline">
+            <div class="feas-qcard__img"><img data-fbimg="gabriella" src="" alt="Dr Gabriella Ferlazzo"></div>
+            <div class="feas-qcard__byline-text">
+              <div class="feas-qcard__attr">Dr Gabriella Ferlazzo</div>
+              <div class="feas-qcard__role">TB Medical Advisor, MSF Access Campaign</div>
+              <div class="feas-qcard__meta"><span class="feas-qcard__tag feas-qcard__tag--blue">Impact</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="feas-qcard" data-theme="2">
+          <span class="feas-qcard__openq">“</span>
+          <blockquote class="feas-qcard__quote">It has also <span class="qh qh--blue">significantly reduced delays in starting treatment</span> in children. TB can spread quickly and lead to serious infections. Any delay in starting treatment can worsen their condition.</blockquote>
+          <div class="feas-qcard__byline">
+            <div class="feas-qcard__img"><img data-fbimg="umar" src="" alt="Dr Saima Umar"></div>
+            <div class="feas-qcard__byline-text">
+              <div class="feas-qcard__attr">Dr Saima Umar</div>
+              <div class="feas-qcard__role">Head of Paediatrics, Gujranwala Teaching Hospital, Pakistan 🇵🇰</div>
+              <div class="feas-qcard__meta"><span class="feas-qcard__tag feas-qcard__tag--blue">Impact</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Diagnostic Shift -->
         <div class="feas-qcard" data-theme="1">
           <span class="feas-qcard__openq">“</span>
           <blockquote class="feas-qcard__quote">The TDAs have streamlined the diagnostic and treatment decision-making approach for TB in children—a process that had long remained challenging. They allow us improve the prognosis for children with TB by facilitating <span class="qh qh--teal">early diagnosis</span>.</blockquote>
@@ -515,31 +572,7 @@
           </div>
         </div>
 
-        <!-- Impact × 5 -->
-        <div class="feas-qcard" data-theme="2">
-          <span class="feas-qcard__openq">“</span>
-          <blockquote class="feas-qcard__quote">Thanks to these algorithms, we have <span class="qh qh--blue">diagnosed tuberculosis earlier and saved more children</span> in health facilities with limited resources.</blockquote>
-          <div class="feas-qcard__byline">
-            <div class="feas-qcard__img"><img data-fbimg="barry" src="" alt="Dr Ibrahima Barry"></div>
-            <div class="feas-qcard__byline-text">
-              <div class="feas-qcard__attr">Dr Ibrahima Barry</div>
-              <div class="feas-qcard__role">Local Principal Investigator, Algo TB Ped study, Guinea 🇬🇳</div>
-              <div class="feas-qcard__meta"><span class="feas-qcard__tag feas-qcard__tag--blue">Impact</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="feas-qcard" data-theme="2">
-          <span class="feas-qcard__openq">“</span>
-          <blockquote class="feas-qcard__quote">It has also <span class="qh qh--blue">significantly reduced delays in starting treatment</span> in children. TB can spread quickly and lead to serious infections. Any delay in starting treatment can worsen their condition.</blockquote>
-          <div class="feas-qcard__byline">
-            <div class="feas-qcard__img"><img data-fbimg="umar" src="" alt="Dr Saima Umar"></div>
-            <div class="feas-qcard__byline-text">
-              <div class="feas-qcard__attr">Dr Saima Umar</div>
-              <div class="feas-qcard__role">Head of Paediatrics, Gujranwala Teaching Hospital, Pakistan 🇵🇰</div>
-              <div class="feas-qcard__meta"><span class="feas-qcard__tag feas-qcard__tag--blue">Impact</span></div>
-            </div>
-          </div>
-        </div>
+        <!-- Impact -->
         <div class="feas-qcard" data-theme="2">
           <span class="feas-qcard__openq">“</span>
           <blockquote class="feas-qcard__quote">Using the algorithm is <span class="qh qh--blue">easy, feasible and acceptable</span> to follow in the Malakal Project.</blockquote>
@@ -548,18 +581,6 @@
             <div class="feas-qcard__byline-text">
               <div class="feas-qcard__attr">Dr Lazro Fidelle Nyikayo</div>
               <div class="feas-qcard__role">Study Coordinator, South Sudan 🇸🇸</div>
-              <div class="feas-qcard__meta"><span class="feas-qcard__tag feas-qcard__tag--blue">Impact</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="feas-qcard" data-theme="2">
-          <span class="feas-qcard__openq">“</span>
-          <blockquote class="feas-qcard__quote">The WHO's recommendations serve as a <span class="qh qh--blue">crucial tool to help health workers diagnose TB in children in all settings</span>, even when there is limited access to laboratory tests and X-ray…</blockquote>
-          <div class="feas-qcard__byline">
-            <div class="feas-qcard__img"><img data-fbimg="gabriella" src="" alt="Dr Gabriella Ferlazzo"></div>
-            <div class="feas-qcard__byline-text">
-              <div class="feas-qcard__attr">Dr Gabriella Ferlazzo</div>
-              <div class="feas-qcard__role">TB Medical Advisor, MSF Access Campaign</div>
               <div class="feas-qcard__meta"><span class="feas-qcard__tag feas-qcard__tag--blue">Impact</span></div>
             </div>
           </div>
@@ -577,19 +598,7 @@
           </div>
         </div>
 
-        <!-- Implementation Gap × 3 -->
-        <div class="feas-qcard" data-theme="3">
-          <span class="feas-qcard__openq">“</span>
-          <blockquote class="feas-qcard__quote">In an already underfunded TB response, <span class="qh qh--orange">children are pushed further to the back of the line</span> when services are disrupted by aid cuts, conflict, or displacement.</blockquote>
-          <div class="feas-qcard__byline">
-            <div class="feas-qcard__img"><img data-fbimg="cathy" src="" alt="Dr Cathy Hewson"></div>
-            <div class="feas-qcard__byline-text">
-              <div class="feas-qcard__attr">Dr Cathy Hewson</div>
-              <div class="feas-qcard__role">MSF Working Group Lead</div>
-              <div class="feas-qcard__meta"><span class="feas-qcard__tag feas-qcard__tag--orange">Implementation Gap</span></div>
-            </div>
-          </div>
-        </div>
+        <!-- Implementation Gap -->
         <div class="feas-qcard" data-theme="3">
           <span class="feas-qcard__openq">“</span>
           <blockquote class="feas-qcard__quote">For algorithms to be sustained in our hospitals, <span class="qh qh--orange">regular monitoring and follow-up is important.</span></blockquote>
@@ -615,7 +624,7 @@
           </div>
         </div>
 
-        <!-- Call to Action × 2 -->
+        <!-- Call to Action -->
         <div class="feas-qcard" data-theme="4">
           <span class="feas-qcard__openq">“</span>
           <blockquote class="feas-qcard__quote">We urge governments to adopt and put the WHO recommendations into practice… Governments must <span class="qh qh--purple">leave no stone unturned to find every child with TB and treat them right away.</span></blockquote>
@@ -624,18 +633,6 @@
             <div class="feas-qcard__byline-text">
               <div class="feas-qcard__attr">Dr Gabriella Ferlazzo</div>
               <div class="feas-qcard__role">TB Medical Advisor, MSF Access Campaign</div>
-              <div class="feas-qcard__meta"><span class="feas-qcard__tag feas-qcard__tag--purple">Call to Action</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="feas-qcard" data-theme="4">
-          <span class="feas-qcard__openq">“</span>
-          <blockquote class="feas-qcard__quote">The impact of implementing the WHO treatment decision algorithms in Niger has been <span class="qh qh--purple">a catalyst for hope.</span></blockquote>
-          <div class="feas-qcard__byline">
-            <div class="feas-qcard__img"><img data-fbimg="farouk" src="" alt="Dr Moussa Mamane Oumarou Farouk"></div>
-            <div class="feas-qcard__byline-text">
-              <div class="feas-qcard__attr">Dr Moussa Mamane Oumarou Farouk</div>
-              <div class="feas-qcard__role">TB Focal Point, Niger 🇳🇪</div>
               <div class="feas-qcard__meta"><span class="feas-qcard__tag feas-qcard__tag--purple">Call to Action</span></div>
             </div>
           </div>
@@ -671,11 +668,6 @@
                 <p>Some children who <em>don't</em> have TB will still be flagged — a deliberate tradeoff. Missing a case in a disease this deadly costs more than over-treating.</p>
               </div>
             </div>
-          </details>
-
-          <details class="faq__item">
-            <summary class="faq__q">Do TDAs lead to overtreatment?</summary>
-            <p class="faq__a">TDAs prioritise sensitivity to avoid missed diagnoses. While some overtreatment may occur, it is outweighed by the current reality that many children with TB are never diagnosed or treated.</p>
           </details>
 
           <details class="faq__item">
@@ -731,5 +723,5 @@
 <script src="https://unpkg.com/scrollama"></script>
 <script src="images.js?v=3"></script>
 <script src="scroll.js?v=16"></script>
-<script src="main.js?v=63"></script>
+<script src="main.js?v=64"></script>
 </html>
