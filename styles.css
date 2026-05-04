@@ -135,6 +135,21 @@ h2{font-family:var(--font-display);font-size:clamp(26px,4vw,40px);line-height:1.
 @keyframes dbl-scale{from{transform:scaleY(1)}to{transform:scaleY(2)}}
 @keyframes dbl-line-top{from{top:50%}to{top:0}}
 @keyframes dbl-line-mid{from{top:75%}to{top:50%}}
+/* ── Ticker (viz 02 title "3") ─────────────────────────────────────────────── */
+.tick-wrap{display:inline-block;height:1em;clip-path:inset(0);line-height:1;vertical-align:baseline}
+.tick{display:flex;flex-direction:column;line-height:1}
+.tick-n{display:block;height:1em;line-height:1;text-align:center;font-variant-numeric:tabular-nums}
+.tick-red{color:var(--red)}
+.tick.tick-go{animation:tick-scroll 1.5s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes tick-scroll{0%{transform:translateY(0)}25%{transform:translateY(-1em)}50%{transform:translateY(-2em)}72%,100%{transform:translateY(-3em)}}
+/* ── Scoring box (viz 03 title) ────────────────────────────────────────────── */
+.sb-wrap{display:inline;font-weight:700}
+.sb{display:inline-block;height:1em;clip-path:inset(0);line-height:1;vertical-align:baseline}
+.sb-t{display:flex;flex-direction:column;line-height:1}
+.sb-t>span{display:block;height:1em;line-height:1;text-align:center}
+.sb-t>span:first-child{color:#bbb;font-weight:400}
+.sb-go .sb-t{animation:sb-scroll .45s cubic-bezier(.22,1,.36,1) both}
+@keyframes sb-scroll{from{transform:translateY(0)}to{transform:translateY(-1em)}}
 .vd{font-size:12px;color:#888}
 .viz-source{font-size:11px;color:#aaa;padding:8px 24px 12px}
 .picto-vh{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}

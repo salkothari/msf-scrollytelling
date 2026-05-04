@@ -1633,4 +1633,70 @@ stepEls.forEach(s=>obs.observe(s));
   }
   window.addEventListener('scroll', check, { passive: true });
   check();
+
+  // After animation ends: measure actual glyph bounds and snap lines precisely
+  var word = wrap.querySelector('.dbl-word');
+  word.addEventListener('animationend', function (e) {
+    if (e.animationName !== 'dbl-scale') return;
+    requestAnimationFrame(function () {
+      var wRect = wrap.getBoundingClientRect();
+      // Find baseline via a zero-height inline-block reference
+      var ref = document.createElement('span');
+      ref.style.cssText = 'display:inline-block;vertical-align:baseline;width:0;height:0';
+      word.appendChild(ref);
+      var bY = ref.getBoundingClientRect().top;
+      word.removeChild(ref);
+      // Measure cap-height via Canvas at the visual (scaled) font size
+      var cvs = document.createElement('canvas');
+      var ctx = cvs.getContext('2d');
+      ctx.font = '700 ' + wRect.height + 'px "DM Serif Display",Georgia,serif';
+      var capH = ctx.measureText('DOUBLE').actualBoundingBoxAscent || wRect.height * 0.72;
+      var capTopY = bY - capH;
+      var topOff = Math.max(0, capTopY - wRect.top);
+      var botOff = Math.max(0, wRect.bottom - bY);
+      var midOff = (topOff + wRect.height - botOff) / 2;
+      var lines = wrap.querySelectorAll('.dbl-line');
+      // Freeze final visual state, then remove animation class
+      wrap.style.clipPath = 'inset(0)';
+      word.style.transform = 'scaleY(2)';
+      lines[0].style.top = topOff + 'px';
+      lines[1].style.top = midOff + 'px';
+      lines[2].style.bottom = botOff + 'px';
+      wrap.classList.remove('dbl-go');
+    });
+  }, { once: true });
+})();
+
+// ── Ticker animation for viz 02 title "3" ─────────────────────────────────────
+(function () {
+  var tick = document.getElementById('picto-tick');
+  if (!tick) return;
+  function check() {
+    var r = tick.getBoundingClientRect();
+    if (r.top < window.innerHeight * 0.85) {
+      tick.classList.add('tick-go');
+      window.removeEventListener('scroll', check);
+    }
+  }
+  window.addEventListener('scroll', check, { passive: true });
+  check();
+})();
+
+// ── Scoring-box scroll-in animation for viz 03 title ──────────────────────────
+(function () {
+  var sbWrap = document.getElementById('sb-wrap');
+  if (!sbWrap) return;
+  var sbs = sbWrap.querySelectorAll('.sb');
+  sbs.forEach(function (el, i) {
+    el.querySelector('.sb-t').style.animationDelay = (i * 0.06) + 's';
+  });
+  function check() {
+    var r = sbWrap.getBoundingClientRect();
+    if (r.top < window.innerHeight * 0.85) {
+      sbWrap.classList.add('sb-go');
+      window.removeEventListener('scroll', check);
+    }
+  }
+  window.addEventListener('scroll', check, { passive: true });
+  check();
 })();
