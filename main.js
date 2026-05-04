@@ -1490,49 +1490,101 @@ stepEls.forEach(s=>obs.observe(s));
   window.addEventListener('resize', render);
 })();
 
-// ── ctx-facts scroll-position reveal ─────────────────────────────────────────
-// The 6 facts unveil one-by-one as the user scrolls, in the order:
-// right column top→bottom, then left column top→bottom. We capture the
-// scrollY when the heading first nears the top of the viewport, then use
-// scroll *distance* past that point to gate each reveal. No scroll-lock,
-// no time-based animation — pure scroll position drives the cascade.
+// ── ctx-facts scroll-locked one-by-one reveal ────────────────────────────────
+// When the Solution section enters view, the page-scroll is frozen and each
+// scroll "tick" (wheel burst, trackpad swipe, touch swipe, or arrow/space/
+// PgDn key) reveals the next fact in the order:
+//   left-top → left-mid → left-bot → right-top → right-mid → right-bot.
+// Once the last fact (index 5: "Based on data pooled...") lights, the page
+// scroll is unlocked and the user can continue.
 (function () {
   var section = document.querySelector('.ctx');
   var facts   = document.querySelectorAll('.ctx-fact');
   if (!section || facts.length < 6) return;
 
-  // grid is 2 columns; fact order in DOM is row-major:
-  // [L0, R0, L1, R1, L2, R2]. We want L-top→bottom then R-top→bottom.
   var revealOrder = [0, 2, 4, 1, 3, 5];
-  var SCROLL_PER_FACT = 90;
-  var startY = null;
-  var lit = 0;
+  var revealed = 0;
+  var locked = false;
+  var lastRevealAt = 0;
+  var REVEAL_COOLDOWN = 350; // ms between successive reveals
+  var touchStartY = null;
+  var TOUCH_THRESHOLD = 22;
 
-  function update() {
-    if (startY === null) {
-      var rect = section.getBoundingClientRect();
-      // Begin once the heading has scrolled to roughly the top third
-      // of the viewport — that's when the user is "settled" in the
-      // section and ready for the cascade to start.
-      if (rect.top < window.innerHeight * 0.45) {
-        startY = window.scrollY;
-      } else {
-        return;
-      }
-    }
-    var delta = Math.max(0, window.scrollY - startY);
-    var target = Math.min(revealOrder.length, Math.floor(delta / SCROLL_PER_FACT) + 1);
-    while (lit < target) {
-      facts[revealOrder[lit]].classList.add('cf-lit');
-      lit++;
-    }
-    if (lit >= revealOrder.length) {
-      window.removeEventListener('scroll', update);
+  function revealNext() {
+    if (revealed >= revealOrder.length) return;
+    facts[revealOrder[revealed]].classList.add('cf-lit');
+    revealed++;
+    if (revealed >= revealOrder.length) {
+      // Small delay so the user sees the last reveal animate before
+      // page scroll resumes.
+      setTimeout(unlock, 220);
     }
   }
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
-  update();
+
+  function tryReveal(direction) {
+    if (direction <= 0) return;
+    var now = Date.now();
+    if (now - lastRevealAt < REVEAL_COOLDOWN) return;
+    lastRevealAt = now;
+    revealNext();
+  }
+
+  function onWheel(e) {
+    e.preventDefault();
+    tryReveal(e.deltaY);
+  }
+  function onTouchStart(e) {
+    touchStartY = e.touches[0].clientY;
+  }
+  function onTouchMove(e) {
+    e.preventDefault();
+    if (touchStartY === null) return;
+    var dy = touchStartY - e.touches[0].clientY;
+    if (Math.abs(dy) > TOUCH_THRESHOLD) {
+      touchStartY = e.touches[0].clientY;
+      tryReveal(dy);
+    }
+  }
+  function onKey(e) {
+    if (['ArrowDown', 'PageDown', ' ', 'Spacebar'].indexOf(e.key) !== -1) {
+      e.preventDefault();
+      tryReveal(1);
+    }
+  }
+
+  function lock() {
+    if (locked) return;
+    locked = true;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    document.addEventListener('wheel', onWheel, { passive: false });
+    document.addEventListener('touchstart', onTouchStart, { passive: false });
+    document.addEventListener('touchmove', onTouchMove, { passive: false });
+    document.addEventListener('keydown', onKey);
+    // The scroll that brought us here counts as the first tick.
+    lastRevealAt = Date.now();
+    revealNext();
+  }
+  function unlock() {
+    if (!locked) return;
+    locked = false;
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    document.removeEventListener('wheel', onWheel);
+    document.removeEventListener('touchstart', onTouchStart);
+    document.removeEventListener('touchmove', onTouchMove);
+    document.removeEventListener('keydown', onKey);
+  }
+
+  // Engage the lock once the section's heading has reached the upper
+  // half of the viewport — i.e., the user is committed to this section.
+  var io = new IntersectionObserver(function (entries) {
+    if (entries[0].isIntersecting && revealed === 0 && !locked) {
+      io.disconnect();
+      lock();
+    }
+  }, { rootMargin: '0px 0px -50% 0px', threshold: 0 });
+  io.observe(section);
 })();
 
 // ── Problem 1 "hard to detect" magnifying glass ──────────────────────────────
