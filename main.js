@@ -1619,3 +1619,18 @@ stepEls.forEach(s=>obs.observe(s));
   window.addEventListener('scroll', check, { passive: true });
   check();
 })();
+
+// ── DOUBLE word stretch animation ─────────────────────────────────────────────
+(function () {
+  var wrap = document.querySelector('.dbl-wrap');
+  if (!wrap) return;
+  function check() {
+    var rect = wrap.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.85) {
+      wrap.classList.add('dbl-go');
+      window.removeEventListener('scroll', check);
+    }
+  }
+  window.addEventListener('scroll', check, { passive: true });
+  check();
+})();

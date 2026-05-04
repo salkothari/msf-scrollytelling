@@ -119,14 +119,22 @@ h2{font-family:var(--font-display);font-size:clamp(26px,4vw,40px);line-height:1.
 .fp.on{background:var(--red);border-color:var(--red);color:#fff}
 .vw{max-width:1040px;margin:0 auto 28px;border:1px solid rgba(0,0,0,.08);border-radius:14px;overflow:hidden}
 .vh{padding:20px 24px 14px;border-bottom:1px solid rgba(0,0,0,.06)}
-.vt{font-family:var(--font-display);font-size:18px;display:flex;align-items:center;gap:10px;margin-bottom:4px;color:#000}
-.vn{font-family:var(--font-body);font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--red);border:1.5px solid var(--red);border-radius:4px;padding:2px 6px}
-.dbl-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;height:36px;overflow:visible;margin:0 2px}
-.dbl-word{display:inline-block;color:#ee0202;font-weight:700;transform:scaleY(2);transform-origin:center;line-height:1;position:relative;z-index:1}
-.dbl-line{position:absolute;left:-12px;right:-12px;border-top:1.5px dashed #bbb;z-index:0}
-.dbl-line:nth-child(1){top:0}
-.dbl-line:nth-child(2){top:50%}
+.vt{font-family:var(--font-display);font-size:18px;display:flex;align-items:flex-end;gap:10px;margin-bottom:4px;color:#000}
+.vn{font-family:var(--font-body);font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--red);border:1.5px solid var(--red);border-radius:4px;padding:2px 6px;align-self:center}
+.dbl-wrap{position:relative;display:inline-flex;align-items:flex-end;height:36px;overflow:visible;margin:0 1px;clip-path:inset(50% 0 0 0)}
+.dbl-word{display:inline-block;color:#ee0202;font-weight:700;transform:scaleY(1);transform-origin:bottom center;line-height:1;position:relative;z-index:1}
+.dbl-line{position:absolute;left:0;right:0;border-top:1.5px dashed #bbb;z-index:0}
+.dbl-line:nth-child(1){top:50%}
+.dbl-line:nth-child(2){top:75%}
 .dbl-line:nth-child(3){bottom:0}
+.dbl-wrap.dbl-go{animation:dbl-clip .9s cubic-bezier(.22,1,.36,1) forwards}
+.dbl-wrap.dbl-go .dbl-word{animation:dbl-scale .9s cubic-bezier(.22,1,.36,1) forwards}
+.dbl-wrap.dbl-go .dbl-line:nth-child(1){animation:dbl-line-top .9s cubic-bezier(.22,1,.36,1) forwards}
+.dbl-wrap.dbl-go .dbl-line:nth-child(2){animation:dbl-line-mid .9s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes dbl-clip{from{clip-path:inset(50% 0 0 0)}to{clip-path:inset(0% 0 0 0)}}
+@keyframes dbl-scale{from{transform:scaleY(1)}to{transform:scaleY(2)}}
+@keyframes dbl-line-top{from{top:50%}to{top:0}}
+@keyframes dbl-line-mid{from{top:75%}to{top:50%}}
 .vd{font-size:12px;color:#888}
 .viz-source{font-size:11px;color:#aaa;padding:8px 24px 12px}
 .picto-vh{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
