@@ -1490,57 +1490,23 @@ stepEls.forEach(s=>obs.observe(s));
   window.addEventListener('resize', render);
 })();
 
-// ── ctx-facts wheel-intercept reveal ─────────────────────────────────────────
+// ── ctx-facts per-element scroll reveal ──────────────────────────────────────
+// Each fact lights as it enters the viewport from below — no scroll-lock,
+// so the page never feels stuck. Reveal threshold is tuned so each fact
+// lights just before its row scrolls into clear view, giving a one-by-one
+// cascade as the user scrolls naturally.
 (function () {
-  var section = document.querySelector('.ctx');
-  var facts   = document.querySelectorAll('.ctx-fact');
-  if (!section || !facts.length) return;
-
-  var revealOrder  = [0, 2, 4, 1, 3, 5];
-  var revealed     = 0;
-  var locked       = false;
-  var scrollAccum  = 0;
-  var SCROLL_PER_FACT = 120;
-
-  function revealNext() {
-    if (revealed < revealOrder.length) {
-      facts[revealOrder[revealed]].classList.add('cf-lit');
-      revealed++;
-    }
-    if (revealed >= revealOrder.length) unlock();
-  }
-
-  function lock() {
-    if (locked) return;
-    locked = true;
-    document.body.style.overflow = 'hidden';
-    document.addEventListener('wheel', onWheel, { passive: false });
-    revealNext();
-  }
-
-  function unlock() {
-    locked = false;
-    document.body.style.overflow = '';
-    document.removeEventListener('wheel', onWheel);
-  }
-
-  function onWheel(e) {
-    e.preventDefault();
-    if (e.deltaY <= 0) return;
-    scrollAccum += e.deltaY;
-    if (scrollAccum >= SCROLL_PER_FACT) {
-      scrollAccum = 0;
-      revealNext();
-    }
-  }
-
-  var obs = new IntersectionObserver(function (entries) {
-    if (entries[0].isIntersecting && revealed === 0) {
-      obs.disconnect();
-      lock();
-    }
-  }, { threshold: 0.4 });
-  obs.observe(section);
+  var facts = document.querySelectorAll('.ctx-fact');
+  if (!facts.length) return;
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('cf-lit');
+        io.unobserve(e.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -22% 0px', threshold: 0.01 });
+  facts.forEach(function (f) { io.observe(f); });
 })();
 
 // ── "How do we know the flowcharts work?" fixed overlay reveal ───────────────
@@ -1606,12 +1572,17 @@ stepEls.forEach(s=>obs.observe(s));
 })();
 
 // ── Problem 2 "underrepresented" slide-in animation ─────────────────────────
+// Fire only once the h2 ("Children are politically …") has scrolled close
+// to the top of the viewport — that way the reveal feels deliberate and
+// the user actually sees the word slide in instead of catching it
+// already finished.
 (function () {
   var sec = document.querySelector('.prob-section.prob-designed');
-  if (!sec) return;
+  var h2  = sec && sec.querySelector('.prob-h');
+  if (!sec || !h2) return;
   function check() {
-    var rect = sec.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.85 && rect.top > -rect.height) {
+    var rect = h2.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.30 && rect.bottom > 0) {
       sec.classList.add('prob-revealed');
       window.removeEventListener('scroll', check);
     }
@@ -1701,4 +1672,39 @@ stepEls.forEach(s=>obs.observe(s));
   }
   window.addEventListener('scroll', check, { passive: true });
   check();
+})();
+
+// ── Evidence vizzes: keep the centred .vw bright, fade the rest ──────────────
+// As the user scrolls the evidence section, the .vw whose centre is closest
+// to the viewport centre keeps full opacity; siblings fade. This focuses
+// attention on one chart at a time without removing the others from layout.
+(function () {
+  var vws = document.querySelectorAll('.sec-ev .vw');
+  if (vws.length < 2) return;
+  var visible = [];
+  vws.forEach(function (vw) {
+    if (vw.offsetParent !== null) visible.push(vw);
+  });
+  if (visible.length < 2) return;
+
+  function update() {
+    var vh = window.innerHeight;
+    var center = vh / 2;
+    var bestEl = null;
+    var bestDist = Infinity;
+    var anyOnscreen = false;
+    visible.forEach(function (vw) {
+      var r = vw.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < vh) anyOnscreen = true;
+      var c = r.top + r.height / 2;
+      var d = Math.abs(c - center);
+      if (d < bestDist) { bestDist = d; bestEl = vw; }
+    });
+    visible.forEach(function (vw) {
+      vw.classList.toggle('vw-faded', anyOnscreen && vw !== bestEl);
+    });
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
 })();
