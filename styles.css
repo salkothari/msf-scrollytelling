@@ -118,7 +118,9 @@ h2{font-family:var(--font-display);font-size:clamp(26px,4vw,40px);line-height:1.
 .fp{font-size:11px;font-weight:500;padding:4px 12px;border-radius:100px;border:1.5px solid #ddd;background:#fff;color:#555;cursor:pointer;transition:all .15s}
 .fp.on{background:var(--red);border-color:var(--red);color:#fff}
 .vw{max-width:1040px;margin:0 auto 28px;border:1px solid rgba(0,0,0,.08);border-radius:14px;overflow:hidden;transition:opacity .45s ease}
-.sec-ev .vw.vw-faded{opacity:.18}
+.sec-ev .ev-intro-new{transition:opacity .45s ease}
+.sec-ev .vw.vw-faded,
+.sec-ev .ev-intro-new.vw-faded{opacity:.18}
 .vh{padding:20px 24px 14px;border-bottom:1px solid rgba(0,0,0,.06)}
 .vt{font-family:var(--font-display);font-size:18px;display:flex;align-items:flex-end;gap:10px;margin-bottom:4px;color:#000}
 .vn{font-family:var(--font-body);font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--red);border:1.5px solid var(--red);border-radius:4px;padding:2px 6px;align-self:center}
@@ -394,12 +396,12 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .ctx-fact strong { color:#fff; font-weight:600 }
 @media(max-width:640px){ .ctx-facts{ grid-template-columns:1fr } }
 
-/* How do we know it works bridge */
-.hwk-band { position:fixed; bottom:52px; left:50%; transform:translateX(-50%); z-index:100; padding:0; text-align:center; white-space:nowrap; opacity:0; transition:opacity .6s ease; pointer-events:none }
-.hwk-band.hwk-vis { opacity:1; pointer-events:auto }
-.hwk-q { font-family:'DM Serif Display',serif; font-size:clamp(18px,2.5vw,28px); font-weight:400; color:#fff; margin:0; letter-spacing:-.01em; text-align:center }
+/* How do we know it works bridge — sits at the step-8 slot, in line with
+   the "start TB treatment" node, and scrolls like the other flow-steps. */
+.flow-step--hwk { justify-content:flex-start; padding-left:0 }
+.hwk-q { font-family:'DM Serif Display',serif; font-size:clamp(18px,2.5vw,28px); font-weight:400; color:#fff; margin:0; letter-spacing:-.01em; text-align:left; white-space:normal }
 .hwk-q em { font-style:italic; color:#ee0202 }
-.hwk-arrow { display:block; animation:hwk-bob 1.8s ease-in-out infinite }
+.hwk-arrow { display:inline-block; vertical-align:middle; margin-left:10px; animation:hwk-bob 1.8s ease-in-out infinite }
 @keyframes hwk-bob { 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(8px) } }
 
 /* Evidence bullets — divs to avoid list-style cascade */

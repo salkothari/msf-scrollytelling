@@ -1490,43 +1490,49 @@ stepEls.forEach(s=>obs.observe(s));
   window.addEventListener('resize', render);
 })();
 
-// ── ctx-facts per-element scroll reveal ──────────────────────────────────────
-// Each fact lights as it enters the viewport from below — no scroll-lock,
-// so the page never feels stuck. Reveal threshold is tuned so each fact
-// lights just before its row scrolls into clear view, giving a one-by-one
-// cascade as the user scrolls naturally.
+// ── ctx-facts scroll-position reveal ─────────────────────────────────────────
+// The 6 facts unveil one-by-one as the user scrolls, in the order:
+// right column top→bottom, then left column top→bottom. We capture the
+// scrollY when the heading first nears the top of the viewport, then use
+// scroll *distance* past that point to gate each reveal. No scroll-lock,
+// no time-based animation — pure scroll position drives the cascade.
 (function () {
-  var facts = document.querySelectorAll('.ctx-fact');
-  if (!facts.length) return;
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) {
-        e.target.classList.add('cf-lit');
-        io.unobserve(e.target);
+  var section = document.querySelector('.ctx');
+  var facts   = document.querySelectorAll('.ctx-fact');
+  if (!section || facts.length < 6) return;
+
+  // grid is 2 columns; fact order in DOM is row-major:
+  // [L0, R0, L1, R1, L2, R2]. We want R-top→bottom then L-top→bottom.
+  var revealOrder = [1, 3, 5, 0, 2, 4];
+  var SCROLL_PER_FACT = 90;
+  var startY = null;
+  var lit = 0;
+
+  function update() {
+    if (startY === null) {
+      var rect = section.getBoundingClientRect();
+      // Begin once the heading has scrolled to roughly the top third
+      // of the viewport — that's when the user is "settled" in the
+      // section and ready for the cascade to start.
+      if (rect.top < window.innerHeight * 0.45) {
+        startY = window.scrollY;
+      } else {
+        return;
       }
-    });
-  }, { rootMargin: '0px 0px -22% 0px', threshold: 0.01 });
-  facts.forEach(function (f) { io.observe(f); });
-})();
-
-// ── "How do we know the flowcharts work?" fixed overlay reveal ───────────────
-(function () {
-  var band        = document.getElementById('hwk-band');
-  var flowSection = document.querySelector('.flow-section');
-  var ev          = document.querySelector('.sec-ev');
-  if (!band || !flowSection || !ev) return;
-
-  function check() {
-    var flowRect = flowSection.getBoundingClientRect();
-    var evRect   = ev.getBoundingClientRect();
-    var vh = window.innerHeight;
-    // show when bottom of flow-section is within viewport and ev hasn't crossed halfway
-    var show = flowRect.bottom < vh + 80 && flowRect.bottom > -80 && evRect.top > vh * 0.45;
-    band.classList.toggle('hwk-vis', show);
+    }
+    var delta = Math.max(0, window.scrollY - startY);
+    var target = Math.min(revealOrder.length, Math.floor(delta / SCROLL_PER_FACT) + 1);
+    while (lit < target) {
+      facts[revealOrder[lit]].classList.add('cf-lit');
+      lit++;
+    }
+    if (lit >= revealOrder.length) {
+      window.removeEventListener('scroll', update);
+    }
   }
-
-  window.addEventListener('scroll', check, { passive: true });
-  check();
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
 })();
 
 // ── Problem 1 "hard to detect" magnifying glass ──────────────────────────────
@@ -1674,18 +1680,21 @@ stepEls.forEach(s=>obs.observe(s));
   check();
 })();
 
-// ── Evidence vizzes: keep the centred .vw bright, fade the rest ──────────────
-// As the user scrolls the evidence section, the .vw whose centre is closest
-// to the viewport centre keeps full opacity; siblings fade. This focuses
-// attention on one chart at a time without removing the others from layout.
+// ── Evidence vizzes: keep the centred block bright, fade the rest ────────────
+// The intro panel and each viz participate in a single "focus" group: the
+// element whose centre is closest to the viewport centre stays at full
+// opacity; everything else (intro included, when a viz is centred) fades.
 (function () {
-  var vws = document.querySelectorAll('.sec-ev .vw');
-  if (vws.length < 2) return;
-  var visible = [];
+  var section = document.querySelector('.sec-ev');
+  if (!section) return;
+  var intro = section.querySelector('.ev-intro-new');
+  var vws   = section.querySelectorAll('.vw');
+  var blocks = [];
+  if (intro) blocks.push(intro);
   vws.forEach(function (vw) {
-    if (vw.offsetParent !== null) visible.push(vw);
+    if (vw.offsetParent !== null) blocks.push(vw);
   });
-  if (visible.length < 2) return;
+  if (blocks.length < 2) return;
 
   function update() {
     var vh = window.innerHeight;
@@ -1693,15 +1702,15 @@ stepEls.forEach(s=>obs.observe(s));
     var bestEl = null;
     var bestDist = Infinity;
     var anyOnscreen = false;
-    visible.forEach(function (vw) {
-      var r = vw.getBoundingClientRect();
+    blocks.forEach(function (el) {
+      var r = el.getBoundingClientRect();
       if (r.bottom > 0 && r.top < vh) anyOnscreen = true;
       var c = r.top + r.height / 2;
       var d = Math.abs(c - center);
-      if (d < bestDist) { bestDist = d; bestEl = vw; }
+      if (d < bestDist) { bestDist = d; bestEl = el; }
     });
-    visible.forEach(function (vw) {
-      vw.classList.toggle('vw-faded', anyOnscreen && vw !== bestEl);
+    blocks.forEach(function (el) {
+      el.classList.toggle('vw-faded', anyOnscreen && el !== bestEl);
     });
   }
   window.addEventListener('scroll', update, { passive: true });
