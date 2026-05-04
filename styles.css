@@ -307,8 +307,8 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 #flow-svg{width:100%;display:block}
 
 /* Right: scroll steps — narrower so the flowchart can grow.
-   The padding-bottom is the runway HWK can sticky-pin within. */
-.flow-right{flex:0 0 26%;padding:40vh 0 140vh}
+   The padding-bottom is the runway HWK pins within before releasing. */
+.flow-right{flex:0 0 26%;padding:40vh 0 100vh}
 .flow-step{min-height:46vh;display:flex;align-items:center;padding:1rem 0}
 .step-card{
   background:rgba(255,255,255,.03);
@@ -397,21 +397,20 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .ctx-fact strong { color:#fff; font-weight:600 }
 @media(max-width:640px){ .ctx-facts{ grid-template-columns:1fr } }
 
-/* "How do we know it works" — step-8 slot, but pinned at the
-   level of the "start TB treatment" node (near the bottom of the
-   sticky algorithm SVG). It scrolls into place like the other steps,
-   then sticks while the user keeps scrolling toward the next section. */
+/* "How do we know it works" — sits in the step-8 slot, scrolls in
+   like the other steps, then JS pins it (position:fixed) at the
+   level of the "start TB treatment" node and releases as the
+   Evidence section approaches. */
 .flow-step--hwk {
   align-items:flex-start;
   justify-content:flex-start;
   padding:0;
-  position:sticky;
-  top:55vh;
-  min-height:0;
+  min-height:46vh;
   z-index:5;
-  margin-top:23vh;
-  margin-bottom:23vh;
 }
+.flow-step--hwk.is-pinned { position:fixed; top:55vh }
+.flow-step--hwk-spacer { display:none }
+.flow-step--hwk-spacer.is-active { display:block }
 .hwk-q { font-family:'DM Serif Display',serif; font-size:clamp(18px,2.5vw,28px); font-weight:400; color:#fff; margin:0; letter-spacing:-.01em; text-align:left; white-space:normal }
 .hwk-q em { font-style:italic; color:#ee0202 }
 .hwk-arrow { display:inline-block; vertical-align:middle; margin-left:10px; animation:hwk-bob 1.8s ease-in-out infinite }

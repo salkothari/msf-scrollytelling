@@ -1724,6 +1724,75 @@ stepEls.forEach(s=>obs.observe(s));
   }, { once: true });
 })();
 
+// ── HWK pin: keep "How do we know the flowcharts work?" at the level of
+//    the "start TB treatment" node once it scrolls in, until the Evidence
+//    section starts to come into view. We use JS-controlled position:fixed
+//    plus a same-height spacer so the layout doesn't jump when pinning. ────
+(function () {
+  var hwk = document.querySelector('.flow-step--hwk');
+  var flowRight = document.querySelector('.flow-right');
+  var ev = document.querySelector('.sec-ev');
+  if (!hwk || !flowRight || !ev) return;
+
+  var spacer = document.createElement('div');
+  spacer.className = 'flow-step flow-step--hwk-spacer';
+  hwk.parentNode.insertBefore(spacer, hwk);
+
+  var pinned = false;
+
+  function natOffsetTop() {
+    // Position of HWK's natural slot relative to viewport, computed from the
+    // spacer (which always sits in flow at HWK's slot location).
+    return spacer.getBoundingClientRect().top;
+  }
+
+  function pin() {
+    if (pinned) return;
+    pinned = true;
+    var rightRect = flowRight.getBoundingClientRect();
+    spacer.style.height = hwk.offsetHeight + 'px';
+    spacer.classList.add('is-active');
+    hwk.classList.add('is-pinned');
+    hwk.style.left = rightRect.left + 'px';
+    hwk.style.width = rightRect.width + 'px';
+  }
+  function unpin() {
+    if (!pinned) return;
+    pinned = false;
+    spacer.classList.remove('is-active');
+    spacer.style.height = '';
+    hwk.classList.remove('is-pinned');
+    hwk.style.left = '';
+    hwk.style.width = '';
+  }
+  function syncWidth() {
+    if (!pinned) return;
+    var rightRect = flowRight.getBoundingClientRect();
+    hwk.style.left = rightRect.left + 'px';
+    hwk.style.width = rightRect.width + 'px';
+  }
+
+  function update() {
+    var vh = window.innerHeight;
+    var pinTop = vh * 0.55;
+    var evRect = ev.getBoundingClientRect();
+    // HWK should be pinned while:
+    //   the natural slot has scrolled above pinTop,
+    //   AND the Evidence section hasn't started pushing into the pin row.
+    var natTop = pinned ? spacer.getBoundingClientRect().top : hwk.getBoundingClientRect().top;
+    var evTooClose = evRect.top < pinTop + hwk.offsetHeight + 40;
+    if (natTop < pinTop && !evTooClose) {
+      pin();
+      syncWidth();
+    } else {
+      unpin();
+    }
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+
 // ── Evidence vizzes: keep the centred block bright, fade the rest ────────────
 // The intro panel and each viz participate in a single "focus" group: the
 // element whose centre is closest to the viewport centre stays at full
