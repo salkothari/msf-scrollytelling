@@ -1673,7 +1673,7 @@ stepEls.forEach(s=>obs.observe(s));
   if (!tick) return;
   function check() {
     var r = tick.getBoundingClientRect();
-    if (r.top < window.innerHeight * 0.85) {
+    if (r.top < window.innerHeight * 0.85 && r.bottom > 0) {
       tick.classList.add('tick-go');
       window.removeEventListener('scroll', check);
     }
@@ -1692,7 +1692,7 @@ stepEls.forEach(s=>obs.observe(s));
   });
   function check() {
     var r = sbWrap.getBoundingClientRect();
-    if (r.top < window.innerHeight * 0.85) {
+    if (r.top < window.innerHeight * 0.85 && r.bottom > 0) {
       sbWrap.classList.add('sb-go');
       window.removeEventListener('scroll', check);
     }

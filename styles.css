@@ -144,7 +144,7 @@ h2{font-family:var(--font-display);font-size:clamp(26px,4vw,40px);line-height:1.
 @keyframes tick-scroll{0%{transform:translateY(0)}25%{transform:translateY(-1em)}50%{transform:translateY(-2em)}72%,100%{transform:translateY(-3em)}}
 /* ── Scoring box (viz 03 title) ────────────────────────────────────────────── */
 .sb-wrap{display:inline;font-weight:700}
-.sb{display:inline-block;height:1em;clip-path:inset(0);line-height:1;vertical-align:baseline}
+.sb-wrap .sb{display:inline-block;height:1em;clip-path:inset(0);line-height:1;vertical-align:baseline;padding:0;background:none;align-items:initial}
 .sb-t{display:flex;flex-direction:column;line-height:1}
 .sb-t>span{display:block;height:1em;line-height:1;text-align:center}
 .sb-t>span:first-child{color:#bbb;font-weight:400}
