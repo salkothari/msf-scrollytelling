@@ -1502,8 +1502,8 @@ stepEls.forEach(s=>obs.observe(s));
   if (!section || facts.length < 6) return;
 
   // grid is 2 columns; fact order in DOM is row-major:
-  // [L0, R0, L1, R1, L2, R2]. We want R-top→bottom then L-top→bottom.
-  var revealOrder = [1, 3, 5, 0, 2, 4];
+  // [L0, R0, L1, R1, L2, R2]. We want L-top→bottom then R-top→bottom.
+  var revealOrder = [0, 2, 4, 1, 3, 5];
   var SCROLL_PER_FACT = 90;
   var startY = null;
   var lit = 0;
@@ -1598,18 +1598,16 @@ stepEls.forEach(s=>obs.observe(s));
 })();
 
 // ── DOUBLE word stretch animation ─────────────────────────────────────────────
+// Fires only once viz 1 itself is the focused .vw — so the user sees
+// the stretch happen as the chart comes to centre, not before.
 (function () {
   var wrap = document.querySelector('.dbl-wrap');
   if (!wrap) return;
-  function check() {
-    var rect = wrap.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.85) {
-      wrap.classList.add('dbl-go');
-      window.removeEventListener('scroll', check);
-    }
-  }
-  window.addEventListener('scroll', check, { passive: true });
-  check();
+  var vw = wrap.closest('.vw');
+  if (!vw) return;
+  vw.addEventListener('vw-focus', function () {
+    wrap.classList.add('dbl-go');
+  }, { once: true });
 
   // After animation ends: measure actual glyph bounds and snap lines precisely
   var word = wrap.querySelector('.dbl-word');
@@ -1645,21 +1643,19 @@ stepEls.forEach(s=>obs.observe(s));
 })();
 
 // ── Ticker animation for viz 02 title "3" ─────────────────────────────────────
+// Fires only once viz 2 is the focused .vw.
 (function () {
   var tick = document.getElementById('picto-tick');
   if (!tick) return;
-  function check() {
-    var r = tick.getBoundingClientRect();
-    if (r.top < window.innerHeight * 0.85 && r.bottom > 0) {
-      tick.classList.add('tick-go');
-      window.removeEventListener('scroll', check);
-    }
-  }
-  window.addEventListener('scroll', check, { passive: true });
-  check();
+  var vw = tick.closest('.vw');
+  if (!vw) return;
+  vw.addEventListener('vw-focus', function () {
+    tick.classList.add('tick-go');
+  }, { once: true });
 })();
 
 // ── Scoring-box scroll-in animation for viz 03 title ──────────────────────────
+// Fires only once viz 3 is the focused .vw.
 (function () {
   var sbWrap = document.getElementById('sb-wrap');
   if (!sbWrap) return;
@@ -1669,21 +1665,20 @@ stepEls.forEach(s=>obs.observe(s));
     el.querySelector('.sb-l').style.animationDelay = d;
     el.querySelector('.sb-p').style.animationDelay = d;
   });
-  function check() {
-    var r = sbWrap.getBoundingClientRect();
-    if (r.top < window.innerHeight * 0.85 && r.bottom > 0) {
-      sbWrap.classList.add('sb-go');
-      window.removeEventListener('scroll', check);
-    }
-  }
-  window.addEventListener('scroll', check, { passive: true });
-  check();
+  var vw = sbWrap.closest('.vw');
+  if (!vw) return;
+  vw.addEventListener('vw-focus', function () {
+    sbWrap.classList.add('sb-go');
+  }, { once: true });
 })();
 
 // ── Evidence vizzes: keep the centred block bright, fade the rest ────────────
 // The intro panel and each viz participate in a single "focus" group: the
 // element whose centre is closest to the viewport centre stays at full
 // opacity; everything else (intro included, when a viz is centred) fades.
+// When a .vw enters focus for the first time we dispatch a "vw-focus"
+// event on it so the per-viz title animations can latch off the same
+// signal.
 (function () {
   var section = document.querySelector('.sec-ev');
   if (!section) return;
@@ -1710,7 +1705,13 @@ stepEls.forEach(s=>obs.observe(s));
       if (d < bestDist) { bestDist = d; bestEl = el; }
     });
     blocks.forEach(function (el) {
+      var isFocus = anyOnscreen && el === bestEl;
+      var wasFocus = el.classList.contains('vw-focused');
       el.classList.toggle('vw-faded', anyOnscreen && el !== bestEl);
+      el.classList.toggle('vw-focused', isFocus);
+      if (isFocus && !wasFocus) {
+        el.dispatchEvent(new CustomEvent('vw-focus'));
+      }
     });
   }
   window.addEventListener('scroll', update, { passive: true });

@@ -396,9 +396,19 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .ctx-fact strong { color:#fff; font-weight:600 }
 @media(max-width:640px){ .ctx-facts{ grid-template-columns:1fr } }
 
-/* How do we know it works bridge — sits at the step-8 slot, in line with
-   the "start TB treatment" node, and scrolls like the other flow-steps. */
-.flow-step--hwk { justify-content:flex-start; padding-left:0 }
+/* "How do we know it works" — step-8 slot, but pinned at the
+   level of the "start TB treatment" node (near the bottom of the
+   sticky algorithm SVG). It scrolls into place like the other steps,
+   then sticks while the user keeps scrolling toward the next section. */
+.flow-step--hwk {
+  align-items:flex-start;
+  justify-content:flex-start;
+  padding:0;
+  position:sticky;
+  top:55vh;
+  min-height:46vh;
+  z-index:5;
+}
 .hwk-q { font-family:'DM Serif Display',serif; font-size:clamp(18px,2.5vw,28px); font-weight:400; color:#fff; margin:0; letter-spacing:-.01em; text-align:left; white-space:normal }
 .hwk-q em { font-style:italic; color:#ee0202 }
 .hwk-arrow { display:inline-block; vertical-align:middle; margin-left:10px; animation:hwk-bob 1.8s ease-in-out infinite }
