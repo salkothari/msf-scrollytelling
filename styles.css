@@ -1064,7 +1064,7 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   padding: 80px 48px;
 }
 .feedback-inner {
-  max-width: 1040px;
+  max-width: 1200px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
@@ -1095,6 +1095,10 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   line-height: 1.08;
   color: #fff;
   margin-bottom: 0;
+  white-space: nowrap;
+}
+@media (max-width: 900px) {
+  .feedback-hd__lead { white-space: normal }
 }
 .feedback-hd__main {
   display: block;
