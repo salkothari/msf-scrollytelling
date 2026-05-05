@@ -1791,8 +1791,9 @@ stepEls.forEach(s=>obs.observe(s));
 (function () {
   var hwk = document.querySelector('.flow-step--hwk');
   var flowRight = document.querySelector('.flow-right');
+  var flowSection = document.querySelector('.flow-section');
   var ev = document.querySelector('.sec-ev');
-  if (!hwk || !flowRight || !ev) return;
+  if (!hwk || !flowRight || !flowSection || !ev) return;
 
   var spacer = document.createElement('div');
   spacer.className = 'flow-step flow-step--hwk-spacer';
@@ -1824,13 +1825,17 @@ stepEls.forEach(s=>obs.observe(s));
     spacer.style.height = '';
     hwk.classList.remove('is-pinned');
     hwk.style.left = '';
+    hwk.style.right = '';
     hwk.style.width = '';
     hwk.style.top = '';
   }
   function syncPos(pinTop) {
+    // Anchor HWK's right edge to flow-right's right, but let it grow
+    // leftward as needed so the single-line question never wraps.
     var rightRect = flowRight.getBoundingClientRect();
-    hwk.style.left = rightRect.left + 'px';
-    hwk.style.width = rightRect.width + 'px';
+    hwk.style.left = 'auto';
+    hwk.style.right = (window.innerWidth - rightRect.right) + 'px';
+    hwk.style.width = 'auto';
     hwk.style.top = pinTop + 'px';
   }
 
@@ -1856,13 +1861,15 @@ stepEls.forEach(s=>obs.observe(s));
   function update() {
     var vh = window.innerHeight;
     var pinTop = computePinTop(vh);
-    var evRect = ev.getBoundingClientRect();
-    // HWK should be pinned while:
-    //   the natural slot has scrolled above pinTop,
-    //   AND the Evidence section hasn't started pushing into the pin row.
+    // HWK stays pinned at the "start TB treatment" level for the full
+    // flow section. It only releases once the flow section's bottom
+    // edge has scrolled up to the pin row — at that point the algorithm
+    // itself is leaving the viewport, so HWK scrolls off with it
+    // rather than disappearing prematurely.
     var natTop = pinned ? spacer.getBoundingClientRect().top : hwk.getBoundingClientRect().top;
-    var evTooClose = evRect.top < pinTop + hwk.offsetHeight + 40;
-    if (natTop < pinTop && !evTooClose) {
+    var flowBottom = flowSection.getBoundingClientRect().bottom;
+    var sectionEnding = flowBottom < pinTop + hwk.offsetHeight + 20;
+    if (natTop < pinTop && !sectionEnding) {
       pin(pinTop);
     } else {
       unpin();
