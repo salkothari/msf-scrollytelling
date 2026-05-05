@@ -1213,7 +1213,8 @@ stepEls.forEach(s=>obs.observe(s));
     var LEVEL0 = showRare ? LEVEL0_BASE.concat(RARE) : LEVEL0_BASE;
     var levels = [LEVEL0, ['TB contact'], [algoNode]];
 
-    var raw = getFilteredRaw().filter(function (f) {
+    var rawAll = getFilteredRaw();
+    var raw = rawAll.filter(function (f) {
       return showRare || RARE.indexOf(f.t) < 0;
     });
 
@@ -1222,6 +1223,14 @@ stepEls.forEach(s=>obs.observe(s));
 
     var TOTAL = raw.reduce(function (a, f) { return a + f.v; }, 0);
     if (TOTAL === 0) { svgBox.innerHTML = '<p style="padding:20px;color:#aaa;font-size:13px">No data for this selection.</p>'; return; }
+
+    // Percentage denominators come from the full subgroup so displayed %
+    // numbers don't shift when rare categories are toggled. Bar layout still
+    // uses the filtered totals below, so the visualization is unchanged.
+    var TOTAL_FULL = rawAll.reduce(function (a, f) { return a + f.v; }, 0);
+    var srcTotFull = {};
+    COUNTRIES.forEach(function (c) { srcTotFull[c.name] = 0; });
+    rawAll.forEach(function (f) { srcTotFull[f.s] += f.v; });
 
     var srcTot = {}, tgtTot = {};
     COUNTRIES.forEach(function (c) { srcTot[c.name] = 0; });
@@ -1321,8 +1330,8 @@ stepEls.forEach(s=>obs.observe(s));
         fg.querySelectorAll('path').forEach(function (x) { x.setAttribute('fill-opacity', '0.08'); });
         p.setAttribute('fill-opacity', '0.88');
         var t    = getTip();
-        var pct  = Math.round(f.val / TOTAL * 100);
-        var sPct = Math.round(f.val / srcTot[f.src] * 100);
+        var pct  = Math.round(f.val / TOTAL_FULL * 100);
+        var sPct = Math.round(f.val / srcTotFull[f.src] * 100);
         t.innerHTML = '<strong>' + f.src + '</strong> to ' + f.tgt
           + '<br>' + f.val + ' children  ·  <strong>' + pct + '%</strong> of all  ·  ' + sPct + '% of ' + f.src;
         t.style.display = 'block';
@@ -1350,7 +1359,7 @@ stepEls.forEach(s=>obs.observe(s));
           p.setAttribute('fill-opacity', p.getAttribute('data-src') === n.name ? '0.88' : '0.08');
         });
         var t    = getTip();
-        var spct = Math.round(srcTot[n.name] / TOTAL * 100);
+        var spct = Math.round(srcTotFull[n.name] / TOTAL_FULL * 100);
         t.innerHTML = '<strong>' + n.name + '</strong><br>' + srcTot[n.name] + ' children diagnosed  ·  <strong>' + spct + '%</strong> of all';
         t.style.display = 'block';
       });
@@ -1377,7 +1386,7 @@ stepEls.forEach(s=>obs.observe(s));
     // Destination node bars + labels + hover
     allReasonsSorted.forEach(function (r) {
       var n      = tgtMap[r];
-      var pct    = Math.round(tgtTot[r] / TOTAL * 100);
+      var pct    = Math.round(tgtTot[r] / TOTAL_FULL * 100);
       var pctStr = pct < 1 ? '<1%' : pct + '%';
       var nw     = Math.max(n.w, 2);
       var ncx    = n.x + nw / 2;
@@ -1388,7 +1397,7 @@ stepEls.forEach(s=>obs.observe(s));
           p.setAttribute('fill-opacity', p.getAttribute('data-tgt') === r ? '0.88' : '0.08');
         });
         var t    = getTip();
-        var tpct = Math.round(tgtTot[r] / TOTAL * 100);
+        var tpct = Math.round(tgtTot[r] / TOTAL_FULL * 100);
         t.innerHTML = '<strong>' + r + '</strong><br>' + tgtTot[r] + ' children  ·  <strong>' + tpct + '%</strong> of all diagnosed';
         t.style.display = 'block';
       });
@@ -1582,12 +1591,27 @@ stepEls.forEach(s=>obs.observe(s));
     facts.forEach(function (f) { f.classList.remove('cf-lit'); });
   }
 
+  // Track scroll direction — the lock should only engage when the user
+  // is actively scrolling DOWN into the section. This prevents:
+  //   1) page-load with the heading already in the trigger zone (stale
+  //      scroll restoration on refresh) from locking immediately, and
+  //   2) scrolling UP through the section (e.g. returning to the
+  //      vicious-cycle above) from getting stuck — reveals only fire
+  //      on downward ticks, so an up-scroll lock would trap the user.
+  var lastScrollY = window.pageYOffset;
+  var hasScrolledDown = false;
+  window.addEventListener('scroll', function () {
+    var y = window.pageYOffset;
+    hasScrolledDown = y > lastScrollY;
+    lastScrollY = y;
+  }, { passive: true });
+
   // Engage the lock once the heading itself has reached the top quarter
   // of the viewport — that gives the user time to read "Treatment
   // Decision Algorithms" before the cascade starts.
   var heading = section.querySelector('.ctx-h');
   var enterIO = new IntersectionObserver(function (entries) {
-    if (entries[0].isIntersecting && revealed === 0 && !locked) {
+    if (entries[0].isIntersecting && revealed === 0 && !locked && hasScrolledDown) {
       lock();
     }
   }, { rootMargin: '0px 0px -75% 0px', threshold: 0 });

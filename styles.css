@@ -1081,12 +1081,27 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 }
 .feedback-hd h2 {
   font-family: 'DM Serif Display', serif;
-  font-size: clamp(24px, 3.5vw, 40px);
-  line-height: 1.12;
+  font-size: clamp(28px, 4.5vw, 46px);
+  line-height: 1.08;
   letter-spacing: -.02em;
   color: #fff;
+  font-weight: 400;
   margin: 8px 0 0;
-  max-width: 600px;
+  max-width: 820px;
+}
+.feedback-hd h2 em {
+  font-style: italic;
+  color: #ee0202;
+}
+.feedback-hd__lead {
+  display: block;
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(16px, 1.8vw, 22px);
+  font-weight: 400;
+  letter-spacing: -.01em;
+  line-height: 1.25;
+  color: rgba(255,255,255,.55);
+  margin-bottom: 8px;
 }
 .feedback-section .feas-single-wrap {
   padding: 0;
