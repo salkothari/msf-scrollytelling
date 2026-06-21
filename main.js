@@ -51,7 +51,7 @@ const SCORES = {
     xray:null, note:'Signs & symptoms only — no chest X-ray required'
   },
   A: {
-    syms:[['Cough > 2 weeks','+2'],['Fever > 2 weeks','+5'],['Lethargy','+3'],['Weight loss','+3'],['Coughing blood','+4'],['Night sweats','+2'],['Swollen lymph nodes','+4'],['Tachycardia','+2'],['Tachypnoea','+1']],
+    syms:[['Cough > 2 weeks','+2'],['Fever > 2 weeks','+5'],['Lethargy','+3'],['Weight loss','+3'],['Coughing blood','+4'],['Night sweats','+2'],['Swollen lymph nodes','+4'],['Tachycardia','+2'],['Tachypnoea','-1']],
     xray:[['Cavity','+6'],['Enlarged lymph nodes','+17'],['Opacities','+5'],['Miliary pattern','+15'],['Effusion','+8']],
     note:'Signs & symptoms + chest X-ray findings'
   }
@@ -289,7 +289,7 @@ stepEls.forEach(s=>obs.observe(s));
   }
 
   function loadSvg(key) {
-    return fetch('algo-' + key + '-tagged.svg?v=3')
+    return fetch('algo-' + key + '-tagged.svg?v=4')
       .then(function (r) { return r.text(); })
       .then(function (txt) {
         mounts[key].innerHTML = txt;
