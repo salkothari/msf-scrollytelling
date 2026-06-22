@@ -216,7 +216,7 @@ stepEls.forEach(s=>obs.observe(s));
     update();
   }
 
-  fetch('cycle-tagged.svg')
+  fetch('cycle-tagged.svg?v=2')
     .then(function (r) { return r.text(); })
     .then(function (txt) {
       mount.innerHTML = txt;
