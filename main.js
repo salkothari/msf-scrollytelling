@@ -463,9 +463,9 @@ stepEls.forEach(s=>obs.observe(s));
     { id: 'All',         cat: 'all',     v: [1.5, 2.3, 2.9] },
   ];
   var COLS = [
-    ['Before diagnostic', 'flowcharts'],
-    ['MSF study with', 'diagnostic flowcharts'],
-    ['With diagnostic', 'flowcharts*']
+    ['Before WHO', 'algorithms'],
+    ['MSF study with', 'WHO algorithms'],
+    ['With WHO', 'algorithms*']
   ];
   var C_COUNTRY = '#c0c0c0';
   var C_ALL     = '#ee0202';
@@ -564,9 +564,9 @@ stepEls.forEach(s=>obs.observe(s));
         }
         if (tip) {
           tip.innerHTML = '<strong>' + d.id + '</strong><br>' +
-            'Before flowcharts: ' + d.v[0] + '<br>' +
+            'Before WHO algorithms: ' + d.v[0] + '<br>' +
             'MSF study: ' + d.v[1] + '<br>' +
-            'With flowcharts: ' + d.v[2];
+            'With WHO algorithms: ' + d.v[2];
           tip.style.display = 'block';
         }
       });
@@ -1443,7 +1443,7 @@ stepEls.forEach(s=>obs.observe(s));
       'text-anchor': 'middle',
       'font-size': '11', 'font-family': 'DM Sans,sans-serif', 'font-weight': '500', fill: '#aaa',
     });
-    yLbl.textContent = 'Chronological order in flowchart';
+    yLbl.textContent = 'Chronological order in WHO algorithm';
     svg.appendChild(yLbl);
 
     // Legend: sample black bar + "= Diagnosis trigger" above x-axis, bottom-left
