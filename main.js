@@ -38,7 +38,7 @@ const NODES = [
   {type:'action',label:'Stabilise and/or transfer',sub:'Emergency stabilisation. Retain if stabilised, transfer if not.',via:'YES',viaColor:'#ee0202'},
   {type:'question',label:'Is the child "high risk"?',sub:'Under 2 years old · HIV+ · Severely malnourished',yes:'Test immediately',no:'Treat likely non-TB illness'},
   {type:'action',label:'Treat most likely non-TB illness',sub:'Follow up in 1–2 weeks. If symptoms persist, re-enter algorithm.',via:'NO',viaColor:'rgba(255,255,255,0.3)'},
-  {type:'action',label:'If available, molecularly test urine, respiratory or stool sample for TB',sub:'Positive result → treat immediately.',via:'YES — high risk or persistent symptoms',viaColor:'#ee0202',badge:{text:'Positive test → treat immediately',color:'#44bba4'}},
+  {type:'action',label:'If available, test respiratory/stool samples with GeneXpert; use urine LF-LAM for eligible HIV-positive children.',sub:'Positive result → treat immediately.',via:'YES — high risk or persistent symptoms',viaColor:'#ee0202',badge:{text:'Positive test → treat immediately',color:'#44bba4'}},
   {type:'question',label:'Close or household TB contact in the last 12 months?',sub:'When test is unavailable OR negative.',yes:'START TB TREATMENT',no:'Score signs & symptoms'},
   {type:'score'},
   {type:'question',label:'Is the total score > 10?',sub:'Same threshold for both algorithms.',yes:'START TB TREATMENT',no:'No TB treatment · Follow up 1–2 weeks'},
@@ -289,7 +289,7 @@ stepEls.forEach(s=>obs.observe(s));
   }
 
   function loadSvg(key) {
-    return fetch('algo-' + key + '-tagged.svg?v=4')
+    return fetch('algo-' + key + '-tagged.svg?v=5')
       .then(function (r) { return r.text(); })
       .then(function (txt) {
         mounts[key].innerHTML = txt;
