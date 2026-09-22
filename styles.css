@@ -1445,3 +1445,31 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 .feedback-section .feas-qcard__tag--blue   { background: rgba(59,201,245,.15); color: #3bc9f5; }
 .feedback-section .feas-qcard__tag--orange { background: rgba(255,167,55,.15); color: #ffa737; }
 .feedback-section .feas-qcard__tag--purple { background: rgba(150,153,224,.15);color: #9699e0; }
+
+/* ── Copy confirmation toast ──────────────────────────────────────────
+   Fixed-position so confirming the copied address cannot reflow the
+   button row underneath it. Sits just above the button that spawned it. */
+.copy-toast{
+  position:fixed;z-index:400;
+  transform:translate(-50%,-100%);
+  background:#fff;color:#000;
+  font-family:var(--font-body);font-size:12.5px;font-weight:600;
+  letter-spacing:.01em;
+  padding:8px 14px;border-radius:9px;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+  opacity:0;pointer-events:none;white-space:nowrap;
+  transition:opacity .18s ease, transform .18s ease;
+}
+.copy-toast.on{
+  opacity:1;
+  transform:translate(-50%,calc(-100% - 10px));
+}
+.copy-toast::after{
+  content:"";position:absolute;left:50%;top:100%;
+  transform:translateX(-50%);
+  border:6px solid transparent;border-top-color:#fff;
+}
+@media(max-width:420px){
+  .copy-toast{font-size:11px;padding:7px 11px;max-width:92vw;
+    overflow:hidden;text-overflow:ellipsis}
+}

@@ -1950,23 +1950,41 @@ stepEls.forEach(s=>obs.observe(s));
   update();
 })();
 
-// ── Contact button fallback ───────────────────────────────────────────
+// ── Contact button fallback ──────────────────────────────────
 // A mailto: link only does something when the visitor has a mail client
 // registered — on a webmail-only desktop (and inside sandboxed preview
 // frames, where it is blocked outright) the click silently dead-ends.
-// Copy the address as well, so there is always something to act on.
+// Copy the address as well, so there is always something to act on, and
+// confirm in a floating toast rather than by relabelling the button,
+// which resized it and shunted the row around.
 (function () {
   var btn = document.getElementById('contact-btn');
   if (!btn) return;
   var EMAIL = 'tic-tb.children@paris.msf.org';
-  var label = btn.textContent;
-  var timer = 0;
+  var toast = null, hideT = 0, dropT = 0;
+
+  function show(msg) {
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'copy-toast';
+      toast.setAttribute('role', 'status');
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    var r = btn.getBoundingClientRect();
+    toast.style.left = (r.left + r.width / 2) + 'px';
+    toast.style.top = r.top + 'px';
+    // force a reflow so the transition runs on a freshly inserted node
+    void toast.offsetWidth;
+    toast.classList.add('on');
+    clearTimeout(hideT); clearTimeout(dropT);
+    hideT = setTimeout(function () { toast.classList.remove('on'); }, 2400);
+  }
+
   btn.addEventListener('click', function () {
     if (!navigator.clipboard || !navigator.clipboard.writeText) return;
     navigator.clipboard.writeText(EMAIL).then(function () {
-      btn.textContent = 'Copied ' + EMAIL;
-      clearTimeout(timer);
-      timer = setTimeout(function () { btn.textContent = label; }, 2600);
+      show('Copied ' + EMAIL);
     }).catch(function () { /* clipboard blocked — the mailto still fires */ });
   });
 })();
