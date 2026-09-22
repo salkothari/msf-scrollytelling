@@ -1989,70 +1989,17 @@ stepEls.forEach(s=>obs.observe(s));
   });
 })();
 
-// ── Print / PDF mode ──────────────────────────────────────────────────
-// The page is a scrollytelling piece: most of it is collapsed, pinned or
-// revealed only as you scroll. For a printable document every one of
-// those states has to be opened up. The CSS lives in print.css; what
-// can't be done in CSS (opening <details>, resetting the cycle's
-// scroll-driven viewBox, showing both algorithm mounts) is done here.
-//
-// ?pdf=mobile | ?pdf=desktop renders the same result on screen for
-// preview, and sets the page size used when printing to PDF.
+// ── Hero: PDF download ────────────────────────────────────────────────
+// The PDF is supplied separately rather than generated from this page.
+// Until the file is in place the button would 404, so it stays hidden
+// until a HEAD request confirms it exists — drop tb-brief.pdf beside
+// index.html and the button appears on its own.
 (function () {
-  // One phone-proportioned page. A vertical PDF still reads fine on a
-  // laptop, so there is no separate desktop variant. Zero margin because
-  // @page margin prints as white paper, which would frame every page of
-  // a dark document in a white border; the inset comes from print.css.
-  var PAGE = { size: '105mm 190mm', margin: '0' };
-
-  function shrinkImages(maxW) {
-    document.querySelectorAll('img').forEach(function (img) {
-      if (!img.complete || !img.naturalWidth || img.naturalWidth <= maxW) return;
-      try {
-        var c = document.createElement('canvas');
-        c.width = maxW;
-        c.height = Math.round(img.naturalHeight * (maxW / img.naturalWidth));
-        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-        img.src = c.toDataURL('image/jpeg', 0.82);
-      } catch (e) { /* tainted — keep the original */ }
-    });
-  }
-
-  function expand() {
-    document.querySelectorAll('details').forEach(function (d) { d.open = true; });
-    var cyc = document.querySelector('#cycle-svg-mount svg');
-    if (cyc) cyc.setAttribute('viewBox', '0 0 1440 810');
-    document.querySelectorAll('.algo-mount').forEach(function (m) {
-      m.classList.add('active');
-    });
-  }
-  window.addEventListener('beforeprint', expand);
-
-  var want = new URLSearchParams(location.search).get('pdf');
-  if (!want) return;
-
-  var page = document.createElement('style');
-  page.textContent = '@page{size:' + PAGE.size + ';margin:' + PAGE.margin + ';}';
-  document.head.appendChild(page);
-
-  document.documentElement.classList.add('pdfmode');
-  // Re-use print.css verbatim by stripping its media wrapper, so the
-  // preview can never drift from what actually prints.
-  fetch('print.css').then(function (r) { return r.text(); }).then(function (css) {
-    var open = css.indexOf('@media print {');
-    if (open < 0) return;
-    var st = document.createElement('style');
-    st.textContent = css.slice(open + 14, css.lastIndexOf('}'));
-    document.head.appendChild(st);
-  }).catch(function () {});
-  setTimeout(function () { expand(); shrinkImages(700); }, 1200);
-  setTimeout(function () { expand(); shrinkImages(700); }, 3000);
-})();
-
-// ── Hero: label the PDF download ────────────────────────────────────
-// One phone-proportioned file serves both — a vertical PDF is still
-// perfectly readable on a laptop.
-(function () {
-  var note = document.getElementById('hero-dl-note');
-  if (note) note.textContent = '\u00b7 40pp';
+  var a = document.getElementById('hero-dl');
+  if (!a) return;
+  var href = a.getAttribute('href');
+  a.style.display = 'none';
+  fetch(href, { method: 'HEAD' })
+    .then(function (r) { if (r.ok) a.style.display = ''; })
+    .catch(function () { /* offline or missing — leave it hidden */ });
 })();

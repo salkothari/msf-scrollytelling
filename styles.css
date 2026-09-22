@@ -1487,8 +1487,8 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 
 /* ── Hero: download-as-PDF fallback ───────────────────────────────────
    An offline copy for readers whose connection or browser makes the
-   scrolling version unreliable. The href is swapped to the phone-sized
-   file on narrow screens. */
+   scrolling version unreliable. The PDF is supplied separately; main.js
+   keeps this hidden until the file is actually present. */
 .hero-dl{
   display:inline-flex;align-items:center;gap:8px;
   margin-top:22px;padding:9px 18px;
@@ -1499,8 +1499,6 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   transition:border-color .2s ease,color .2s ease;
 }
 .hero-dl:hover{border-color:#fff;color:#fff}
-.hero-dl__note{font-weight:400;color:rgba(255,255,255,.45);font-size:11.5px}
 @media(max-width:700px){
   .hero-dl{margin-top:18px;padding:10px 16px;font-size:12.5px}
-  .hero-dl__note{display:none}
 }
