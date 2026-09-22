@@ -200,6 +200,14 @@ stepEls.forEach(s=>obs.observe(s));
     return { x: cx - w / 2, y: cy - h / 2, w: w, h: h };
   }
 
+  function lerpBox(a, b, t) {
+    return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t,
+             w: a.w + (b.w - a.w) * t, h: a.h + (b.h - a.h) * t };
+  }
+  function smoothstep(t) {
+    return t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t);
+  }
+
   function measureStages() {
     if (!svgEl) return;
     if (!BASE_VB) return;
@@ -234,7 +242,7 @@ stepEls.forEach(s=>obs.observe(s));
     for (var n = 1; n <= thresholds.length; n++) {
       var b = boxes[n];
       if (!b) { stageBox.push(null); continue; }
-      var padX = (b.x1 - b.x0) * 0.12 + 24, padY = (b.y1 - b.y0) * 0.12 + 24;
+      var padX = (b.x1 - b.x0) * 0.30 + 48, padY = (b.y1 - b.y0) * 0.30 + 48;
       stageBox.push(aspectFit({
         x: b.x0 - padX, y: b.y0 - padY,
         w: (b.x1 - b.x0) + padX * 2, h: (b.y1 - b.y0) + padY * 2
@@ -250,7 +258,7 @@ stepEls.forEach(s=>obs.observe(s));
   function tick() {
     raf = 0;
     if (!curBox || !wantBox) return;
-    var k = 0.14, done = true;
+    var k = 0.085, done = true;
     ['x', 'y', 'w', 'h'].forEach(function (f) {
       var d = wantBox[f] - curBox[f];
       if (Math.abs(d) > 0.4) { curBox[f] += d * k; done = false; }
@@ -267,13 +275,34 @@ stepEls.forEach(s=>obs.observe(s));
     // the life of the page. Measure lazily until it takes.
     if (!FULL || !stageBox.some(Boolean)) measureStages();
     if (!FULL || !stageBox.some(Boolean)) return;
-    // Before the first stage and after the last, frame the whole cycle
-    // so the reader sees the loop close.
-    var target = FULL, i;
-    for (i = thresholds.length - 1; i >= 0; i--) {
-      if (p >= thresholds[i]) { target = stageBox[i] || FULL; break; }
+    // Snapping the target from one stage framing straight to the next
+    // made the camera lurch. Instead treat the framings as keyframes and
+    // move between them continuously: hold a stage still while it is
+    // being read, then ease across to the next one. The whole cycle is
+    // framed at both ends so the reader sees the loop open and close.
+    // The camera trails the reveal slightly. Anchoring it straight onto
+    // thresholds[0] = 0.05 meant the opening zoom happened inside the
+    // first 2.5% of the runway, which read as a lurch; the offset buys
+    // each move a longer ramp.
+    var LAG = 0.08;
+    var anchors = [{ p: 0, box: FULL }];
+    for (var i = 0; i < thresholds.length; i++) {
+      if (stageBox[i]) anchors.push({ p: thresholds[i] + LAG, box: stageBox[i] });
     }
-    if (p >= 0.97) target = FULL;
+    anchors.push({ p: 1, box: FULL });
+
+    var HOLD = 0.5;              // fraction of each gap spent holding still
+    var target = anchors[anchors.length - 1].box;
+    for (var j = anchors.length - 2; j >= 0; j--) {
+      if (p >= anchors[j].p) {
+        var a = anchors[j], b = anchors[j + 1];
+        var span = b.p - a.p;
+        var local = span > 0 ? (p - a.p) / span : 1;
+        var t = local <= HOLD ? 0 : (local - HOLD) / (1 - HOLD);
+        target = lerpBox(a.box, b.box, smoothstep(t));
+        break;
+      }
+    }
     if (!curBox) { curBox = { x: target.x, y: target.y, w: target.w, h: target.h }; applyBox(curBox); }
     wantBox = target;
     // Always reschedule rather than gating on a pending id: a frame
