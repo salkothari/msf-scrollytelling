@@ -1988,3 +1988,80 @@ stepEls.forEach(s=>obs.observe(s));
     }).catch(function () { /* clipboard blocked — the mailto still fires */ });
   });
 })();
+
+// ── Print / PDF mode ──────────────────────────────────────────────────
+// The page is a scrollytelling piece: most of it is collapsed, pinned or
+// revealed only as you scroll. For a printable document every one of
+// those states has to be opened up. The CSS lives in print.css; what
+// can't be done in CSS (opening <details>, resetting the cycle's
+// scroll-driven viewBox, showing both algorithm mounts) is done here.
+//
+// ?pdf=mobile | ?pdf=desktop renders the same result on screen for
+// preview, and sets the page size used when printing to PDF.
+(function () {
+  var SIZES = {
+    mobile:  { size: '105mm 190mm', margin: '7mm',  label: 'mobile' },
+    desktop: { size: 'A4',          margin: '14mm', label: 'desktop' }
+  };
+
+  // The page ships camera-resolution photos (one is 5251px wide for a
+  // 294px slot). Embedded at full size they dominate the PDF, which is
+  // exactly the wrong trade for an offline fallback. Redraw anything
+  // oversized at print resolution before the PDF is produced.
+  function shrinkImages(maxW) {
+    document.querySelectorAll('img').forEach(function (img) {
+      if (!img.complete || !img.naturalWidth || img.naturalWidth <= maxW) return;
+      try {
+        var c = document.createElement('canvas');
+        c.width = maxW;
+        c.height = Math.round(img.naturalHeight * (maxW / img.naturalWidth));
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        img.src = c.toDataURL('image/jpeg', 0.82);
+      } catch (e) { /* tainted — keep the original */ }
+    });
+  }
+
+  function expand() {
+    document.querySelectorAll('details').forEach(function (d) { d.open = true; });
+    var cyc = document.querySelector('#cycle-svg-mount svg');
+    if (cyc) cyc.setAttribute('viewBox', '0 0 1440 810');
+    document.querySelectorAll('.algo-mount').forEach(function (m) {
+      m.classList.add('active');
+    });
+  }
+  window.addEventListener('beforeprint', expand);
+
+  var want = new URLSearchParams(location.search).get('pdf');
+  if (!want) return;
+  var cfg = SIZES[want] || SIZES.desktop;
+
+  var page = document.createElement('style');
+  page.textContent = '@page{size:' + cfg.size + ';margin:' + cfg.margin + ';}';
+  document.head.appendChild(page);
+
+  document.documentElement.classList.add('pdfmode');
+  // Re-use print.css verbatim by stripping its media wrapper, so the
+  // preview can never drift from what actually prints.
+  fetch('print.css').then(function (r) { return r.text(); }).then(function (css) {
+    var open = css.indexOf('@media print {');
+    if (open < 0) return;
+    var st = document.createElement('style');
+    st.textContent = css.slice(open + 14, css.lastIndexOf('}'));
+    document.head.appendChild(st);
+  }).catch(function () {});
+  var maxW = (want === 'mobile') ? 700 : 1100;
+  setTimeout(function () { expand(); shrinkImages(maxW); }, 1200);
+  setTimeout(function () { expand(); shrinkImages(maxW); }, 3000);
+})();
+
+// ── Hero: point the PDF download at the right page size ───────────────
+// Two files are generated: A4 for laptops, and a phone-proportioned
+// 105x190mm one that stays readable without pinch-zooming.
+(function () {
+  var a = document.getElementById('hero-dl');
+  if (!a) return;
+  var note = document.getElementById('hero-dl-note');
+  var mobile = window.matchMedia('(max-width: 700px)').matches;
+  a.href = mobile ? 'tb-brief-mobile.pdf' : 'tb-brief-desktop.pdf';
+  if (note) note.textContent = mobile ? '' : '\u00b7 A4';
+})();

@@ -1,0 +1,101 @@
+/* ═══════════════════════════════════════════════════════════════════
+   PRINT / PDF STYLESHEET
+   Reflows the scrollytelling page into a linear, light-background
+   document: every collapsed or scroll-revealed element is opened, all
+   pinned graphics are unpinned, and interactive-only chrome is dropped.
+
+   Applies to real printing and to the on-screen preview
+   at ?pdf=1, which adds .pdfmode to <html> so the same rules can be
+   inspected in a normal browser.
+   ═══════════════════════════════════════════════════════════════════ */
+/* ── Base: light ground, print-sized type ───────────────────────── */
+@media print {
+  html, body { background:#fff !important; color:#111 !important; }
+  body { font-size:11.5pt; line-height:1.55; }
+  .dark, .dark--tda, .hero, .prob-designed, .feedback-section,
+  section[id="act-now"], .sec-ct, .ctx, .flow-section {
+    background:#fff !important; color:#111 !important;
+  }
+  /* decorative red/radial glows carry no information in print */
+  .gb, .gt, .gc, .hp, .hg { display:none !important; }
+
+  h1,h2,h3,.prob-h,.ctx-h,.vt,.faq-heading { color:#111 !important; }
+  .wh, .prob-h--light, .hero h1 { color:#111 !important; }
+  p, li, .bpd, .step-card, .faq__a, .ev-bullet, .vd, .cap, .cap-dk {
+    color:#222 !important;
+  }
+  .prob-tag, .td, .tr, .tag, .ey { color:#c00 !important; }
+
+  /* ── Unpin everything ─────────────────────────────────────────── */
+  .bar, .flow-left, .cycle-pin, .prob-sticky-photo,
+  .prob-bio-seq > .prob-section.prob-bio {
+    position:static !important; top:auto !important; height:auto !important;
+  }
+  .hero { height:auto !important; min-height:0 !important; padding:0 0 18pt; }
+  .hc { padding:0 !important; max-width:none !important; }
+  .prob-bio-seq, .cycle-stage, .flow-step, .tda-step, .prob-policy-step {
+    height:auto !important; min-height:0 !important;
+  }
+  .flow-outer { display:block !important; padding:0 !important; }
+  .flow-right { padding:0 !important; width:auto !important; }
+
+  /* ── Reveal every scroll-gated state ──────────────────────────── */
+  .fng, .dep-dullable, .cy-dullable, .ctx-fact, .ur-word,
+  .vw, .ev-intro-new, .prob-card, .feas-qcard, .flow-step {
+    opacity:1 !important; transform:none !important;
+  }
+  .vw-faded { opacity:1 !important; }
+  .pbc--hidden, .pbc--featured, .pbc--settled {
+    opacity:1 !important; transform:none !important;
+  }
+  .flow-step .step-card { color:#222 !important; background:#f6f6f4 !important;
+    border-left-color:#c00 !important; }
+
+  /* ── Drop interactive-only chrome ─────────────────────────────── */
+  .hero-dl, .sh, .picto-filter, .picto-btns, .feas-track-nav, .copy-toast,
+  .slope-tip, .picto-tip, .fil, .flow-progress, .ctb,
+  .pills, .algo-toggle-box, #sh { display:none !important; }
+
+  /* ── Both algorithms, not just the selected one ───────────────── */
+  .algo-mount { display:block !important; margin-bottom:10pt; }
+  .algo-mount::before { display:block; font-weight:700; font-size:10pt;
+    margin:0 0 4pt; color:#111; }
+  .algo-mount--a::before { content:"Algorithm A \2014 with chest X-ray"; }
+  .algo-mount--b::before { content:"Algorithm B \2014 without chest X-ray"; }
+  .algo-mount svg { width:100% !important; height:auto !important;
+    min-width:0 !important; max-width:100% !important; }
+  .algo-board { overflow:visible !important; }
+
+  /* ── Unstack the quote carousel ───────────────────────────────── */
+  .feas-single-wrap { overflow:visible !important; }
+  .feas-track { display:block !important; transform:none !important;
+    width:auto !important; }
+  .feas-qcard { width:auto !important; max-width:none !important;
+    margin:0 0 10pt !important; break-inside:avoid; }
+
+  /* ── FAQ: opened by print-mode JS, styled light here ───────────── */
+  .faq__item, .itf-light .faq__item { border-top-color:#ddd !important; }
+  .faq__q, .itf-light .faq__q { color:#111 !important; }
+  .faq__q::after { display:none !important; }
+  .faq__a { color:#222 !important; }
+
+  /* ── Diagrams fill the page width ─────────────────────────────── */
+  .cycle-pin .cycle-svg-mount, .cycle-pin .cycle-svg-mount svg {
+    width:100% !important; height:auto !important; max-height:none !important;
+    min-width:0 !important; overflow:visible !important;
+  }
+  .slope-svg, #picto-wrap svg, #sankey-wrap svg { max-width:100% !important; }
+
+  /* ── Pagination ───────────────────────────────────────────────── */
+  section { break-inside:auto; }
+  .prob-card, .ctx-card, .feas-card, .vw, .step-card, .faq__item,
+  .ev-bullet, .feas-qcard { break-inside:avoid; }
+  h2, .prob-h, .ctx-h { break-after:avoid; }
+  .sec-ev, .flow-section, .itf-light, section[id="act-now"] {
+    break-before:page;
+  }
+  a { color:#111 !important; text-decoration:none !important; }
+  /* spell out link targets — a PDF reader can't hover */
+  .ctb a::after, .footer a::after { content:" (" attr(href) ")";
+    font-size:8pt; color:#666; }
+}
