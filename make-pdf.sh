@@ -7,10 +7,11 @@
 #
 #   ./make-pdf.sh
 #
-# Renders index.html?pdf=<variant> in headless Chrome. That query param
+# Renders index.html?pdf=1 in headless Chrome. That query param
 # applies print.css on screen, opens every <details>, un-pins the
 # graphics, shows both algorithms, unstacks the quote carousel and
-# downsamples the oversized photos. @page sizing comes from main.js.
+# downsamples the oversized photos. Page size comes from main.js:
+# one 105x190mm phone-proportioned file, full bleed.
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -23,11 +24,9 @@ SERVER=$!
 trap 'kill $SERVER 2>/dev/null || true' EXIT
 sleep 2
 
-for v in mobile desktop; do
-  "$CHROME" --headless --disable-gpu --no-pdf-header-footer \
-    --virtual-time-budget=35000 \
-    --print-to-pdf="tb-brief-$v.pdf" \
-    "http://localhost:$PORT/index.html?pdf=$v" 2>/dev/null
-  printf '  %-22s %s\n' "tb-brief-$v.pdf" "$(du -h "tb-brief-$v.pdf" | cut -f1)"
-done
+"$CHROME" --headless --disable-gpu --no-pdf-header-footer \
+  --virtual-time-budget=35000 \
+  --print-to-pdf="tb-brief.pdf" \
+  "http://localhost:$PORT/index.html?pdf=1" 2>/dev/null
+printf '  %-16s %s\n' "tb-brief.pdf" "$(du -h tb-brief.pdf | cut -f1)"
 echo "done"

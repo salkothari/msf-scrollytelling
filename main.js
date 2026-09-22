@@ -1999,15 +1999,12 @@ stepEls.forEach(s=>obs.observe(s));
 // ?pdf=mobile | ?pdf=desktop renders the same result on screen for
 // preview, and sets the page size used when printing to PDF.
 (function () {
-  var SIZES = {
-    mobile:  { size: '105mm 190mm', margin: '7mm',  label: 'mobile' },
-    desktop: { size: 'A4',          margin: '14mm', label: 'desktop' }
-  };
+  // One phone-proportioned page. A vertical PDF still reads fine on a
+  // laptop, so there is no separate desktop variant. Zero margin because
+  // @page margin prints as white paper, which would frame every page of
+  // a dark document in a white border; the inset comes from print.css.
+  var PAGE = { size: '105mm 190mm', margin: '0' };
 
-  // The page ships camera-resolution photos (one is 5251px wide for a
-  // 294px slot). Embedded at full size they dominate the PDF, which is
-  // exactly the wrong trade for an offline fallback. Redraw anything
-  // oversized at print resolution before the PDF is produced.
   function shrinkImages(maxW) {
     document.querySelectorAll('img').forEach(function (img) {
       if (!img.complete || !img.naturalWidth || img.naturalWidth <= maxW) return;
@@ -2033,10 +2030,9 @@ stepEls.forEach(s=>obs.observe(s));
 
   var want = new URLSearchParams(location.search).get('pdf');
   if (!want) return;
-  var cfg = SIZES[want] || SIZES.desktop;
 
   var page = document.createElement('style');
-  page.textContent = '@page{size:' + cfg.size + ';margin:' + cfg.margin + ';}';
+  page.textContent = '@page{size:' + PAGE.size + ';margin:' + PAGE.margin + ';}';
   document.head.appendChild(page);
 
   document.documentElement.classList.add('pdfmode');
@@ -2049,19 +2045,14 @@ stepEls.forEach(s=>obs.observe(s));
     st.textContent = css.slice(open + 14, css.lastIndexOf('}'));
     document.head.appendChild(st);
   }).catch(function () {});
-  var maxW = (want === 'mobile') ? 700 : 1100;
-  setTimeout(function () { expand(); shrinkImages(maxW); }, 1200);
-  setTimeout(function () { expand(); shrinkImages(maxW); }, 3000);
+  setTimeout(function () { expand(); shrinkImages(700); }, 1200);
+  setTimeout(function () { expand(); shrinkImages(700); }, 3000);
 })();
 
-// ── Hero: point the PDF download at the right page size ───────────────
-// Two files are generated: A4 for laptops, and a phone-proportioned
-// 105x190mm one that stays readable without pinch-zooming.
+// ── Hero: label the PDF download ────────────────────────────────────
+// One phone-proportioned file serves both — a vertical PDF is still
+// perfectly readable on a laptop.
 (function () {
-  var a = document.getElementById('hero-dl');
-  if (!a) return;
   var note = document.getElementById('hero-dl-note');
-  var mobile = window.matchMedia('(max-width: 700px)').matches;
-  a.href = mobile ? 'tb-brief-mobile.pdf' : 'tb-brief-desktop.pdf';
-  if (note) note.textContent = mobile ? '' : '\u00b7 A4';
+  if (note) note.textContent = '\u00b7 40pp';
 })();

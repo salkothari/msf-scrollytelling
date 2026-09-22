@@ -4,7 +4,7 @@
     {
       "name": "static",
       "runtimeExecutable": "/usr/bin/python3",
-      "runtimeArgs": ["-c", "import http.server,os; os.chdir('/Users/salonikothari/Documents/GitHub/msf-scrollytelling'); http.server.test(HandlerClass=http.server.SimpleHTTPRequestHandler,port=8765,bind='127.0.0.1')"],
+      "runtimeArgs": ["-c", "import sys; sys.path=[p for p in sys.path if p]; import http.server,functools; h=functools.partial(http.server.SimpleHTTPRequestHandler, directory='/Users/salonikothari/Documents/GitHub/msf-scrollytelling'); http.server.ThreadingHTTPServer(('127.0.0.1',8765),h).serve_forever()"],
       "port": 8765
     }
   ]
