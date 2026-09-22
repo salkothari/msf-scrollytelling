@@ -1949,3 +1949,24 @@ stepEls.forEach(s=>obs.observe(s));
   window.addEventListener('resize', update);
   update();
 })();
+
+// ── Contact button fallback ───────────────────────────────────────────
+// A mailto: link only does something when the visitor has a mail client
+// registered — on a webmail-only desktop (and inside sandboxed preview
+// frames, where it is blocked outright) the click silently dead-ends.
+// Copy the address as well, so there is always something to act on.
+(function () {
+  var btn = document.getElementById('contact-btn');
+  if (!btn) return;
+  var EMAIL = 'tic-tb.children@paris.msf.org';
+  var label = btn.textContent;
+  var timer = 0;
+  btn.addEventListener('click', function () {
+    if (!navigator.clipboard || !navigator.clipboard.writeText) return;
+    navigator.clipboard.writeText(EMAIL).then(function () {
+      btn.textContent = 'Copied ' + EMAIL;
+      clearTimeout(timer);
+      timer = setTimeout(function () { btn.textContent = label; }, 2600);
+    }).catch(function () { /* clipboard blocked — the mailto still fires */ });
+  });
+})();
