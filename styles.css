@@ -16,7 +16,15 @@ body{font-family:var(--font-body);background:#000;color:#fff;overflow-x:hidden}
 .bd{width:8px;height:8px;background:var(--red);border-radius:50%;flex-shrink:0;animation:pulse 1.4s infinite}
 .bt{font-size:13px;font-weight:600;letter-spacing:.2px;color:rgba(255,255,255,.85)}
 .bn{font-family:var(--font-display);font-size:27px;font-weight:700;color:var(--red);font-variant-numeric:tabular-nums;line-height:1}
-.bsrc{font-size:10px;color:rgba(255,255,255,.2);margin-left:auto}
+.bq{font-size:13px;font-weight:600;letter-spacing:.2px;color:rgba(255,255,255,.5);white-space:nowrap}
+.bsrc{font-size:10px;color:rgba(255,255,255,.2);margin-left:auto;text-align:right}
+/* The sticky bar is costly vertical real estate on a phone, so the tick
+   rate gives way to the claim there; the WHO attribution always stays. */
+@media(max-width:700px){
+  .bar{padding:8px 16px;gap:8px}
+  .bq{font-size:11px;white-space:normal}
+  .brate{display:none}
+}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
 
 /* ── HERO ── */
