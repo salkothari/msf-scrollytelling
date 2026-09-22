@@ -255,7 +255,7 @@
       <h2>1,846 children.<br>5 countries.<br><span style="color:#ee0202">1</span> result.</h2>
       <div class="ev-bullets">
         <div class="ev-bullet">MSF's TACTiC initiative conducted the <strong>TB ALGO PED</strong> study to investigate the diagnostic accuracy and implementability of these WHO algorithms</div>
-        <div class="ev-bullet">The study enrolled <strong>1,846 children</strong> under 10 years with presumptive TB symptoms</div>
+        <div class="ev-bullet">The study enrolled <strong>1,846 children</strong> under 10 years with symptoms consistent with TB</div>
         <div class="ev-bullet">Countries included:
           <span class="ctry-lbl" style="color:#E31612;border-color:#E31612">Guinea</span>
           <span class="ctry-lbl" style="color:#c45580;border-color:#c45580">Niger</span>
@@ -263,6 +263,7 @@
           <span class="ctry-lbl" style="color:#6B6FB6;border-color:#6B6FB6">South Sudan</span>
           <span class="ctry-lbl" style="color:#d4891e;border-color:#d4891e">Uganda</span>
         </div>
+        <div class="ev-bullet">WHO algorithms nearly doubled the number of children initiated on lifesaving care.</div>
       </div>
     </div>
     <!-- Right: full photo -->
@@ -274,24 +275,11 @@
     </div>
   </div>
 
-  <!-- FLOURISH VIZ: SLOPE CHART — Diagnosis rates -->
-  <div class="vw">
-    <div class="vh">
-      <div class="vt"><span class="vn">01</span>WHO algorithm use <span class="dbl-wrap"><span class="dbl-line"></span><span class="dbl-line"></span><span class="dbl-line"></span><span class="dbl-word">DOUBLE</span></span> TB diagnosis rates in children</div>
-      <div class="vd">Percent (%) of children diagnosed with TB</div>
-    </div>
-    <div class="slope-wrap">
-      <svg id="slope-svg" class="slope-svg"></svg>
-      <div id="slope-tip" class="slope-tip"></div>
-    </div>
-    <div class="viz-source" style="font-style:italic">*Uganda never implemented the WHO algorithms into their national policies</div>
-  </div>
-
   <!-- STACKED PICTOGRAM: Days until diagnosis -->
   <div class="vw">
     <div class="vh picto-vh">
       <div>
-        <div class="vt"><span class="vn">02</span>Most children diagnosed <strong>within <span class="tick-wrap"><span class="tick" id="picto-tick"><span class="tick-n">0</span><span class="tick-n">1</span><span class="tick-n">2</span><span class="tick-n tick-red">3</span></span></span> days</strong> of using the WHO algorithm</div>
+        <div class="vt">Most children diagnosed <strong>within <span class="tick-wrap"><span class="tick" id="picto-tick"><span class="tick-n">0</span><span class="tick-n">1</span><span class="tick-n">2</span><span class="tick-n tick-red">3</span></span></span> days</strong> of using the WHO algorithm</div>
         <div class="vd">Of the children who got diagnosed, consistent across all countries and all high-risk subgroups.</div>
       </div>
       <div class="picto-filter" id="picto-filter">
@@ -299,7 +287,7 @@
         <div class="picto-btns">
           <button class="picto-btn active" data-grp="all">All</button>
           <button class="picto-btn" data-grp="hiv">HIV+</button>
-          <button class="picto-btn" data-grp="under2">Under 2</button>
+          <button class="picto-btn" data-grp="under2">Under 2 years</button>
           <button class="picto-btn" data-grp="sam">Severely malnourished</button>
         </div>
       </div>
@@ -315,7 +303,7 @@
   <div class="vw">
     <div class="vh picto-vh">
       <div>
-        <div class="vt"><span class="vn">03</span>Diagnosis was mostly triggered by the <span id="sb-wrap" class="sb-wrap"><span class="sb"><span class="sb-l">s</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">c</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">o</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">r</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">i</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">n</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">g</span><span class="sb-p">+</span></span> <span class="sb"><span class="sb-l">b</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">o</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">x</span><span class="sb-p">+</span></span></span> in the WHO algorithms</div>
+        <div class="vt">Diagnosis was mostly triggered by the <span id="sb-wrap" class="sb-wrap"><span class="sb"><span class="sb-l">s</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">c</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">o</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">r</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">i</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">n</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">g</span><span class="sb-p">+</span></span> <span class="sb"><span class="sb-l">b</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">o</span><span class="sb-p">+</span></span><span class="sb"><span class="sb-l">x</span><span class="sb-p">+</span></span></span> in the WHO algorithms</div>
         <div class="vd">Of 496 children diagnosed using the WHO algorithm across 5 countries. Hover a flow to explore.</div>
       </div>
       <div class="picto-filter" id="sankey-filter">
@@ -323,7 +311,7 @@
         <div class="picto-btns">
           <button class="picto-btn active" data-grp="all">All</button>
           <button class="picto-btn" data-grp="hiv">HIV+</button>
-          <button class="picto-btn" data-grp="u2">Under 2</button>
+          <button class="picto-btn" data-grp="u2">Under 2 years</button>
           <button class="picto-btn" data-grp="sam">Severely malnourished</button>
         </div>
       </div>
@@ -333,6 +321,19 @@
     </div>
   </div>
 
+
+  <!-- FLOURISH VIZ: SLOPE CHART — Diagnosis rates -->
+  <div class="vw">
+    <div class="vh">
+      <div class="vt">WHO algorithm use <span class="dbl-wrap"><span class="dbl-line"></span><span class="dbl-line"></span><span class="dbl-line"></span><span class="dbl-word">DOUBLE</span></span> TB diagnosis rates in children</div>
+      <div class="vd">Percent (%) of children diagnosed and admitted with TB</div>
+    </div>
+    <div class="slope-wrap">
+      <svg id="slope-svg" class="slope-svg"></svg>
+      <div id="slope-tip" class="slope-tip"></div>
+    </div>
+    <div class="viz-source" style="font-style:italic">*Uganda never implemented the WHO algorithms into their national policies</div>
+  </div>
 
   <!-- VIZ 03 removed — moved to THE FEEDBACK section below -->
   <div class="vw feas-vw" style="display:none">
@@ -723,5 +724,5 @@
 <script src="https://unpkg.com/scrollama"></script>
 <script src="images.js?v=3"></script>
 <script src="scroll.js?v=16"></script>
-<script src="main.js?v=85"></script>
+<script src="main.js?v=86"></script>
 </html>
