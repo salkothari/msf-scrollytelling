@@ -1301,17 +1301,31 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
      floating in dead space. Show it whole, and give both diagrams a
      sideways scroller at a width where the labels are readable. */
   .dep-dullable{opacity:1 !important}
-  .algo-board,
-  .cycle-pin .cycle-svg-mount{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+  .algo-board{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
   .algo-mount svg{min-width:680px;max-width:none}
-  .cycle-pin .cycle-svg-mount svg{min-width:820px;max-width:none;width:820px}
-  .flow-left::before,
-  .cycle-pin::before{
+  .flow-left::before{
     content:"Swipe the diagram sideways to read it \2192";
     display:block;font-family:var(--font-body);font-size:10px;font-weight:600;
     letter-spacing:.08em;text-transform:uppercase;
     color:rgba(255,255,255,.35);margin-bottom:8px;
   }
+
+  /* The vicious cycle zooms to the stage in focus instead of scrolling
+     sideways, so it needs its scroll runway and sticky pin back on
+     mobile — without them there is nothing to drive the choreography. */
+  .cycle-stage{min-height:280vh;padding-bottom:40px}
+  .cycle-pin{
+    position:sticky;top:60px;height:calc(100vh - 76px);height:calc(100svh - 76px);
+    display:flex;align-items:center;justify-content:center;
+  }
+  /* Fill the pin rather than sitting in a short landscape letterbox:
+     the stage boxes are fitted to whatever aspect the SVG is rendered
+     at, so a tall frame gives each stage far more room on a phone. */
+  .cycle-pin .loop-circle-wrap{width:100%;height:100%}
+  .cycle-pin .cycle-svg-mount{width:100%;height:100%;max-width:100%;min-width:0}
+  /* main.js sets height:auto inline on the injected SVG, so this has to
+     win on specificity to let the diagram fill the tall mobile pin. */
+  .cycle-pin .cycle-svg-mount svg{width:100%!important;height:100%!important;max-width:100%;max-height:100%;min-width:0}
 
   /* FAQ / "In the field": a hard 1fr 1fr grid squeezed the questions into
      a 138px column. */

@@ -177,6 +177,108 @@ stepEls.forEach(s=>obs.observe(s));
   var thresholds = [0.05, 0.30, 0.55, 0.80];
   var parts = [];
 
+  // ── Focus zoom ───────────────────────────────────────────────────
+  // The diagram is 1440x810 of user units. Rendered whole it is already
+  // at ~1:1 on a desktop viewport and ~0.2:1 on a phone, so the labels
+  // cannot be made bigger by scaling the container — the only headroom
+  // is to show less at a time. We drive the root viewBox from the same
+  // scroll progress that lights each stage, so the stage in focus fills
+  // the frame and everything else falls outside it.
+  var svgEl = null;
+  var BASE_VB = null;       // the artwork's own viewBox, never overwritten
+  var FULL = null;          // {x,y,w,h} of the whole artwork
+  var stageBox = [];        // per-stage target viewBox, aspect-corrected
+  var curBox = null;        // currently rendered viewBox (lerped)
+  var wantBox = null;       // target viewBox
+  var raf = 0;
+
+  function aspectFit(b, aspect) {
+    // Grow the shorter axis so the box matches the container's aspect,
+    // otherwise preserveAspectRatio letterboxes and undoes the zoom.
+    var w = b.w, h = b.h, cx = b.x + w / 2, cy = b.y + h / 2;
+    if (w / h < aspect) w = h * aspect; else h = w / aspect;
+    return { x: cx - w / 2, y: cy - h / 2, w: w, h: h };
+  }
+
+  function measureStages() {
+    if (!svgEl) return;
+    if (!BASE_VB) return;
+    FULL = { x: BASE_VB[0], y: BASE_VB[1], w: BASE_VB[2], h: BASE_VB[3] };
+    var r = svgEl.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    // Map client px -> user units through the SVG's own screen matrix.
+    // A plain rect ratio is wrong as soon as preserveAspectRatio
+    // letterboxes (which it does whenever the frame's aspect differs
+    // from the viewBox's, e.g. the tall mobile pin).
+    var ctm = svgEl.getScreenCTM();
+    if (!ctm) return;
+    var inv = ctm.inverse(), pt = svgEl.createSVGPoint();
+    function toUser(cx, cy) { pt.x = cx; pt.y = cy; return pt.matrixTransform(inv); }
+    var aspect = r.width / r.height;
+    var boxes = {};
+    parts.forEach(function (el) {
+      var n = parseInt(el.getAttribute('data-order'), 10);
+      if (!n) return;
+      var b = el.getBoundingClientRect();
+      if (!b.width && !b.height) return;
+      var p0 = toUser(b.left, b.top), p1 = toUser(b.right, b.bottom);
+      var x0 = Math.min(p0.x, p1.x), y0 = Math.min(p0.y, p1.y);
+      var x1 = Math.max(p0.x, p1.x), y1 = Math.max(p0.y, p1.y);
+      var cur = boxes[n];
+      boxes[n] = cur
+        ? { x0: Math.min(cur.x0, x0), y0: Math.min(cur.y0, y0),
+            x1: Math.max(cur.x1, x1), y1: Math.max(cur.y1, y1) }
+        : { x0: x0, y0: y0, x1: x1, y1: y1 };
+    });
+    stageBox = [];
+    for (var n = 1; n <= thresholds.length; n++) {
+      var b = boxes[n];
+      if (!b) { stageBox.push(null); continue; }
+      var padX = (b.x1 - b.x0) * 0.12 + 24, padY = (b.y1 - b.y0) * 0.12 + 24;
+      stageBox.push(aspectFit({
+        x: b.x0 - padX, y: b.y0 - padY,
+        w: (b.x1 - b.x0) + padX * 2, h: (b.y1 - b.y0) + padY * 2
+      }, aspect));
+    }
+  }
+
+  function applyBox(b) {
+    svgEl.setAttribute('viewBox',
+      b.x.toFixed(2) + ' ' + b.y.toFixed(2) + ' ' + b.w.toFixed(2) + ' ' + b.h.toFixed(2));
+  }
+
+  function tick() {
+    raf = 0;
+    if (!curBox || !wantBox) return;
+    var k = 0.14, done = true;
+    ['x', 'y', 'w', 'h'].forEach(function (f) {
+      var d = wantBox[f] - curBox[f];
+      if (Math.abs(d) > 0.4) { curBox[f] += d * k; done = false; }
+      else curBox[f] = wantBox[f];
+    });
+    applyBox(curBox);
+    if (!done) raf = requestAnimationFrame(tick);
+  }
+
+  function focus(p) {
+    if (!svgEl) return;
+    // The first measure can land before the injected SVG has been laid
+    // out (its box is still 0x0), which used to leave the zoom dead for
+    // the life of the page. Measure lazily until it takes.
+    if (!FULL || !stageBox.some(Boolean)) measureStages();
+    if (!FULL || !stageBox.some(Boolean)) return;
+    // Before the first stage and after the last, frame the whole cycle
+    // so the reader sees the loop close.
+    var target = FULL, i;
+    for (i = thresholds.length - 1; i >= 0; i--) {
+      if (p >= thresholds[i]) { target = stageBox[i] || FULL; break; }
+    }
+    if (p >= 0.97) target = FULL;
+    if (!curBox) { curBox = { x: target.x, y: target.y, w: target.w, h: target.h }; applyBox(curBox); }
+    wantBox = target;
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+
   function update() {
     var vh = window.innerHeight;
     var p;
@@ -204,6 +306,7 @@ stepEls.forEach(s=>obs.observe(s));
       if (p >= thresholds[n - 1]) el.classList.add('cy-lit');
       else el.classList.remove('cy-lit');
     });
+    focus(p);
   }
 
   function wireScroll() {
@@ -211,8 +314,14 @@ stepEls.forEach(s=>obs.observe(s));
       cycleSection.querySelectorAll('.cy-dullable')
     );
     if (!parts.length) return;
+    measureStages();
     window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
+    window.addEventListener('resize', function () {
+      // Re-measure against the full artwork, not the zoomed frame.
+      if (svgEl && FULL) { curBox = null; wantBox = null; applyBox(FULL); }
+      measureStages();
+      update();
+    });
     update();
   }
 
@@ -229,6 +338,9 @@ stepEls.forEach(s=>obs.observe(s));
         svg.style.width = '100%';
         svg.style.height = 'auto';
         svg.style.display = 'block';
+        svgEl = svg;
+        BASE_VB = (svg.getAttribute('viewBox') || '0 0 1440 810')
+          .split(/[\s,]+/).map(Number);
       }
       wireScroll();
     })
@@ -289,7 +401,7 @@ stepEls.forEach(s=>obs.observe(s));
   }
 
   function loadSvg(key) {
-    return fetch('algo-' + key + '-tagged.svg?v=5')
+    return fetch('algo-' + key + '-tagged.svg?v=6')
       .then(function (r) { return r.text(); })
       .then(function (txt) {
         mounts[key].innerHTML = txt;
