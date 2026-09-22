@@ -244,8 +244,11 @@ details[open] .faq__q::after { transform: rotate(45deg); color: #ee0202; }
 
 /* ── CTA ── */
 .sec-cta{padding:96px 48px;text-align:center}
-.ctph{max-width:480px;margin:0 auto 40px;border-radius:16px;overflow:hidden}
-.ctph img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block}
+/* The caption lives inside .ctph, so rounding the wrapper clipped the
+   bottom corners of the caption box rather than the photo. Round the
+   image itself, as .pf and the other photos do. */
+.ctph{max-width:480px;margin:0 auto 40px}
+.ctph img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block;border-radius:16px}
 .ctb{display:flex;gap:13px;justify-content:center;margin:28px 0;flex-wrap:wrap}
 .bp3{background:var(--red);color:#fff;border:none;padding:12px 30px;border-radius:100px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-body);box-shadow:0 4px 24px rgba(238,2,2,.5)}
 .bs3{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.35);padding:12px 30px;border-radius:100px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-body)}
