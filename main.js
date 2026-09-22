@@ -34,7 +34,7 @@ setInterval(tick,1000);tick();
 // ── TDA logic ───────────────────────────────
 // TDA scroll logic
 const NODES = [
-  {type:'question',label:'Is urgent medical care needed?',sub:'Entry point · All children under 10 with presumptive TB symptoms',yes:'Stabilise and transfer',no:'Continue assessment'},
+  {type:'question',label:'Is urgent medical care needed?',sub:'Entry point · All children under 10 years with presumptive TB symptoms',yes:'Stabilise and transfer',no:'Continue assessment'},
   {type:'action',label:'Stabilise and/or transfer',sub:'Emergency stabilisation. Retain if stabilised, transfer if not.',via:'YES',viaColor:'#ee0202'},
   {type:'question',label:'Is the child "high risk"?',sub:'Under 2 years old · HIV+ · Severely malnourished',yes:'Test immediately',no:'Treat likely non-TB illness'},
   {type:'action',label:'Treat most likely non-TB illness',sub:'Follow up in 1–2 weeks. If symptoms persist, re-enter algorithm.',via:'NO',viaColor:'rgba(255,255,255,0.3)'},
@@ -276,7 +276,11 @@ stepEls.forEach(s=>obs.observe(s));
     if (p >= 0.97) target = FULL;
     if (!curBox) { curBox = { x: target.x, y: target.y, w: target.w, h: target.h }; applyBox(curBox); }
     wantBox = target;
-    if (!raf) raf = requestAnimationFrame(tick);
+    // Always reschedule rather than gating on a pending id: a frame
+    // requested while the tab was hidden may never fire, and the stale
+    // id would then block every later frame for the life of the page.
+    if (raf) cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(tick);
   }
 
   function update() {
@@ -325,7 +329,7 @@ stepEls.forEach(s=>obs.observe(s));
     update();
   }
 
-  fetch('cycle-tagged.svg?v=3')
+  fetch('cycle-tagged.svg?v=6')
     .then(function (r) { return r.text(); })
     .then(function (txt) {
       mount.innerHTML = txt;
