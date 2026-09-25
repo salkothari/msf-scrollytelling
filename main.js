@@ -2052,3 +2052,58 @@ stepEls.forEach(s=>obs.observe(s));
   if (closeBtn) closeBtn.addEventListener('click', dismiss);
   if (dl) dl.addEventListener('click', dismiss);
 })();
+
+// ── PDF language chooser ──────────────────────────────────────────────
+// Both download entry points (hero button, phone prompt) open this
+// instead of downloading straight away. Each trigger keeps a real href
+// to the English file, so without JS the link still does something
+// sensible rather than nothing.
+(function () {
+  var modal = document.getElementById('lang-pick');
+  if (!modal) return;
+  var sheet = modal.querySelector('.lang-pick__sheet');
+  var closeBtn = document.getElementById('lang-pick-x');
+  var opts = [].slice.call(modal.querySelectorAll('.lang-pick__opt'));
+  var lastFocus = null;
+
+  function close() {
+    modal.classList.remove('on');
+    setTimeout(function () { modal.hidden = true; }, 240);
+    document.removeEventListener('keydown', onKey);
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  function onKey(e) {
+    if (e.key === 'Escape') { close(); return; }
+    if (e.key !== 'Tab') return;
+    // keep focus inside the dialog while it is open
+    var f = opts.concat([closeBtn]);
+    var i = f.indexOf(document.activeElement);
+    if (i === -1) { f[0].focus(); e.preventDefault(); return; }
+    var next = e.shiftKey ? i - 1 : i + 1;
+    if (next < 0) next = f.length - 1;
+    if (next >= f.length) next = 0;
+    f[next].focus();
+    e.preventDefault();
+  }
+
+  function open(trigger) {
+    lastFocus = trigger || document.activeElement;
+    modal.hidden = false;
+    requestAnimationFrame(function () { modal.classList.add('on'); });
+    document.addEventListener('keydown', onKey);
+    setTimeout(function () { opts[0].focus(); }, 60);
+  }
+
+  document.querySelectorAll('[data-pdf-trigger]').forEach(function (t) {
+    t.addEventListener('click', function (e) {
+      e.preventDefault();
+      open(t);
+    });
+  });
+
+  closeBtn.addEventListener('click', close);
+  modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+  // the browser handles the download; just get the dialog out of the way
+  opts.forEach(function (o) { o.addEventListener('click', function () { setTimeout(close, 80); }); });
+})();

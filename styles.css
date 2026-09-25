@@ -1573,3 +1573,52 @@ body.has-pdf-prompt #sh{display:none !important}
   .pdf-prompt__txt span{display:none}
   .pdf-prompt__btn{padding:9px 13px;font-size:12px}
 }
+
+/* ── PDF language chooser ─────────────────────────────────────────────
+   Opened by either download entry point. A centred dialog rather than a
+   sheet: it is a decision the reader has to make before anything
+   happens, so it should take focus rather than sit at the edge. */
+.lang-pick{
+  position:fixed;inset:0;z-index:400;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  background:rgba(0,0,0,.72);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  opacity:0;transition:opacity .22s ease;
+}
+.lang-pick.on{opacity:1}
+.lang-pick__sheet{
+  position:relative;
+  width:100%;max-width:330px;
+  padding:26px 24px 24px;
+  background:#141414;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.7);
+  font-family:var(--font-body);
+  transform:translateY(10px) scale(.98);
+  transition:transform .26s cubic-bezier(.22,1,.36,1);
+}
+.lang-pick.on .lang-pick__sheet{transform:none}
+.lang-pick__t{font-size:16px;font-weight:700;color:#fff;letter-spacing:.1px}
+.lang-pick__sub{margin-top:3px;font-size:12px;color:rgba(255,255,255,.45)}
+.lang-pick__opts{display:flex;flex-direction:column;gap:9px;margin-top:18px}
+.lang-pick__opt{
+  display:block;text-align:center;text-decoration:none;
+  padding:13px 16px;border-radius:10px;
+  font-size:14px;font-weight:600;color:#fff;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.14);
+  transition:background .16s ease,border-color .16s ease;
+}
+.lang-pick__opt:hover,.lang-pick__opt:focus-visible{
+  background:rgba(238,2,2,.16);border-color:var(--red);outline:none;
+}
+.lang-pick__x{
+  position:absolute;top:10px;right:10px;
+  width:32px;height:32px;padding:0;
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,.4);font-size:22px;line-height:1;
+  font-family:var(--font-body);border-radius:8px;
+}
+.lang-pick__x:hover,.lang-pick__x:focus-visible{color:#fff;outline:none}
