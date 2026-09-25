@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=61">
+<link rel="stylesheet" href="styles.css?v=62">
 
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -729,8 +729,18 @@
   </div>
 </footer>
 
+<!-- Phone-only nudge toward the offline copy; dismissal is remembered. -->
+<div class="pdf-prompt" id="pdf-prompt" hidden>
+  <div class="pdf-prompt__txt">
+    <strong>Reading on your phone?</strong>
+    <span>The PDF is easier to read and works offline.</span>
+  </div>
+  <a class="pdf-prompt__btn" href="tb-brief.pdf" download>Download PDF</a>
+  <button class="pdf-prompt__x" id="pdf-prompt-x" type="button" aria-label="Dismiss">&times;</button>
+</div>
+
 <script src="https://unpkg.com/scrollama"></script>
 <script src="images.js?v=3"></script>
 <script src="scroll.js?v=16"></script>
-<script src="main.js?v=95"></script>
+<script src="main.js?v=96"></script>
 </html>

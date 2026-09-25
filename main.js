@@ -2018,17 +2018,37 @@ stepEls.forEach(s=>obs.observe(s));
   });
 })();
 
-// ── Hero: PDF download ────────────────────────────────────────────────
-// The PDF is supplied separately rather than generated from this page.
-// Until the file is in place the button would 404, so it stays hidden
-// until a HEAD request confirms it exists — drop tb-brief.pdf beside
-// index.html and the button appears on its own.
+// ── PDF download ──────────────────────────────────────────────────────
+// The button is always shown: it points at tb-brief.pdf, which is
+// supplied separately rather than generated from this page.
+//
+// On a phone the same file is offered once as a dismissible prompt —
+// the scrolling version is the part most likely to misbehave there.
+// Dismissal is remembered so it never nags twice.
 (function () {
-  var a = document.getElementById('hero-dl');
-  if (!a) return;
-  var href = a.getAttribute('href');
-  a.style.display = 'none';
-  fetch(href, { method: 'HEAD' })
-    .then(function (r) { if (r.ok) a.style.display = ''; })
-    .catch(function () { /* offline or missing — leave it hidden */ });
+  var el = document.getElementById('pdf-prompt');
+  if (!el) return;
+  if (!window.matchMedia('(max-width: 700px)').matches) return;
+
+  var KEY = 'msf-pdf-prompt-dismissed';
+  try { if (localStorage.getItem(KEY) === '1') return; } catch (e) { /* private mode */ }
+
+  var closeBtn = document.getElementById('pdf-prompt-x');
+  var dl = el.querySelector('.pdf-prompt__btn');
+
+  function dismiss() {
+    el.classList.remove('on');
+    document.body.classList.remove('has-pdf-prompt');
+    setTimeout(function () { el.hidden = true; }, 420);
+    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+  }
+
+  setTimeout(function () {
+    el.hidden = false;
+    document.body.classList.add('has-pdf-prompt');
+    requestAnimationFrame(function () { el.classList.add('on'); });
+  }, 2400);
+
+  if (closeBtn) closeBtn.addEventListener('click', dismiss);
+  if (dl) dl.addEventListener('click', dismiss);
 })();

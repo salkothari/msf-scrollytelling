@@ -1529,3 +1529,47 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   .foot-fund__logo--anrs{height:29px}
   .foot-fund__logo--msf{height:36px}
 }
+
+/* ── Phone prompt: offline PDF ────────────────────────────────────────
+   A bottom sheet rather than a centre modal: it never covers the thing
+   the reader is looking at, and it is trivially dismissible. Shown once
+   per device; the dismissal is remembered in localStorage. */
+.pdf-prompt{
+  position:fixed;z-index:300;
+  left:10px;right:10px;bottom:10px;
+  bottom:calc(10px + env(safe-area-inset-bottom));
+  display:flex;align-items:center;gap:11px;
+  padding:13px 14px;
+  background:#141414;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:14px;
+  box-shadow:0 12px 44px rgba(0,0,0,.65);
+  font-family:var(--font-body);
+  transform:translateY(160%);
+  transition:transform .4s cubic-bezier(.22,1,.36,1);
+}
+.pdf-prompt.on{transform:translateY(0)}
+.pdf-prompt__txt{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.pdf-prompt__txt strong{font-size:13px;font-weight:700;color:#fff;letter-spacing:.1px}
+.pdf-prompt__txt span{font-size:11.5px;line-height:1.35;color:rgba(255,255,255,.5)}
+.pdf-prompt__btn{
+  flex-shrink:0;
+  background:var(--red);color:#fff;text-decoration:none;
+  font-size:12.5px;font-weight:600;
+  padding:10px 15px;border-radius:100px;
+  box-shadow:0 4px 18px rgba(238,2,2,.45);
+  white-space:nowrap;
+}
+.pdf-prompt__x{
+  flex-shrink:0;
+  width:30px;height:30px;padding:0;margin-right:-3px;
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,.4);font-size:21px;line-height:1;
+  font-family:var(--font-body);
+}
+/* the scroll hint sits bottom-right and would collide with the sheet */
+body.has-pdf-prompt #sh{display:none !important}
+@media(max-width:360px){
+  .pdf-prompt__txt span{display:none}
+  .pdf-prompt__btn{padding:9px 13px;font-size:12px}
+}
