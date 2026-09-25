@@ -1504,19 +1504,28 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 }
 
 /* ── Footer: study funding ────────────────────────────────────────────
-   A funder is not an implementing partner, so ANRS sits on its own
-   quiet line below the partner logos rather than beside them. MSF is
-   named in text since its logo is already in the row above. */
+   Sits under the colophon on the right of the bottom bar. Both funders
+   are shown as marks rather than one mark and one name. The label goes
+   on its own line so the two logos get room: these are detailed
+   lockups, and below roughly 30px their wordmarks turn to mush. The
+   heights differ because the lockups do — ANRS is a wide two-line
+   stack, MSF a squarer block — so equal pixel heights would leave MSF
+   looking oversized. */
 .foot-fund{
-  flex:1 0 100%;
-  display:flex;align-items:center;gap:11px;flex-wrap:wrap;
-  margin-top:22px;padding-top:18px;
-  border-top:1px solid rgba(255,255,255,.07);
-  font-family:var(--font-body);font-size:11px;
-  color:rgba(255,255,255,.28);line-height:1.75;
+  display:flex;flex-direction:column;align-items:flex-end;gap:7px;
+  margin-top:16px;
 }
-.foot-fund__logo{height:46px;width:auto;display:block;opacity:.8}
+.foot-fund__lbl{
+  font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.2);white-space:nowrap;
+}
+.foot-fund__row{display:flex;align-items:center;gap:16px}
+.foot-fund__logo{width:auto;display:block;opacity:.9}
+.foot-fund__logo--anrs{height:34px}
+.foot-fund__logo--msf{height:42px}
 @media(max-width:700px){
-  .foot-fund{gap:8px;margin-top:18px;padding-top:14px;font-size:10.5px}
-  .foot-fund__logo{height:38px}
+  .foot-fund{align-items:flex-start;margin-top:14px}
+  .foot-fund__row{gap:13px}
+  .foot-fund__logo--anrs{height:29px}
+  .foot-fund__logo--msf{height:36px}
 }
