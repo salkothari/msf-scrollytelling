@@ -1534,6 +1534,13 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
    A bottom sheet rather than a centre modal: it never covers the thing
    the reader is looking at, and it is trivially dismissible. Shown once
    per device; the dismissal is remembered in localStorage. */
+/* The hidden attribute works through a very low-specificity UA rule
+   ([hidden]{display:none}), so any display declaration here beats it and
+   leaves the element laid out and swallowing clicks. Both overlays need
+   this. */
+.pdf-prompt[hidden],
+.lang-pick[hidden]{display:none}
+
 .pdf-prompt{
   position:fixed;z-index:300;
   left:10px;right:10px;bottom:10px;
