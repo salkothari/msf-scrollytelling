@@ -1502,3 +1502,21 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 @media(max-width:700px){
   .hero-dl{margin-top:18px;padding:10px 16px;font-size:12.5px}
 }
+
+/* ── Footer: study funding ────────────────────────────────────────────
+   A funder is not an implementing partner, so ANRS sits on its own
+   quiet line below the partner logos rather than beside them. MSF is
+   named in text since its logo is already in the row above. */
+.foot-fund{
+  flex:1 0 100%;
+  display:flex;align-items:center;gap:11px;flex-wrap:wrap;
+  margin-top:22px;padding-top:18px;
+  border-top:1px solid rgba(255,255,255,.07);
+  font-family:var(--font-body);font-size:11px;
+  color:rgba(255,255,255,.28);line-height:1.75;
+}
+.foot-fund__logo{height:46px;width:auto;display:block;opacity:.8}
+@media(max-width:700px){
+  .foot-fund{gap:8px;margin-top:18px;padding-top:14px;font-size:10.5px}
+  .foot-fund__logo{height:38px}
+}
