@@ -2028,6 +2028,13 @@ stepEls.forEach(s=>obs.observe(s));
 (function () {
   var el = document.getElementById('pdf-prompt');
   if (!el) return;
+  // Both overlays must sit directly on <body>. Anywhere else and a
+  // positioned ancestor forms a stacking context, which caps their
+  // z-index against the rest of the page however high it is set — the
+  // sheet then slid under the sticky ticker and other sections.
+  [el, document.getElementById('lang-pick')].forEach(function (n) {
+    if (n && n.parentElement !== document.body) document.body.appendChild(n);
+  });
   if (!window.matchMedia('(max-width: 700px)').matches) return;
 
   var KEY = 'msf-pdf-prompt-dismissed';
