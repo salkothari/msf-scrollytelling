@@ -1541,55 +1541,57 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
   .foot-fund__logo--msf{height:36px}
 }
 
-/* ── Phone prompt: offline PDF ────────────────────────────────────────
-   A bottom sheet rather than a centre modal: it never covers the thing
-   the reader is looking at, and it is trivially dismissible. Shown once
-   per device; the dismissal is remembered in localStorage. */
 /* The hidden attribute works through a very low-specificity UA rule
-   ([hidden]{display:none}), so any display declaration here beats it and
-   leaves the element laid out and swallowing clicks. Both overlays need
-   this. */
+   ([hidden]{display:none}), so any display declaration below beats it and
+   leaves the element laid out and swallowing clicks across the whole
+   viewport. Both overlays need this. Do not drop it. */
 .pdf-prompt[hidden],
 .lang-pick[hidden]{display:none}
 
+/* ── Phone prompt: offline PDF ────────────────────────────────────────
+   A bottom sheet rather than a centre modal: it never covers the thing
+   the reader is looking at. Stacked rather than side-by-side — at this
+   size a row squeezed the message into a ~150px column that wrapped to
+   three lines next to the button. Shown once per device; the dismissal
+   is remembered in localStorage. */
 .pdf-prompt{
   position:fixed;z-index:300;
   left:10px;right:10px;bottom:10px;
   bottom:calc(10px + env(safe-area-inset-bottom));
-  display:flex;align-items:center;gap:11px;
-  padding:13px 14px;
+  display:flex;flex-direction:column;align-items:stretch;gap:12px;
+  padding:17px 17px 16px;
   background:#141414;
   border:1px solid rgba(255,255,255,.14);
-  border-radius:14px;
-  box-shadow:0 12px 44px rgba(0,0,0,.65);
+  border-radius:16px;
+  box-shadow:0 14px 48px rgba(0,0,0,.7);
   font-family:var(--font-body);
   transform:translateY(160%);
   transition:transform .4s cubic-bezier(.22,1,.36,1);
 }
 .pdf-prompt.on{transform:translateY(0)}
-.pdf-prompt__txt{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
-.pdf-prompt__txt strong{font-size:13px;font-weight:700;color:#fff;letter-spacing:.1px}
-.pdf-prompt__txt span{font-size:11.5px;line-height:1.35;color:rgba(255,255,255,.5)}
+.pdf-prompt__txt{display:flex;flex-direction:column;gap:3px;padding-right:30px}
+.pdf-prompt__txt strong{font-size:16px;font-weight:700;color:#fff;letter-spacing:.1px}
+.pdf-prompt__txt span{font-size:13px;line-height:1.4;color:rgba(255,255,255,.58)}
 .pdf-prompt__btn{
-  flex-shrink:0;
+  display:block;text-align:center;
   background:var(--red);color:#fff;text-decoration:none;
-  font-size:12.5px;font-weight:600;
-  padding:10px 15px;border-radius:100px;
-  box-shadow:0 4px 18px rgba(238,2,2,.45);
-  white-space:nowrap;
+  font-size:14.5px;font-weight:600;
+  padding:14px 18px;border-radius:100px;
+  box-shadow:0 4px 20px rgba(238,2,2,.45);
 }
 .pdf-prompt__x{
-  flex-shrink:0;
-  width:30px;height:30px;padding:0;margin-right:-3px;
+  position:absolute;top:9px;right:9px;
+  width:36px;height:36px;padding:0;
   background:none;border:none;cursor:pointer;
-  color:rgba(255,255,255,.4);font-size:21px;line-height:1;
-  font-family:var(--font-body);
+  color:rgba(255,255,255,.45);font-size:24px;line-height:1;
+  font-family:var(--font-body);border-radius:10px;
 }
 /* the scroll hint sits bottom-right and would collide with the sheet */
 body.has-pdf-prompt #sh{display:none !important}
 @media(max-width:360px){
-  .pdf-prompt__txt span{display:none}
-  .pdf-prompt__btn{padding:9px 13px;font-size:12px}
+  .pdf-prompt{padding:15px 15px 14px;gap:10px}
+  .pdf-prompt__txt strong{font-size:15px}
+  .pdf-prompt__btn{padding:13px 16px;font-size:14px}
 }
 
 /* ── PDF language chooser ─────────────────────────────────────────────

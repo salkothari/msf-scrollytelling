@@ -2043,11 +2043,15 @@ stepEls.forEach(s=>obs.observe(s));
     try { localStorage.setItem(KEY, '1'); } catch (e) {}
   }
 
-  setTimeout(function () {
-    el.hidden = false;
-    document.body.classList.add('has-pdf-prompt');
+  // Show it straight away. The two nested frames are not a delay — the
+  // element has to be laid out in its off-screen state for one frame
+  // before .on is added, or the slide-up has nothing to animate from
+  // and it simply pops into place.
+  el.hidden = false;
+  document.body.classList.add('has-pdf-prompt');
+  requestAnimationFrame(function () {
     requestAnimationFrame(function () { el.classList.add('on'); });
-  }, 2400);
+  });
 
   if (closeBtn) closeBtn.addEventListener('click', dismiss);
   if (dl) dl.addEventListener('click', dismiss);
