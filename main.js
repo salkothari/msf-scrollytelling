@@ -2031,7 +2031,24 @@ stepEls.forEach(s=>obs.observe(s));
   if (!window.matchMedia('(max-width: 700px)').matches) return;
 
   var KEY = 'msf-pdf-prompt-dismissed';
-  try { if (localStorage.getItem(KEY) === '1') return; } catch (e) { /* private mode */ }
+  var DAYS = 30;
+
+  // ?prompt=1 always shows it, so this can be checked on a real phone
+  // without clearing site data.
+  var force = false;
+  try { force = new URLSearchParams(location.search).get('prompt') === '1'; } catch (e) {}
+
+  if (!force) {
+    try {
+      // Dismissal now expires. Someone who waved it away months ago and
+      // comes back on a bad connection should be offered it again.
+      // A value written by the old build is the literal '1', which
+      // parses to 1ms after the epoch and so reads as long expired —
+      // devices stuck on the old permanent flag recover by themselves.
+      var at = parseInt(localStorage.getItem(KEY), 10);
+      if (at && Date.now() - at < DAYS * 864e5) return;
+    } catch (e) { /* private mode */ }
+  }
 
   var closeBtn = document.getElementById('pdf-prompt-x');
   var dl = el.querySelector('.pdf-prompt__btn');
@@ -2040,7 +2057,7 @@ stepEls.forEach(s=>obs.observe(s));
     el.classList.remove('on');
     document.body.classList.remove('has-pdf-prompt');
     setTimeout(function () { el.hidden = true; }, 420);
-    try { localStorage.setItem(KEY, '1'); } catch (e) {}
+    try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {}
   }
 
   // Show it straight away. The two nested frames are not a delay — the
