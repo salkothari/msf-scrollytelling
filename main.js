@@ -610,7 +610,7 @@ stepEls.forEach(s=>obs.observe(s));
   var COLS = [
     ['Before WHO', 'algorithms'],
     ['MSF study with', 'WHO algorithms'],
-    ['With WHO', 'algorithms*']
+    ['After the', 'MSF study*']
   ];
   var C_COUNTRY = '#c0c0c0';
   var C_ALL     = '#ee0202';
@@ -711,7 +711,7 @@ stepEls.forEach(s=>obs.observe(s));
           tip.innerHTML = '<strong>' + d.id + '</strong><br>' +
             'Before WHO algorithms: ' + d.v[0] + '<br>' +
             'MSF study: ' + d.v[1] + '<br>' +
-            'With WHO algorithms: ' + d.v[2];
+            'After the MSF study: ' + d.v[2];
           tip.style.display = 'block';
         }
       });
