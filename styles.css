@@ -1532,13 +1532,13 @@ body{font-family:'DM Sans',sans-serif;background:#000;color:#fff}
 }
 .foot-fund__row{display:flex;align-items:center;gap:16px}
 .foot-fund__logo{width:auto;display:block;opacity:.9}
-.foot-fund__logo--anrs{height:34px}
-.foot-fund__logo--msf{height:42px}
+.foot-fund__logo--anrs{height:30px}
+.foot-fund__logo--msf{height:52px}
 @media(max-width:700px){
   .foot-fund{align-items:flex-start;margin-top:14px}
   .foot-fund__row{gap:13px}
-  .foot-fund__logo--anrs{height:29px}
-  .foot-fund__logo--msf{height:36px}
+  .foot-fund__logo--anrs{height:26px}
+  .foot-fund__logo--msf{height:44px}
 }
 
 /* The hidden attribute works through a very low-specificity UA rule
